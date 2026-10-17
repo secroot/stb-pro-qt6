@@ -409,6 +409,7 @@ def probe_stream(
     skip_ffprobe: bool = False,
     proxy: str = "",
     extract_thumbnail: bool = True,
+    trigger_vpn: bool = False,
 ) -> StreamProbeResult:
     if not url:
         return StreamProbeResult(is_alive=False, latency_ms=-1, error_msg="Keine Stream-URL")
@@ -478,7 +479,7 @@ def probe_stream(
 
                 err_payload = detect_stream_error_payload(sample_bytes, content_type)
                 if err_payload:
-                    if is_ip_or_stream_ban(status_code, err_payload):
+                    if trigger_vpn and is_ip_or_stream_ban(status_code, err_payload):
                         try:
                             from core.signals import event_bus
                             event_bus.stream_ip_ban_detected.emit(url, err_payload)
@@ -492,7 +493,7 @@ def probe_stream(
                     )
             else:
                 diag = diagnose_iptv_status(status_code)
-                if is_ip_or_stream_ban(status_code, diag):
+                if trigger_vpn and is_ip_or_stream_ban(status_code, diag):
                     try:
                         from core.signals import event_bus
                         event_bus.stream_ip_ban_detected.emit(url, diag)

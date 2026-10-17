@@ -1244,6 +1244,9 @@ class MainWindow(QMainWindow):
         elif status == "connected":
             self.top_bar.update_vpn_badge("🛡️ VPN: Aktiv", "connected")
             self.live_view.set_video_status_text(f"✅ {msg}", "VPN AKTIV")
+        elif status == "disconnected":
+            self.top_bar.update_vpn_badge("🛡️ VPN: Aus", "disconnected")
+            self.live_view.set_video_status_text(f"⚪ {msg}", "VPN GETRENNT")
         elif status == "error":
             self.top_bar.update_vpn_badge("🛡️ VPN: Fehler", "error")
             self.live_view.set_video_status_text(f"⚠️ {msg}", "VPN FEHLER")
@@ -1365,6 +1368,10 @@ class MainWindow(QMainWindow):
         # Action: Quick Connect
         act_rotate = menu.addAction("🔄 Server jetzt rotieren (Quick Connect)")
         act_rotate.triggered.connect(lambda: vpn_manager.switch_server())
+
+        # Action: Disconnect
+        act_disconnect = menu.addAction("🛑 VPN trennen (Disconnect / Limit freigeben)")
+        act_disconnect.triggered.connect(lambda: vpn_manager.disconnect())
 
         # Submenu: Länder
         menu_countries = menu.addMenu("📍 Land gezielt wählen")

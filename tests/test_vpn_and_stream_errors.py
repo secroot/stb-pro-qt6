@@ -83,7 +83,7 @@ class TestVpnAndStreamErrors(unittest.TestCase):
         cb = MagicMock()
         ok = vm.switch_server(callback=cb)
         self.assertFalse(ok)
-        cb.assert_called_with(False, "Server-Wechsel läuft bereits oder Cooldown aktiv.")
+        cb.assert_called_with(False, "Server-Wechsel läuft bereits oder Cooldown aktiv (15s).")
 
     def test_burned_ips_tracking(self):
         vm = NordVpnManager()
@@ -148,15 +148,58 @@ class TestVpnAndStreamErrors(unittest.TestCase):
         event_bus.stream_ip_ban_detected.connect(_on_ban)
         try:
             with patch("requests.get", return_value=mock_resp):
-                res = probe_stream("http://pro.8k-strong.tv/play/live.php?mac=00:1A:79:00:13:BE")
-                self.assertFalse(res.is_alive)
-                self.assertEqual(res.status_code, 511)
-                self.assertIn("511", res.error_msg)
+                # 1. Default (trigger_vpn=False, z.B. Vorschaubilder-Abruf): darf KEIN System-VPN-Switch auslösen
+                res_passive = probe_stream("http://pro.8k-strong.tv/play/live.php?mac=00:1A:79:00:13:BE", trigger_vpn=False)
+                self.assertFalse(res_passive.is_alive)
+                self.assertEqual(len(emitted_signals), 0)
+
+                # 2. Explizit trigger_vpn=True (z.B. aktives Playback): muss Event emittieren
+                res_active = probe_stream("http://pro.8k-strong.tv/play/live.php?mac=00:1A:79:00:13:BE", trigger_vpn=True)
+                self.assertFalse(res_active.is_alive)
+                self.assertEqual(res_active.status_code, 511)
+                self.assertIn("511", res_active.error_msg)
                 self.assertEqual(len(emitted_signals), 1)
                 self.assertIn("pro.8k-strong.tv", emitted_signals[0][0])
                 self.assertIn("511", emitted_signals[0][1])
         finally:
             event_bus.stream_ip_ban_detected.disconnect(_on_ban)
+
+    def test_vpn_manager_clean_disconnect_and_sequence(self):
+        vm = NordVpnManager()
+        vm._cli_path = r"C:\fake\NordVPN.exe"
+
+        called_cmds = []
+        def _fake_run(cmd, *args, **kwargs):
+            called_cmds.append(list(cmd))
+            m = MagicMock()
+            m.returncode = 0
+            return m
+
+        with patch("subprocess.run", side_effect=_fake_run):
+            # Test expliziter Disconnect
+            ok = vm.disconnect()
+            self.assertTrue(ok)
+            import time
+            for _ in range(20):
+                if any("-d" in cmd for cmd in called_cmds):
+                    break
+                time.sleep(0.05)
+            self.assertTrue(any("-d" in cmd for cmd in called_cmds))
+
+            # Test Serverwechsel: Muss -d vor -c aufrufen
+            called_cmds.clear()
+            vm._is_switching = False
+            vm._last_switch_time = 0.0
+            with patch.object(vm, "get_public_ip", return_value="1.2.3.4"):
+                vm.switch_server("Switzerland")
+                for _ in range(40):
+                    if len(called_cmds) >= 2:
+                        break
+                    time.sleep(0.05)
+                self.assertTrue(len(called_cmds) >= 2)
+                self.assertIn("-d", called_cmds[0])
+                self.assertIn("-c", called_cmds[1])
+                self.assertIn("Switzerland", called_cmds[1])
 
     def test_stream_buffer_aborts_immediately_on_511(self):
         import time

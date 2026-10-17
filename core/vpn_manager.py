@@ -116,19 +116,18 @@ class NordVpnManager:
             return True
 
     def is_connected(self) -> bool:
-        """Prüft über Netzwerkschnittstellen, ob der NordLynx-Adapter aktiv verbunden ist."""
+        """Prüft über die Routing-Tabelle, ob der NordLynx-Tunnel aktiv Datenverkehr leitet."""
         try:
             res = subprocess.run(
-                ["netsh", "interface", "show", "interface"],
+                ["route", "print", "0.0.0.0"],
                 capture_output=True,
                 text=True,
                 timeout=2,
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             )
             for line in res.stdout.splitlines():
-                if "nordlynx" in line.lower() or "openvpn data channel" in line.lower():
-                    if "verbunden" in line.lower() or "connected" in line.lower():
-                        return True
+                if "0.0.0.0" in line and ("100." in line or "nordlynx" in line.lower()):
+                    return True
         except Exception:
             pass
         return False
@@ -267,6 +266,43 @@ class NordVpnManager:
             return list(pool)
         return [base_country, "Germany", "Switzerland", "Austria", "Netherlands"]
 
+    def disconnect(self, callback: Optional[Callable[[bool, str], None]] = None) -> bool:
+        """
+        Trennt die aktive NordVPN-Verbindung sauber (-d), um das Gerätelimit in der Cloud freizugeben.
+        """
+        cli = self._detect_cli()
+        if not cli:
+            if callback:
+                callback(False, "NordVPN ist nicht installiert.")
+            return False
+
+        event_bus.log_message.emit("[🛡️ VPN] Trenne aktive NordVPN-Verbindung (-d)...")
+        event_bus.vpn_status_changed.emit("switching", "Trenne VPN...")
+
+        def _worker():
+            try:
+                subprocess.run(
+                    [cli, "-d"],
+                    capture_output=True,
+                    text=True,
+                    timeout=6,
+                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+                )
+                time.sleep(1.2)
+                event_bus.log_message.emit("[🛡️ VPN] NordVPN sauber getrennt. Verbindungslimit freigegeben.")
+                event_bus.vpn_status_changed.emit("disconnected", "NordVPN getrennt")
+                if callback:
+                    callback(True, "NordVPN getrennt")
+            except Exception as e:
+                event_bus.log_message.emit(f"[⚠️ VPN] Fehler beim Trennen: {e}")
+                event_bus.vpn_status_changed.emit("error", str(e))
+                if callback:
+                    callback(False, str(e))
+
+        th = threading.Thread(target=_worker, daemon=True, name="NordVpnDisconnecter")
+        th.start()
+        return True
+
     def switch_server(
         self,
         target_country: Optional[str] = None,
@@ -274,6 +310,7 @@ class NordVpnManager:
     ) -> bool:
         """
         Wechselt asynchron zu einem neuen NordVPN-Server (optional mit Länderangabe).
+        Führt vorab immer einen sauberen Disconnect (-d) durch, um Ghost-Sessions zu verhindern.
         """
         cli = self._detect_cli()
         if not cli:
@@ -283,10 +320,10 @@ class NordVpnManager:
 
         now = time.time()
         with self._lock:
-            # 8 Sekunden Cooldown zwischen Server-Wechseln
-            if self._is_switching or (now - self._last_switch_time < 8.0):
+            # 15 Sekunden Cooldown zwischen Server-Wechseln, um NordVPN-Gerätelimits zu schützen
+            if self._is_switching or (now - self._last_switch_time < 15.0):
                 if callback:
-                    callback(False, "Server-Wechsel läuft bereits oder Cooldown aktiv.")
+                    callback(False, "Server-Wechsel läuft bereits oder Cooldown aktiv (15s).")
                 return False
             self._is_switching = True
             self._last_switch_time = now
@@ -300,6 +337,16 @@ class NordVpnManager:
             success = False
             new_ip = ""
             try:
+                # 1. Zwingend sauber trennen, damit die bisherige Session in der NordVPN-Cloud sofort deregistriert wird
+                subprocess.run(
+                    [cli, "-d"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+                )
+                time.sleep(1.2)
+
                 cmd = [cli, "-c"]
                 if country:
                     cmd.extend(["-g", country])
@@ -353,8 +400,8 @@ class NordVpnManager:
         on_success: Optional[Callable[[], None]] = None,
     ) -> bool:
         """
-        Rotiert intelligent durch verschiedene Server/Länder, bis eine IP erhalten wird,
-        die für diesen Host NICHT als verbrannt gilt.
+        Rotiert intelligent zu einem sauberen Ziel-Server/Land.
+        Trennt die alte Verbindung sauber (-d) vor dem Neuaufbau (-c), um das 10-Geräte-Limit zu schützen.
         """
         if not self.auto_switch_enabled or not self.is_installed():
             return False
@@ -366,7 +413,11 @@ class NordVpnManager:
         clean_host = self._normalize_host(host)
         now = time.time()
         with self._lock:
-            if self._is_switching or (now - self._last_switch_time < 8.0):
+            # 15 Sekunden Cooldown gegen Verbindungsfluten
+            if self._is_switching or (now - self._last_switch_time < 15.0):
+                event_bus.log_message.emit(
+                    f"[🛡️ VPN] Rotation für '{clean_host}' ignoriert (Cooldown aktiv, Schutz vor Gerätelimit)."
+                )
                 return False
             self._is_switching = True
             self._last_switch_time = now
@@ -374,56 +425,58 @@ class NordVpnManager:
         base_country = self.guess_country_for_profile(profile_name, clean_host)
         candidates = self.get_rotation_candidates(base_country)
 
+        # Wähle den besten Zielkandidaten
+        target_country = candidates[0] if candidates else "Germany"
+
         event_bus.log_message.emit(
-            f"[🛡️ VPN] Starte intelligente Server-Rotation für '{clean_host}' (Kandidaten: {', '.join(candidates[:3])})..."
+            f"[🛡️ VPN] Starte Server-Rotation für '{clean_host}' nach {target_country} (Cooldown 15s geschützt)..."
         )
-        event_bus.vpn_status_changed.emit("switching", f"Rotiere Server für {clean_host}...")
+        event_bus.vpn_status_changed.emit("switching", f"Rotiere nach {target_country}...")
 
         def _rotation_worker():
             final_ip = ""
-            final_country = ""
             success = False
 
             try:
-                for attempt_idx, country in enumerate(candidates[:4]):
-                    # Verbinde zu Land
-                    cmd = [cli, "-c", "-g", country]
-                    event_bus.log_message.emit(f"[🛡️ VPN] Verbindungsversuch {attempt_idx + 1}: {country}...")
-                    event_bus.vpn_status_changed.emit("switching", f"Verbinde {country}...")
+                # 1. Zwingend sauber trennen, damit die vorherige Session sofort aus NordVPNs Geräte-Zähler entfernt wird
+                subprocess.run(
+                    [cli, "-d"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+                )
+                time.sleep(1.2)
 
-                    subprocess.run(
-                        cmd,
-                        capture_output=True,
-                        text=True,
-                        timeout=8,
-                        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
-                    )
+                # 2. Saubere Verbindung zum Zielland aufbauen
+                cmd = [cli, "-c", "-g", target_country]
+                subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=8,
+                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+                )
 
-                    # Warte auf neue IP
-                    t_start = time.time()
-                    cand_ip = ""
-                    while time.time() - t_start < 10.0:
-                        time.sleep(1.2)
-                        ip = self.get_public_ip(timeout=2.0)
-                        if ip and ip != "Unbekannt":
-                            cand_ip = ip
-                            break
+                # Warte auf neue IP
+                t_start = time.time()
+                while time.time() - t_start < 12.0:
+                    time.sleep(1.2)
+                    ip = self.get_public_ip(timeout=2.0)
+                    if ip and ip != "Unbekannt":
+                        final_ip = ip
+                        success = True
+                        break
 
-                    if not cand_ip:
-                        continue
-
-                    # Prüfen, ob die IP für diesen Host bereits verbrannt ist
-                    if self.is_ip_burned(clean_host, cand_ip):
+                if success and final_ip:
+                    if self.is_ip_burned(clean_host, final_ip):
                         event_bus.log_message.emit(
-                            f"[🔥 VPN] IP {cand_ip} ({country}) ist für '{clean_host}' bereits verbrannt! Versuche nächstes Ziel..."
+                            f"[🔥 VPN] Erhaltene IP {final_ip} ({target_country}) ist für '{clean_host}' bereits verbrannt."
                         )
-                        continue
-
-                    # Saubere, unverbrannte IP gefunden!
-                    final_ip = cand_ip
-                    final_country = country
-                    success = True
-                    break
+                    else:
+                        event_bus.log_message.emit(
+                            f"[🛡️ VPN] Frische, unverbrannte IP {final_ip} ({target_country}) aktiv!"
+                        )
 
             except Exception as e:
                 final_ip = str(e)
@@ -432,14 +485,14 @@ class NordVpnManager:
                     self._is_switching = False
 
                 if success:
-                    info = f"NordVPN verbunden ({final_country}): {final_ip} (Clean)"
+                    info = f"NordVPN verbunden ({target_country}): {final_ip}"
                     event_bus.log_message.emit(f"[🛡️ VPN] {info}")
                     event_bus.vpn_status_changed.emit("connected", info)
                     if on_success:
                         time.sleep(0.5)
                         on_success()
                 else:
-                    err_info = "Keine unverbrannte IP in den Rotationspools gefunden."
+                    err_info = f"NordVPN Rotation fehlgeschlagen ({final_ip})"
                     event_bus.log_message.emit(f"[⚠️ VPN] {err_info}")
                     event_bus.vpn_status_changed.emit("error", err_info)
 
