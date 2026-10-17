@@ -28,6 +28,8 @@ class XtreamClient(_BaseXtreamClient):
         user_agent: Optional[str] = None,
         enable_inspector: bool = True,
         verify_ssl: bool = False,
+        connect_timeout: Optional[float] = None,
+        read_timeout: Optional[float] = None,
     ):
         super().__init__(
             server_url=server_url,
@@ -38,6 +40,12 @@ class XtreamClient(_BaseXtreamClient):
             user_agent=user_agent,
         )
         self.session.verify = verify_ssl
+        if connect_timeout is not None and read_timeout is not None:
+            self.req_timeout = (float(connect_timeout), float(read_timeout))
+        elif connect_timeout is not None:
+            self.req_timeout = (float(connect_timeout), self.req_timeout[1])
+        elif read_timeout is not None:
+            self.req_timeout = (self.req_timeout[0], float(read_timeout))
         self.series_categories: List[Dict[str, Any]] = []
         _attach_inspector_hook(self.session, enable=enable_inspector)
 

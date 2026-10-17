@@ -34,6 +34,7 @@ class BufferSettings:
     preview_enabled: bool = True # Standbild bei Senderauswahl
     preview_max_age_min: int = 15
     proxy: str = ""              # HTTP/SOCKS5 Proxy (z.B. http://127.0.0.1:1080)
+    pcr_smoothing_enabled: bool = True # Glättet PCR-Mux-Bitrate zur Jitter-Reduktion
 
     def clamp(self) -> "BufferSettings":
         self.mode = self.mode if self.mode in ("proxy", "vlc") else "proxy"
@@ -47,6 +48,7 @@ class BufferSettings:
         self.timeout_read = max(1.0, float(self.timeout_read))
         self.preview_max_age_min = max(0, int(self.preview_max_age_min))
         self.proxy = str(self.proxy or "").strip()
+        self.pcr_smoothing_enabled = bool(self.pcr_smoothing_enabled)
         return self
 
     def to_dict(self) -> Dict[str, Any]:
@@ -137,7 +139,10 @@ class _Session:
         if dt >= 0.8 and db > 0:
             calc_bps = (db * 8.0) / dt
             if 100_000 <= calc_bps <= 150_000_000:
-                self.mux_bps = calc_bps
+                if getattr(self.st, "pcr_smoothing_enabled", True) and self.mux_bps > 0:
+                    self.mux_bps = 0.75 * self.mux_bps + 0.25 * calc_bps
+                else:
+                    self.mux_bps = calc_bps
             if dt >= 2.5:
                 self._pcr_rate_start = self._pcr_rate_last
         self._pcr_rate_last = (abs_offset, pcr_time)

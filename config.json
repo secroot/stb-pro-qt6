@@ -708,7 +708,8 @@
         "hw_decode": true,
         "preview_enabled": true,
         "preview_max_age_min": 15,
-        "proxy": ""
+        "proxy": "",
+        "pcr_smoothing_enabled": true
     },
     "ui_scale": "Auto",
     "last_account": {

@@ -174,6 +174,128 @@ class TestSettingsAndSidebar(unittest.TestCase):
         finally:
             win.close()
 
+    def test_06_device_id_mode_random_vs_deterministic(self):
+        """Verify StbClient respects device_id_mode='random' vs 'deterministic'."""
+        from clients.stb_client import StbClient
+
+        cl_det = StbClient(
+            portal_url="http://example.com/c/",
+            mac="00:1A:79:AA:BB:CC",
+            device_id_mode="deterministic",
+            enable_inspector=False,
+        )
+        cl_rand = StbClient(
+            portal_url="http://example.com/c/",
+            mac="00:1A:79:AA:BB:CC",
+            device_id_mode="random",
+            enable_inspector=False,
+        )
+
+        self.assertEqual(cl_det.device_id_mode, "deterministic")
+        self.assertEqual(cl_rand.device_id_mode, "random")
+        self.assertEqual(len(cl_rand.device_id), 64)
+        # Random IDs must differ from deterministic SHA-256 hash
+        self.assertNotEqual(cl_det.device_id, cl_rand.device_id)
+
+    def test_07_pcr_rate_smoothing(self):
+        """Verify BufferSettings and _Session apply PCR rate smoothing when enabled."""
+        from core.stream_buffer import BufferSettings, _Session
+
+        st_smooth = BufferSettings(pcr_smoothing_enabled=True)
+        session_smooth = _Session("http://test.ts", {}, st_smooth)
+        session_smooth._record_pcr(0, 0.0)
+        session_smooth._record_pcr(500_000, 1.0)
+        initial_bps = session_smooth.mux_bps
+        self.assertGreater(initial_bps, 0)
+
+        # Feed a sharp jump with smoothing active: should be weighted 0.75 / 0.25
+        # dt = 2.0 - 0.0 = 2.0s, db = 1_500_000 bytes -> calc_bps = 6.0 Mbps
+        calc_bps = (1_500_000 * 8.0) / 2.0
+        session_smooth._record_pcr(1_500_000, 2.0)
+        expected_smoothed = 0.75 * initial_bps + 0.25 * calc_bps
+        self.assertAlmostEqual(session_smooth.mux_bps, expected_smoothed, delta=100.0)
+
+        # Now test with smoothing disabled: directly assigned without EMA
+        st_raw = BufferSettings(pcr_smoothing_enabled=False)
+        session_raw = _Session("http://test.ts", {}, st_raw)
+        session_raw._record_pcr(0, 0.0)
+        session_raw._record_pcr(500_000, 1.0)
+        session_raw._record_pcr(1_500_000, 2.0)
+        self.assertAlmostEqual(session_raw.mux_bps, calc_bps, delta=100.0)
+
+    def test_08_check_mac_account_boost_options(self):
+        """Verify check_mac_account accepts and uses genre_param, sortby_param, and fallback_get_all."""
+        from unittest.mock import MagicMock, patch
+        from clients.stb_client import check_mac_account
+
+        with patch("clients.stb_client.StbClient") as mock_stb_cls:
+            mock_client = MagicMock()
+            mock_client.token = "test_token"
+            mock_client.normalized_load_url = "http://example.com/c/load.php"
+            mock_client.get_profile.return_value = {"blocked": "0", "expire_billing_date": "2027-10-10"}
+            mock_client.get_account_info.return_value = {"expire": "2027-10-10"}
+            mock_client._request.return_value = {"total_items": 42}
+            mock_stb_cls.return_value = mock_client
+            mock_stb_cls.format_mac = lambda m: m.upper()
+
+            res = check_mac_account(
+                portal_url="http://example.com/c/",
+                mac="00:1A:79:00:11:22",
+                genre_param="15",
+                sortby_param="name",
+                fallback_get_all=False,
+                verify_ssl=True,
+                device_id_mode="random",
+            )
+
+            self.assertTrue(res["valid"])
+            self.assertEqual(res["channels"], 42)
+            mock_client._request.assert_called_once()
+            call_args = mock_client._request.call_args
+            self.assertEqual(call_args[0][0], "get_ordered_list")
+            self.assertEqual(call_args[1]["extra_params"]["genre"], "15")
+            self.assertEqual(call_args[1]["extra_params"]["sortby"], "name")
+
+    def test_09_vpn_fallback_country_and_reload(self):
+        """Verify NordVpnManager respects configured vpn_fallback_country and reload_config."""
+        cfg_mgr = ConfigManager()
+        cfg_mgr.set("vpn_fallback_country", "Switzerland", auto_save=False)
+        vpn = NordVpnManager()
+        vpn.set_config_manager(cfg_mgr)
+
+        self.assertEqual(vpn.guess_country_for_profile("Unknown Profile", "unknown-host.net"), "Switzerland")
+        candidates = vpn.get_rotation_candidates("Switzerland")
+        self.assertIn("Switzerland", candidates)
+
+        # Test reload_config resets internal CLI cache
+        vpn._cli_path = "C:\\fake\\nordvpn.exe"
+        cfg_mgr.set("vpn_custom_cli_path", "", auto_save=False)
+        vpn.reload_config()
+        self.assertNotEqual(vpn._cli_path, "C:\\fake\\nordvpn.exe")
+
+    def test_10_external_player_caching_and_hwdec(self):
+        """Verify ExternalPlayerRunner passes caching_ms and hw_decode flags without crashing."""
+        from unittest.mock import MagicMock, patch
+        from player.external_player import ExternalPlayerRunner
+
+        runner = ExternalPlayerRunner()
+        with patch("os.path.exists", return_value=True), patch("subprocess.Popen") as mock_popen:
+            mock_proc = MagicMock()
+            mock_proc.poll.return_value = None
+            mock_popen.return_value = mock_proc
+
+            # VLC with custom caching
+            runner.play("vlc", "C:\\vlc\\vlc.exe", "http://stream.ts", caching_ms=3500, hw_decode=True)
+            vlc_cmd = mock_popen.call_args[0][0]
+            self.assertIn("--network-caching=3500", vlc_cmd)
+            self.assertIn("--avcodec-hw=any", vlc_cmd)
+
+            # MPV with custom caching and hwdec
+            runner.play("mpv", "C:\\mpv\\mpv.exe", "http://stream.ts", caching_ms=2000, hw_decode=True)
+            mpv_cmd = mock_popen.call_args[0][0]
+            self.assertIn("--hwdec=auto", mpv_cmd)
+            self.assertIn("--demuxer-readahead-secs=2.0", mpv_cmd)
+
 
 if __name__ == "__main__":
     unittest.main()

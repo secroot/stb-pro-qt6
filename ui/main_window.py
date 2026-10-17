@@ -370,6 +370,7 @@ class MainWindow(QMainWindow):
         # Settings View Signals
         self.settings_view.settings_saved.connect(self._on_settings_applied)
         self.settings_view.buffer_settings_changed.connect(self._on_buffer_settings_from_view)
+        self.settings_view.vpn_settings_changed.connect(lambda cfg: vpn_manager.reload_config())
         self.settings_view.ui_scale_changed.connect(self._on_ui_scale_changed)
 
     def _on_buffer_settings_from_view(self, st: BufferSettings):
@@ -394,6 +395,7 @@ class MainWindow(QMainWindow):
         hide_dead = bool(cfg.get("hide_dead_channels", False))
         if hasattr(self.live_view, "chk_hide_dead") and self.live_view.chk_hide_dead.isChecked() != hide_dead:
             self.live_view.chk_hide_dead.setChecked(hide_dead)
+        vpn_manager.reload_config()
         event_bus.log_message.emit("[⚙️] Konfigurations-Optionen erfolgreich aktualisiert & live aktiv.")
 
     def _is_text_input_focused(self) -> bool:
@@ -492,6 +494,21 @@ class MainWindow(QMainWindow):
             self.sidebar.combo_prebuffer.setCurrentIndex(4)
         self.sidebar.combo_prebuffer.blockSignals(False)
 
+        # Scanner Initial Settings
+        scan_threads = int(self.config_mgr.get("scan_threads", 8))
+        if hasattr(self.scanner_view, "spin_threads"):
+            self.scanner_view.spin_threads.setValue(scan_threads)
+        scan_delay = float(self.config_mgr.get("scan_delay_s", 0.0))
+        delay_ms = int(round(scan_delay * 1000))
+        if hasattr(self.scanner_view, "combo_delay"):
+            target_str = f"{delay_ms} ms"
+            idx = self.scanner_view.combo_delay.findText(target_str)
+            if idx >= 0:
+                self.scanner_view.combo_delay.setCurrentIndex(idx)
+
+        # Initialer Sidebar-Status im Top-Bar-Button
+        self.top_bar.set_sidebar_active(self.sidebar.isVisible())
+
         # Initialer NordVPN-Status Check
         try:
             from core.vpn_manager import vpn_manager
@@ -522,12 +539,14 @@ class MainWindow(QMainWindow):
         vis = not self.sidebar.isVisible()
         self.sidebar.setVisible(vis)
         self.state.sidebar_visible = vis
+        self.top_bar.set_sidebar_active(vis)
 
     def toggle_cinema_mode(self):
         if self.is_fullscreen or self.is_pip_mode:
             return
         self.is_cinema_mode = not self.is_cinema_mode
         self.sidebar.setVisible(not self.is_cinema_mode)
+        self.top_bar.set_sidebar_active(not self.is_cinema_mode)
         self.live_view.set_cinema_layout(self.is_cinema_mode, pip_mode=False)
 
     def toggle_pip_mode(self):
@@ -760,6 +779,7 @@ class MainWindow(QMainWindow):
             tok_refresh = int(self.config_mgr.get("token_refresh_interval_s", 75))
             def_ua = str(self.config_mgr.get("custom_user_agent_default", "")).strip() or None
             def_model = str(self.config_mgr.get("default_stb_model", "MAG 250"))
+            dev_mode = str(self.config_mgr.get("device_id_mode", "deterministic"))
 
             if ptype == "stalker":
                 norm_ep = cached_eps.get(prof.url.strip().rstrip("/"))
@@ -777,6 +797,7 @@ class MainWindow(QMainWindow):
                     verify_ssl=ssl_ver,
                     connect_timeout=hs_connect,
                     read_timeout=hs_read,
+                    device_id_mode=dev_mode,
                 )
                 if prof.proxy:
                     client.session.proxies.update({"http": prof.proxy, "https": prof.proxy})
@@ -812,6 +833,8 @@ class MainWindow(QMainWindow):
                     timeout=timeout_s,
                     user_agent=prof.user_agent or def_ua,
                     verify_ssl=ssl_ver,
+                    connect_timeout=hs_connect,
+                    read_timeout=hs_read,
                 )
                 if prof.proxy:
                     client.session.proxies.update({"http": prof.proxy, "https": prof.proxy})
@@ -1290,7 +1313,20 @@ class MainWindow(QMainWindow):
         else:
             p_type, p_path = "vlc", str(self.config_mgr.get("vlc_path") or "")
 
-        if self.ext_player.play(p_type, p_path, url, title=title, user_agent=ua, referrer=ref):
+        raw_buf = self.config_mgr.get("buffer_settings") or {}
+        caching_ms = int(raw_buf.get("vlc_caching_ms", 1500))
+        hw_decode = bool(raw_buf.get("hw_decode", True))
+
+        if self.ext_player.play(
+            p_type,
+            p_path,
+            url,
+            title=title,
+            user_agent=ua,
+            referrer=ref,
+            caching_ms=caching_ms,
+            hw_decode=hw_decode,
+        ):
             self.live_view.set_video_status_text(f"↗ Externer Player ({p_type.upper()}): {title}", "Extern")
             event_bus.log_message.emit(f"[↗] Externer Player ({p_type.upper()}) gestartet für: {title}")
         else:
@@ -2336,6 +2372,13 @@ class MainWindow(QMainWindow):
         scan_auto_requeue = bool(self.config_mgr.get("scan_auto_requeue", True))
         scan_max_retries = int(self.config_mgr.get("scan_max_requeue_retries", 2))
         ssl_verify = bool(self.config_mgr.get("ssl_verify", False))
+        scan_genre = str(self.config_mgr.get("scan_genre_param", "*")).strip() or "*"
+        scan_sortby = str(self.config_mgr.get("scan_sortby_param", "number")).strip() or "number"
+        scan_fallback = bool(self.config_mgr.get("scan_fallback_get_all", True))
+        dev_mode = str(self.config_mgr.get("device_id_mode", "deterministic"))
+        def_ua = str(self.config_mgr.get("custom_user_agent_default", "")).strip() or None
+        def_model = str(self.config_mgr.get("default_stb_model", "MAG 250"))
+        model = model or def_model
         cached_eps = self.config_mgr.get("cached_endpoints", {}) or {}
         norm_portal = portal_url.strip().rstrip("/")
         shared_ep = [cached_eps.get(norm_portal)]
@@ -2361,7 +2404,14 @@ class MainWindow(QMainWindow):
         # Dadurch entfallen für alle weiteren 10.000 MACs zeitraubende Fallback-Probes auf 6 verschiedene URLs!
         if not shared_ep[0] and unique_macs:
             try:
-                probe_cl = StbClient(portal_url=portal_url, mac=unique_macs[0], model=model, timeout=int(scan_probe_t), verify_ssl=ssl_verify)
+                probe_cl = StbClient(
+                    portal_url=portal_url,
+                    mac=unique_macs[0],
+                    model=model,
+                    timeout=int(scan_probe_t),
+                    verify_ssl=ssl_verify,
+                    device_id_mode=dev_mode,
+                )
                 for ep in probe_cl._get_candidate_endpoints()[:5]:
                     try:
                         probe_cl._execute_request(
@@ -2409,7 +2459,7 @@ class MainWindow(QMainWindow):
                 worker_session.mount("http://", worker_adapter)
                 worker_session.mount("https://", worker_adapter)
                 worker_session.verify = ssl_verify
-                ua_str = STB_PRESETS.get(model, STB_PRESETS.get("MAG 250", {})).get(
+                ua_str = def_ua or STB_PRESETS.get(model, STB_PRESETS.get("MAG 250", {})).get(
                     "user_agent", "Mozilla/5.0 (QtEmbedded; U; Linux; C)"
                 )
                 worker_session.headers.update({
@@ -2456,10 +2506,14 @@ class MainWindow(QMainWindow):
                                 portal_url=portal_url,
                                 mac=mac,
                                 model=model,
-                                timeout=min(int(scan_probe_t), timeout_s),
+                                timeout=min(scan_probe_t, float(timeout_s)),
                                 normalized_load_url=shared_ep[0],
                                 session=worker_session,
                                 verify_ssl=ssl_verify,
+                                genre_param=scan_genre,
+                                sortby_param=scan_sortby,
+                                fallback_get_all=scan_fallback,
+                                device_id_mode=dev_mode,
                             )
                             res["portal_url"] = portal_url
 

@@ -62,6 +62,8 @@ class ExternalPlayerRunner:
         user_agent: str = "",
         referrer: str = "",
         fullscreen: bool = False,
+        caching_ms: Optional[int] = None,
+        hw_decode: bool = True,
     ) -> bool:
         self.stop()
         if not player_path or not os.path.exists(player_path):
@@ -71,10 +73,13 @@ class ExternalPlayerRunner:
             cmd = [player_path]
             low = player_path.lower()
             if "vlc" in low or player_type == "vlc":
+                caching = int(caching_ms) if caching_ms is not None else 1500
                 cmd.extend([
                     "--meta-title", title,
-                    "--network-caching=2000",
+                    f"--network-caching={caching}",
                 ])
+                if hw_decode:
+                    cmd.append("--avcodec-hw=any")
                 if fullscreen:
                     cmd.append("--fullscreen")
                 if user_agent:
@@ -84,6 +89,10 @@ class ExternalPlayerRunner:
                 cmd.append(stream_url)
             elif "mpv" in low or player_type == "mpv":
                 cmd.append(f"--title={title}")
+                if hw_decode:
+                    cmd.append("--hwdec=auto")
+                if caching_ms is not None:
+                    cmd.append(f"--demuxer-readahead-secs={max(0.5, caching_ms / 1000.0):.1f}")
                 if fullscreen:
                     cmd.append("--fs")
                 if user_agent:

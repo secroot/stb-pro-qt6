@@ -129,6 +129,7 @@ class TopNavigationBar(QFrame):
         # Seitenleisten-Button: In die zweite Reihe linksbündig mit Text "Verbindung.."
         self.btn_sidebar = QPushButton("☰ Verbindung..")
         self.btn_sidebar.setObjectName("SidebarToggle")
+        self.btn_sidebar.setProperty("active", "true")
         self.btn_sidebar.setFixedHeight(24)
         self.btn_sidebar.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_sidebar.setToolTip("Seitenleiste (Verbindung & Portale) ein-/ausblenden [B]")
@@ -205,6 +206,11 @@ class TopNavigationBar(QFrame):
             btn.style().unpolish(btn)
             btn.style().polish(btn)
         self.view_changed.emit(view_key)
+
+    def set_sidebar_active(self, active: bool):
+        self.btn_sidebar.setProperty("active", "true" if active else "false")
+        self.btn_sidebar.style().unpolish(self.btn_sidebar)
+        self.btn_sidebar.style().polish(self.btn_sidebar)
 
     def set_provider_status(self, connected: bool, summary: str):
         self._provider_connected = bool(connected)

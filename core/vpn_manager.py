@@ -87,14 +87,30 @@ class NordVpnManager:
         if self._config_mgr:
             self._config_mgr.set("vpn_auto_switch", bool(val), auto_save=True)
 
-    def _detect_cli(self) -> Optional[str]:
+    def reload_config(self):
+        """Lädt die Konfiguration dynamisch neu und aktualisiert Pfade und Caches."""
+        self._detect_cli(force_refresh=True)
+        if self._config_mgr:
+            self._auto_switch_enabled = bool(self._config_mgr.get("vpn_auto_switch", True))
+            raw_burned = self._config_mgr.get("burned_ips", {})
+            if isinstance(raw_burned, dict):
+                for host, ips in raw_burned.items():
+                    if isinstance(ips, list):
+                        self._burned_ips[self._normalize_host(host)] = set(str(x) for x in ips)
+
+    def _detect_cli(self, force_refresh: bool = False) -> Optional[str]:
+        if force_refresh:
+            self._cli_path = None
+
         if self._config_mgr:
             custom_p = str(self._config_mgr.get("vpn_custom_cli_path", "")).strip()
-            if custom_p and os.path.exists(custom_p):
-                self._cli_path = custom_p
-                return custom_p
+            if custom_p:
+                if os.path.exists(custom_p):
+                    self._cli_path = custom_p
+                    return custom_p
+                # Custom-Pfad ungültig -> nicht verwenden
 
-        if self._cli_path and os.path.exists(self._cli_path):
+        if not force_refresh and self._cli_path and os.path.exists(self._cli_path):
             return self._cli_path
 
         # 1. Bekannte Standard-Pfade
@@ -109,6 +125,7 @@ class NordVpnManager:
             self._cli_path = which_p
             return which_p
 
+        self._cli_path = None
         return None
 
     def is_installed(self) -> bool:
@@ -257,8 +274,7 @@ class NordVpnManager:
     # Länder- & Server-Rotation
     # ──────────────────────────────────────────────────────────────────────
 
-    @classmethod
-    def guess_country_for_profile(cls, profile_name: str = "", portal_url: str = "") -> str:
+    def guess_country_for_profile(self, profile_name: str = "", portal_url: str = "") -> str:
         """
         Leitet aus dem Profilnamen oder der Portal-Domain das optimale Zielland ab.
         Beispiel: 'DE | HD paplive.me' -> 'Germany', '.tr' -> 'Turkey'
@@ -286,7 +302,10 @@ class NordVpnManager:
         if re.search(r"\b(es|spain|spanien)\b", combined) or ".es" in combined:
             return "Spain"
 
-        return "Germany"
+        fb = "Germany"
+        if self._config_mgr:
+            fb = str(self._config_mgr.get("vpn_fallback_country", "Germany")).strip() or "Germany"
+        return fb
 
     def get_rotation_candidates(self, base_country: str) -> List[str]:
         """Liefert eine geordnete Liste alternativer Länder für die Rotation."""
@@ -373,7 +392,10 @@ class NordVpnManager:
 
             country = (target_country or "").strip()
             if not country:
-                fallback_candidates = self.get_rotation_candidates("Germany")
+                fb = "Germany"
+                if self._config_mgr:
+                    fb = str(self._config_mgr.get("vpn_fallback_country", "Germany")).strip() or "Germany"
+                fallback_candidates = self.get_rotation_candidates(fb)
                 self._global_rotation_idx = (self._global_rotation_idx + 1) % len(fallback_candidates)
                 country = fallback_candidates[self._global_rotation_idx]
 
@@ -454,7 +476,10 @@ class NordVpnManager:
         base_country = self.guess_country_for_profile(profile_name, clean_host)
         candidates = self.get_rotation_candidates(base_country)
         if not candidates:
-            candidates = ["Switzerland", "Austria", "Netherlands", "Berlin", "Germany"]
+            fb = "Germany"
+            if self._config_mgr:
+                fb = str(self._config_mgr.get("vpn_fallback_country", "Germany")).strip() or "Germany"
+            candidates = self.get_rotation_candidates(fb) or ["Switzerland", "Austria", "Netherlands", "Berlin", "Germany"]
 
         now = time.time()
         debounce = float(self._config_mgr.get("vpn_debounce_seconds", 2.0)) if self._config_mgr else 2.0

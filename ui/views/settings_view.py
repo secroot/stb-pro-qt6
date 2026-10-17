@@ -813,6 +813,7 @@ class SettingsView(QWidget):
             hw_decode=self.chk_hw_decode.isChecked(),
             preview_enabled=self.chk_preview_enabled.isChecked(),
             preview_max_age_min=self.spin_preview_age.value(),
+            pcr_smoothing_enabled=self.chk_pcr_smoothing.isChecked(),
         ).clamp()
         self.config_mgr.set("buffer_settings", buf_st.to_dict(), auto_save=False)
         self.config_mgr.set("pcr_smoothing_enabled", self.chk_pcr_smoothing.isChecked(), auto_save=False)
@@ -843,6 +844,11 @@ class SettingsView(QWidget):
 
         # Save to disk
         self.config_mgr.save()
+
+        # Dynamically reload VPN manager state & update status badge
+        if self.vpn_mgr:
+            self.vpn_mgr.reload_config()
+            self._update_vpn_badge()
 
         # Emit change signals
         self.buffer_settings_changed.emit(buf_st)

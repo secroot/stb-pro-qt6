@@ -125,6 +125,12 @@ QPushButton#SidebarToggle:pressed {{
     color: #FFFFFF;
 }}
 
+QPushButton#SidebarToggle[active="true"] {{
+    background-color: #1E1B4B;
+    color: #A5B4FC;
+    border-color: #6366F1;
+}}
+
 QPushButton:hover {{
     background-color: {ThemeColors.BG_CARD_HOVER};
     border-color: #334155;
