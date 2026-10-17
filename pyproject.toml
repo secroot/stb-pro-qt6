@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stb-pro-qt6"
+version = "1.0.0"
+description = "High-Performance Qt6 IPTV Cyber-Cinema, Protocol-Inspector & Multi-Thread MAC Pentesting Suite"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "InfoHazard & H7CFoX" }
+]
+keywords = [
+    "iptv",
+    "stb-emulator",
+    "stalker-portal",
+    "ministra",
+    "qt6",
+    "pyside6",
+    "libvlc",
+    "m3u8",
+    "xtream-codes",
+    "pentesting",
+    "security-research"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Video :: Display",
+    "Topic :: Security",
+]
+dependencies = [
+    "PySide6>=6.6.0",
+    "requests>=2.31.0",
+    "Pillow>=10.0.0",
+    "python-vlc>=3.0.18",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-qt>=4.2.0",
+    "ruff>=0.3.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/InfoHazard-H7CFoX/stb-pro-qt6"
+Repository = "https://github.com/InfoHazard-H7CFoX/stb-pro-qt6"
+
+[project.scripts]
+stb-pro-qt6 = "main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["clients*", "core*", "player*", "ui*", "tools*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

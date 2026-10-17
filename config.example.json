@@ -1,0 +1,36 @@
+{
+    "profiles": [
+        {
+            "name": "Example Stalker Portal",
+            "provider_type": "Stalker MAC",
+            "portal_url": "http://example.com:8080/c/",
+            "mac": "00:1A:79:00:11:22",
+            "model": "MAG 254",
+            "device_id": "",
+            "device_id2": "",
+            "signature": "",
+            "serial_number": "",
+            "user_agent": "Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 2 rev: 250 Safari/533.3",
+            "xc_url": "http://example.com:8080/c/",
+            "username": "",
+            "password": "",
+            "xc_format": "ts",
+            "m3u_source": "",
+            "proxy": ""
+        }
+    ],
+    "last_profile": "Example Stalker Portal",
+    "selected_player": "Integrierter Player",
+    "player_volume": 100,
+    "connection_timeout_label": "8s Standard",
+    "favorites": {},
+    "vod_favorites": {},
+    "recently_played": {},
+    "cached_endpoints": {},
+    "ui_scale": "100%",
+    "start_maximized": true,
+    "hide_dead_channels": true,
+    "validation_workers": 8,
+    "last_scan_host": "",
+    "last_scan_mac": ""
+}

@@ -1,0 +1,226 @@
+"""
+Konfigurations-Manager für STB Pro Qt6.
+Unterstützt nahtlose Übernahme der bestehenden config.json aus dem Hauptverzeichnis,
+damit alle gespeicherten Profile, Favoriten und Einstellungen erhalten bleiben.
+Zusätzlich neu: Persistente VOD-Favoriten und Recently-Played-Historie!
+"""
+import os
+import json
+import shutil
+from typing import Dict, List, Optional, Any
+from core.models import Profile
+
+APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PARENT_DIR = os.path.dirname(APP_DIR)
+LOCAL_CONFIG_FILE = os.path.join(APP_DIR, "config.json")
+PARENT_CONFIG_FILE = os.path.join(PARENT_DIR, "config.json")
+
+
+def detect_vlc_path() -> str:
+    which = shutil.which("vlc")
+    if which:
+        return which
+    win_paths = [
+        r"C:\Program Files\VideoLAN\VLC\vlc.exe",
+        r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe",
+    ]
+    local_app = os.environ.get("LOCALAPPDATA")
+    if local_app:
+        win_paths.append(os.path.join(local_app, "Microsoft", "WinGet", "Links", "vlc.exe"))
+    for p in win_paths:
+        if os.path.exists(p):
+            return p
+    return ""
+
+
+def detect_mpv_path() -> str:
+    which = shutil.which("mpv")
+    if which:
+        return which
+    local_app = os.environ.get("LOCALAPPDATA")
+    if local_app:
+        p = os.path.join(local_app, "Microsoft", "WinGet", "Links", "mpv.exe")
+        if os.path.exists(p):
+            return p
+    return ""
+
+
+def detect_ffplay_path() -> str:
+    which = shutil.which("ffplay")
+    if which:
+        return which
+    local_app = os.environ.get("LOCALAPPDATA")
+    if local_app:
+        wg_path = os.path.join(local_app, "Microsoft", "WinGet", "Links", "ffplay.exe")
+        if os.path.exists(wg_path):
+            return wg_path
+    return ""
+
+
+class ConfigManager:
+    """Verwaltet Profile, Live-/VOD-Favoriten, Verlauf, Player-Pfade und UI-Einstellungen."""
+
+    def __init__(self, filepath: Optional[str] = None):
+        if filepath is None:
+            # Nutze bestehende config.json im Hauptordner falls vorhanden, sonst lokal
+            if os.path.exists(PARENT_CONFIG_FILE) and not os.path.exists(LOCAL_CONFIG_FILE):
+                try:
+                    shutil.copy2(PARENT_CONFIG_FILE, LOCAL_CONFIG_FILE)
+                except Exception:
+                    pass
+            filepath = LOCAL_CONFIG_FILE
+        self.filepath = filepath
+        self.config: Dict[str, Any] = self._load()
+
+    def _default_config(self) -> Dict[str, Any]:
+        return {
+            "profiles": [
+                {
+                    "name": "Standard Test",
+                    "provider_type": "Stalker MAC",
+                    "portal_url": "http://example.com:8080/c/",
+                    "mac": "00:1A:79:00:11:22",
+                    "model": "MAG 250",
+                    "device_id": "",
+                    "device_id2": "",
+                    "signature": "",
+                    "serial_number": "",
+                    "user_agent": "",
+                    "xc_url": "",
+                    "username": "",
+                    "password": "",
+                    "xc_format": "ts",
+                    "m3u_source": "",
+                }
+            ],
+            "last_profile": "Standard Test",
+            "vlc_path": detect_vlc_path(),
+            "mpv_path": detect_mpv_path(),
+            "ffplay_path": detect_ffplay_path(),
+            "selected_player": "Integrierter Player",
+            "player_volume": 100,
+            "connection_timeout_label": "8s Standard",
+            "favorites": {},
+            "vod_favorites": {},
+            "recently_played": {},
+            "cached_endpoints": {},
+            "ui_scale": "100%",
+            "start_maximized": True,
+            "hide_dead_channels": True,
+            "validation_workers": 8,
+        }
+
+    def _load(self) -> Dict[str, Any]:
+        defaults = self._default_config()
+        if os.path.exists(self.filepath):
+            try:
+                with open(self.filepath, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                    for k, v in defaults.items():
+                        if k not in cfg:
+                            cfg[k] = v
+                    return cfg
+            except Exception:
+                pass
+        return defaults
+
+    def save(self) -> bool:
+        try:
+            tmp_path = self.filepath + ".tmp"
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(self.config, f, indent=4, ensure_ascii=False)
+            if os.path.exists(self.filepath):
+                os.replace(tmp_path, self.filepath)
+            else:
+                os.rename(tmp_path, self.filepath)
+            # Synchronisiere auch zurück in die Parent config.json falls vorhanden
+            if os.path.exists(PARENT_CONFIG_FILE) and os.path.abspath(self.filepath) != os.path.abspath(PARENT_CONFIG_FILE):
+                try:
+                    shutil.copy2(self.filepath, PARENT_CONFIG_FILE)
+                except Exception:
+                    pass
+            return True
+        except Exception:
+            return False
+
+    def get(self, key: str, default: Any = None) -> Any:
+        return self.config.get(key, default)
+
+    def set(self, key: str, value: Any, auto_save: bool = True):
+        self.config[key] = value
+        if auto_save:
+            self.save()
+
+    def get_profiles(self) -> List[Profile]:
+        raw_profiles = self.config.get("profiles", [])
+        out = [Profile.from_dict(p) for p in raw_profiles if isinstance(p, dict)]
+        return out if out else [Profile.from_dict(self._default_config()["profiles"][0])]
+
+    def get_profile(self, name: str) -> Optional[Profile]:
+        for p in self.get_profiles():
+            if p.name == name:
+                return p
+        return None
+
+    def save_profile(self, profile: Profile, old_name: Optional[str] = None):
+        profiles = self.get_profiles()
+        target_name = old_name or profile.name
+        idx = next((i for i, p in enumerate(profiles) if p.name == target_name), None)
+        if idx is not None:
+            profiles[idx] = profile
+        else:
+            profiles.append(profile)
+        self.config["profiles"] = [p.to_dict() for p in profiles]
+        self.config["last_profile"] = profile.name
+        self.save()
+
+    def delete_profile(self, name: str) -> bool:
+        profiles = self.get_profiles()
+        if len(profiles) <= 1:
+            return False
+        new_profiles = [p for p in profiles if p.name != name]
+        if len(new_profiles) == len(profiles):
+            return False
+        self.config["profiles"] = [p.to_dict() for p in new_profiles]
+        self.config["last_profile"] = new_profiles[0].name
+        self.save()
+        return True
+
+    def get_favorites(self, profile_name: str) -> List[str]:
+        fav_dict = self.config.get("favorites", {})
+        return [str(x) for x in fav_dict.get(profile_name, [])]
+
+    def save_favorites(self, profile_name: str, favorites: List[str]):
+        if "favorites" not in self.config or not isinstance(self.config["favorites"], dict):
+            self.config["favorites"] = {}
+        self.config["favorites"][profile_name] = [str(x) for x in favorites]
+        self.save()
+
+    def get_vod_favorites(self, profile_name: str) -> List[str]:
+        fav_dict = self.config.get("vod_favorites", {})
+        return [str(x) for x in fav_dict.get(profile_name, [])]
+
+    def save_vod_favorites(self, profile_name: str, favorites: List[str]):
+        if "vod_favorites" not in self.config or not isinstance(self.config["vod_favorites"], dict):
+            self.config["vod_favorites"] = {}
+        self.config["vod_favorites"][profile_name] = [str(x) for x in favorites]
+        self.save()
+
+    def get_recently_played(self, profile_name: str) -> List[str]:
+        rec_dict = self.config.get("recently_played", {})
+        return [str(x) for x in rec_dict.get(profile_name, [])]
+
+    def save_recently_played(self, profile_name: str, channel_ids: List[str]):
+        if "recently_played" not in self.config or not isinstance(self.config["recently_played"], dict):
+            self.config["recently_played"] = {}
+        self.config["recently_played"][profile_name] = [str(x) for x in channel_ids[:50]]
+        self.save()
+
+    def get_timeout_seconds(self) -> int:
+        import re
+        val = str(self.config.get("connection_timeout_label", "10s"))
+        m = re.search(r"(\d+)", val)
+        if m:
+            return max(1, int(m.group(1)))
+        return 10
+
