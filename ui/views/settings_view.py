@@ -590,6 +590,19 @@ class SettingsView(QWidget):
         form.addWidget(self.spin_vpn_debounce, r, 1, 1, 2)
 
         r += 1
+        form.addWidget(QLabel("Mindest-Rotationsintervall / Rate-Limit (Sek.):"), r, 0)
+        self.spin_vpn_min_interval = QDoubleSpinBox()
+        self.spin_vpn_min_interval.setRange(5.0, 60.0)
+        self.spin_vpn_min_interval.setSingleStep(1.0)
+        self.spin_vpn_min_interval.setDecimals(1)
+        self.spin_vpn_min_interval.setSuffix(" s")
+        self.spin_vpn_min_interval.setToolTip(
+            "Mindestpause zwischen Serverwechseln (Standard: 10s). "
+            "Verhindert NordVPN API-Rate-Limits (10-Minuten-Lockout) und Ghost-Sessions."
+        )
+        form.addWidget(self.spin_vpn_min_interval, r, 1, 1, 2)
+
+        r += 1
         form.addWidget(QLabel("Max. konsekutive Hops vor Cooldown:"), r, 0)
         self.spin_vpn_hops = QSpinBox()
         self.spin_vpn_hops.setRange(1, 20)
@@ -755,6 +768,7 @@ class SettingsView(QWidget):
         self.chk_vpn_auto.setChecked(bool(cfg.get("vpn_auto_switch", True)))
         self.spin_vpn_cooldown.setValue(float(cfg.get("vpn_cooldown_seconds", 15.0)))
         self.spin_vpn_debounce.setValue(float(cfg.get("vpn_debounce_seconds", 2.0)))
+        self.spin_vpn_min_interval.setValue(float(cfg.get("vpn_min_switch_interval", 10.0)))
         self.spin_vpn_hops.setValue(int(cfg.get("vpn_max_consecutive_hops", 5)))
         fb_country = str(cfg.get("vpn_fallback_country", "Germany"))
         fidx = self.combo_vpn_fallback.findText(fb_country)
@@ -829,6 +843,7 @@ class SettingsView(QWidget):
         self.config_mgr.set("vpn_auto_switch", self.chk_vpn_auto.isChecked(), auto_save=False)
         self.config_mgr.set("vpn_cooldown_seconds", self.spin_vpn_cooldown.value(), auto_save=False)
         self.config_mgr.set("vpn_debounce_seconds", self.spin_vpn_debounce.value(), auto_save=False)
+        self.config_mgr.set("vpn_min_switch_interval", self.spin_vpn_min_interval.value(), auto_save=False)
         self.config_mgr.set("vpn_max_consecutive_hops", self.spin_vpn_hops.value(), auto_save=False)
         self.config_mgr.set("vpn_fallback_country", self.combo_vpn_fallback.currentText(), auto_save=False)
         self.config_mgr.set("vpn_custom_cli_path", self.entry_vpn_cli.text().strip(), auto_save=False)

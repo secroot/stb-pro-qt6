@@ -95,6 +95,7 @@ class TestSettingsAndSidebar(unittest.TestCase):
         self.assertIn("vpn_auto_switch", cfg_mgr.config)
         self.assertIn("vpn_cooldown_seconds", cfg_mgr.config)
         self.assertIn("vpn_debounce_seconds", cfg_mgr.config)
+        self.assertIn("vpn_min_switch_interval", cfg_mgr.config)
         self.assertIn("vpn_max_consecutive_hops", cfg_mgr.config)
         self.assertIn("vpn_fallback_country", cfg_mgr.config)
         self.assertIn("vpn_rotation_pool", cfg_mgr.config)
@@ -115,6 +116,7 @@ class TestSettingsAndSidebar(unittest.TestCase):
         view.spin_scan_threads.setValue(12)
         view.spin_buf_start_s.setValue(2.2)
         view.spin_vpn_cooldown.setValue(25.0)
+        view.spin_vpn_min_interval.setValue(12.0)
 
         saved_cfg = None
 
@@ -131,6 +133,7 @@ class TestSettingsAndSidebar(unittest.TestCase):
         self.assertEqual(cfg_mgr.get("scan_threads"), 12)
         self.assertEqual(cfg_mgr.get("buffer_settings")["start_seconds"], 2.2)
         self.assertEqual(cfg_mgr.get("vpn_cooldown_seconds"), 25.0)
+        self.assertEqual(cfg_mgr.get("vpn_min_switch_interval"), 12.0)
 
         # Reset back to defaults
         view.chk_ssl_verify.setChecked(False)
@@ -138,6 +141,7 @@ class TestSettingsAndSidebar(unittest.TestCase):
         view.spin_scan_threads.setValue(8)
         view.spin_buf_start_s.setValue(0.8)
         view.spin_vpn_cooldown.setValue(15.0)
+        view.spin_vpn_min_interval.setValue(10.0)
         view.save_to_config()
 
     def test_05_main_window_settings_live_application(self):

@@ -167,6 +167,14 @@ class TestVpnAndStreamErrors(unittest.TestCase):
     def test_vpn_manager_clean_disconnect_and_sequence(self):
         vm = NordVpnManager()
         vm._cli_path = r"C:\Program Files\NordVPN\NordVPN.exe"
+        mock_cfg = MagicMock()
+        mock_cfg.get.side_effect = lambda k, d=None: {
+            "vpn_min_switch_interval": 0.0,
+            "vpn_debounce_seconds": 0.0,
+            "vpn_cooldown_seconds": 15.0,
+            "vpn_max_consecutive_hops": 5,
+        }.get(k, d)
+        vm._config_mgr = mock_cfg
 
         called_cmds = []
         called_cwds = []
@@ -230,7 +238,7 @@ class TestVpnAndStreamErrors(unittest.TestCase):
             called_cmds.clear()
             called_cwds.clear()
             vm._is_switching = False
-            vm._last_switch_time = time.time() - 2.5
+            vm._last_switch_time = 0.0
             with patch.object(vm, "is_installed", return_value=True), patch.object(vm, "get_public_ip", return_value="1.2.3.5"):
                 vm.rotate_server_for_host("http://paplive.me:8080/c/", profile_name="DE | HD")
                 for _ in range(40):
@@ -242,11 +250,11 @@ class TestVpnAndStreamErrors(unittest.TestCase):
                 self.assertNotEqual(first_target, second_target)
                 self.assertEqual(second_target, "Austria")
 
-            # 3. Dritte Rotation (konsekutiver Hop ohne 15s Blockade) -> naechster Kandidat (z.B. Netherlands)
+            # 3. Dritte Rotation (konsekutiver Hop ohne Blockade) -> naechster Kandidat (z.B. Netherlands)
             called_cmds.clear()
             called_cwds.clear()
             vm._is_switching = False
-            vm._last_switch_time = time.time() - 2.5
+            vm._last_switch_time = 0.0
             with patch.object(vm, "is_installed", return_value=True), patch.object(vm, "get_public_ip", return_value="1.2.3.6"):
                 vm.rotate_server_for_host("http://paplive.me:8080/c/", profile_name="DE | HD")
                 for _ in range(40):
@@ -257,6 +265,31 @@ class TestVpnAndStreamErrors(unittest.TestCase):
                 third_target = called_cmds[0][-1]
                 self.assertNotEqual(second_target, third_target)
                 self.assertEqual(third_target, "Netherlands")
+
+    def test_vpn_manager_rate_limit_pacing(self):
+        import time
+        vm = NordVpnManager()
+        vm._cli_path = r"C:\fake\nordvpn.exe"
+        mock_cfg = MagicMock()
+        mock_cfg.get.side_effect = lambda k, d=None: {
+            "vpn_min_switch_interval": 10.0,
+            "vpn_debounce_seconds": 2.0,
+            "vpn_cooldown_seconds": 15.0,
+            "vpn_max_consecutive_hops": 5,
+        }.get(k, d)
+        vm._config_mgr = mock_cfg
+
+        # Letzter Wechsel vor 3 Sekunden -> Rate-Limit muss greifen (noch ~7s verbleibend)
+        vm._last_switch_time = time.time() - 3.0
+        vm._is_switching = False
+
+        cb = MagicMock()
+        ok = vm.switch_server(callback=cb)
+        self.assertFalse(ok)
+        self.assertTrue(cb.called)
+        call_msg = cb.call_args[0][1]
+        self.assertIn("Rate-Limit", call_msg)
+        self.assertIn("verbleibend", call_msg)
 
     def test_stream_buffer_aborts_immediately_on_511(self):
         import time

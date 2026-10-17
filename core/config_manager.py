@@ -153,6 +153,7 @@ class ConfigManager:
             "vpn_auto_switch": True,
             "vpn_cooldown_seconds": 15.0,
             "vpn_debounce_seconds": 2.0,
+            "vpn_min_switch_interval": 10.0,
             "vpn_max_consecutive_hops": 5,
             "vpn_fallback_country": "Germany",
             "vpn_custom_cli_path": "",

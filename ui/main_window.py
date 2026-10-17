@@ -2093,8 +2093,6 @@ class MainWindow(QMainWindow):
     def _on_vlc_state_changed(self, state: str):
         if state == "playing":
             self._live_snapshot_timer.start(1800)
-            from core.vpn_manager import vpn_manager
-            vpn_manager.reset_consecutive_hops()
         else:
             self._live_snapshot_timer.stop()
 
@@ -2903,6 +2901,10 @@ class MainWindow(QMainWindow):
             tel = self.vlc_ctrl.get_live_telemetry()
             if tel:
                 self.live_view.update_live_telemetry(tel)
+                # Sobald der Stream aktiv Daten empfaengt, Hop-Zaehler zuruecksetzen
+                if tel.get("bitrate_kbps", 0) > 0 or tel.get("displayed_pictures", 0) > 0:
+                    from core.vpn_manager import vpn_manager
+                    vpn_manager.reset_consecutive_hops()
             if self.vlc_ctrl.is_playing:
                 is_seek = self.vlc_ctrl.is_seekable()
                 self.live_view.update_seek_ui(

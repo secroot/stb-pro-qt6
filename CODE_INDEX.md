@@ -52,7 +52,7 @@
 | `ChannelListModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L51-L210) | `L51-L210` | High-performance backing model for 50,000+ Live TV channels. |
 | `ChannelRoles` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L33-L48) | `L33-L48` | Basis:  |
 | `check_mac_account` | **Function** | [clients/stb_client.py](clients/stb_client.py#L123-L275) | `L123-L275` | Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarke... |
-| `ConfigManager` | **Class / Widget** | [core/config_manager.py](core/config_manager.py#L60-L313) | `L60-L313` | Verwaltet Profile, Live-/VOD-Favoriten, Verlauf, Player-Pfade und UI-Einstellungen. |
+| `ConfigManager` | **Class / Widget** | [core/config_manager.py](core/config_manager.py#L60-L314) | `L60-L314` | Verwaltet Profile, Live-/VOD-Favoriten, Verlauf, Player-Pfade und UI-Einstellungen. |
 | `ConsoleView` | **Class / Widget** | [ui/views/console_view.py](ui/views/console_view.py#L26-L156) | `L26-L156` | Basis: QWidget |
 | `decode_vlc_fourcc` | **Function** | [player/vlc_controller.py](player/vlc_controller.py#L20-L101) | `L20-L101` | def decode_vlc_fourcc(codec_val) |
 | `detect_ffplay_path` | **Function** | [core/config_manager.py](core/config_manager.py#L48-L57) | `L48-L57` | def detect_ffplay_path() |
@@ -94,8 +94,8 @@
 | `MacDatabase` | **Class / Widget** | [core/mac_database.py](core/mac_database.py#L26-L238) | `L26-L238` | Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern. |
 | `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L31-L211) | `L31-L211` | Basis: QDialog |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
-| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L89-L2939) | `L89-L2939` | Basis: QMainWindow |
-| `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L29-L623) | `L29-L623` | Verwaltet die Integration mit NordVPN unter Windows. |
+| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L89-L2941) | `L89-L2941` | Basis: QMainWindow |
+| `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L29-L653) | `L29-L653` | Verwaltet die Integration mit NordVPN unter Windows. |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
 | `pcr_bitrate_kbps` | **Function** | [core/stream_probe.py](core/stream_probe.py#L38-L66) | `L38-L66` | Echte Mux-Bitrate aus MPEG-TS-PCR. |
 | `PreviewOverlayWidget` | **Class / Widget** | [ui/views/live_tv_view.py](ui/views/live_tv_view.py#L86-L152) | `L86-L152` | Standbild-Preview Thumbnail Overlay displayed inside the video viewport when |
@@ -117,15 +117,15 @@
 | `ScanResult` | **Class / Widget** | [core/models.py](core/models.py#L478-L488) | `L478-L488` | Basis:  |
 | `ScanThrottleController` | **Class / Widget** | [clients/throttle.py](clients/throttle.py#L11-L69) | `L11-L69` | Basis:  |
 | `SeriesBrowserDialog` | **Class / Widget** | [ui/dialogs/series_dialog.py](ui/dialogs/series_dialog.py#L26-L163) | `L26-L163` | Basis: QDialog |
-| `SettingsView` | **Class / Widget** | [ui/views/settings_view.py](ui/views/settings_view.py#L45-L953) | `L45-L953` | Basis: QWidget |
+| `SettingsView` | **Class / Widget** | [ui/views/settings_view.py](ui/views/settings_view.py#L45-L968) | `L45-L968` | Basis: QWidget |
 | `SidebarWidget` | **Class / Widget** | [ui/components/sidebar.py](ui/components/sidebar.py#L32-L453) | `L32-L453` | Basis: QFrame |
 | `StbClient` | **Class / Widget** | [clients/stb_client.py](clients/stb_client.py#L68-L120) | `L68-L120` | Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging |
 | `StreamBufferProxy` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L590-L634) | `L590-L634` | Basis:  |
 | `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L456-L474) | `L456-L474` | Basis:  |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
-| `TestSettingsAndSidebar` | **Class / Widget** | [tests/test_settings_and_sidebar.py](tests/test_settings_and_sidebar.py#L25-L297) | `L25-L297` | Basis: unittest.TestCase |
+| `TestSettingsAndSidebar` | **Class / Widget** | [tests/test_settings_and_sidebar.py](tests/test_settings_and_sidebar.py#L25-L301) | `L25-L301` | Basis: unittest.TestCase |
 | `TestUIAndEngine` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L90-L840) | `L90-L840` | Basis: unittest.TestCase |
-| `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L297) | `L15-L297` | Basis: unittest.TestCase |
+| `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L330) | `L15-L330` | Basis: unittest.TestCase |
 | `ThemeColors` | **Class / Widget** | [ui/theme.py](ui/theme.py#L11-L43) | `L11-L43` | Design tokens matching and refining the Obsidian Cyber-Cinema palette. |
 | `thumb_age_s` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L147-L151) | `L147-L151` | def thumb_age_s(key) |
 | `thumb_path` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L116-L117) | `L116-L117` | def thumb_path(key) |
@@ -217,31 +217,31 @@ Enthält Datenmodelle, Event-Bus, Persistenz, Stream-Puffer, Probing und Recordi
 
 ---
 
-### 📄 [`core/config_manager.py`](core/config_manager.py) (314 Zeilen)
+### 📄 [`core/config_manager.py`](core/config_manager.py) (315 Zeilen)
 > Konfigurations-Manager für STB Pro Qt6.
 Unterstützt nahtlose Übernahme der bestehenden config.json aus dem Hauptverzeichnis,
 damit alle gespeicherten Profile, Favoriten und Einstellungen erhalten bleiben.
 Zusätzlich neu: Persistente VOD-Favoriten und Recently-Played-Historie!
 
 #### Klassen & Komponenten
-- **[`ConfigManager`](core/config_manager.py#L60-L313)** — `L60-L313`
+- **[`ConfigManager`](core/config_manager.py#L60-L314)** — `L60-L314`
   - *Verwaltet Profile, Live-/VOD-Favoriten, Verlauf, Player-Pfade und UI-Einstellungen.*
   - **Wichtige Methoden:**
     - [`__init__(filepath)`](core/config_manager.py#L63) — `L63`
     - [`_default_config()`](core/config_manager.py#L75) — `L75`
-    - [`_load()`](core/config_manager.py#L171) — `L171`
-    - [`save()`](core/config_manager.py#L189) — `L189`
-    - [`get(key, default)`](core/config_manager.py#L208) — `L208`
-    - [`set(key, value, auto_save)`](core/config_manager.py#L211) — `L211`
-    - [`get_profiles()`](core/config_manager.py#L216) — `L216`
-    - [`get_profile(name)`](core/config_manager.py#L221) — `L221`
-    - [`save_profile(profile, old_name)`](core/config_manager.py#L227) — `L227`
-    - [`delete_profile(name)`](core/config_manager.py#L239) — `L239`
-    - [`get_favorites(profile_name)`](core/config_manager.py#L251) — `L251`
-    - [`save_favorites(profile_name, favorites)`](core/config_manager.py#L255) — `L255`
-    - [`get_vod_favorites(profile_name)`](core/config_manager.py#L261) — `L261`
-    - [`save_vod_favorites(profile_name, favorites)`](core/config_manager.py#L265) — `L265`
-    - [`get_recently_played(profile_name)`](core/config_manager.py#L271) — `L271`
+    - [`_load()`](core/config_manager.py#L172) — `L172`
+    - [`save()`](core/config_manager.py#L190) — `L190`
+    - [`get(key, default)`](core/config_manager.py#L209) — `L209`
+    - [`set(key, value, auto_save)`](core/config_manager.py#L212) — `L212`
+    - [`get_profiles()`](core/config_manager.py#L217) — `L217`
+    - [`get_profile(name)`](core/config_manager.py#L222) — `L222`
+    - [`save_profile(profile, old_name)`](core/config_manager.py#L228) — `L228`
+    - [`delete_profile(name)`](core/config_manager.py#L240) — `L240`
+    - [`get_favorites(profile_name)`](core/config_manager.py#L252) — `L252`
+    - [`save_favorites(profile_name, favorites)`](core/config_manager.py#L256) — `L256`
+    - [`get_vod_favorites(profile_name)`](core/config_manager.py#L262) — `L262`
+    - [`save_vod_favorites(profile_name, favorites)`](core/config_manager.py#L266) — `L266`
+    - [`get_recently_played(profile_name)`](core/config_manager.py#L272) — `L272`
     - *... und 5 weitere Hilfsmethoden.*
 
 #### Modul-Funktionen
@@ -587,7 +587,7 @@ Ermittelt HTTP-Latenz, MPEG-TS PCR-Mux-Bitrate sowie Video-/Audio-Codecs und Auf
 
 ---
 
-### 📄 [`core/vpn_manager.py`](core/vpn_manager.py) (627 Zeilen)
+### 📄 [`core/vpn_manager.py`](core/vpn_manager.py) (657 Zeilen)
 > NordVPN Manager für STB Pro Qt6.
 Erkennt eine aktive NordVPN-Installation, überwacht den Verbindungsstatus und
 führt bei Erkennung von IP-/ISP-Sperren (IP_BAN / ISP_LOCK) vollautomatische,
@@ -595,7 +595,7 @@ mehrstufige Server- und Länder-Rotationen via NordVPN-CLI durch.
 Speichert verbrannte IPs pro Host und respektiert Benutzer-Präferenzen zur VPN-Steuerung.
 
 #### Klassen & Komponenten
-- **[`NordVpnManager`](core/vpn_manager.py#L29-L623)** — `L29-L623`
+- **[`NordVpnManager`](core/vpn_manager.py#L29-L653)** — `L29-L653`
   - *Verwaltet die Integration mit NordVPN unter Windows.*
   - **Wichtige Methoden:**
     - [`__init__()`](core/vpn_manager.py#L52) — `L52`
@@ -719,14 +719,14 @@ Nutzt Qt Signals für reaktive Status- und Puffer-Updates ohne UI-Blockade.
 
 ---
 
-### 📄 [`ui/main_window.py`](ui/main_window.py) (2941 Zeilen)
+### 📄 [`ui/main_window.py`](ui/main_window.py) (2943 Zeilen)
 > Main Application Window (Orchestrator) for STB Pro v6.0 Qt6 Edition.
 Coordinates Sidebar, TopNavigationBar, LiveTVView, VODView, ScannerView, InspectorView, ConsoleView,
 LibVLC Hardware Player, External Player Runner, Fullscreen HUD Overlay, PiP Mini-Player,
 Multi-Thread MAC Scanner, Parallel Category Validator, and all 7 Dialogs.
 
 #### Klassen & Komponenten
-- **[`MainWindow`](ui/main_window.py#L89-L2939)** : *QMainWindow* — `L89-L2939`
+- **[`MainWindow`](ui/main_window.py#L89-L2941)** : *QMainWindow* — `L89-L2941`
   - **Signals**: `_val_progress_sig`, `_val_finished_sig`, `_val_thumb_progress_sig`, `_val_thumb_finished_sig`, `_epg_loaded_sig`, `_probe_done_sig`, `_preview_ready_sig`
   - **Wichtige Methoden:**
     - [`__init__()`](ui/main_window.py#L99) — `L99`
@@ -890,14 +890,14 @@ filterable hit table, and 1-click profile adoption.
 
 ---
 
-### 📄 [`ui/views/settings_view.py`](ui/views/settings_view.py) (953 Zeilen)
+### 📄 [`ui/views/settings_view.py`](ui/views/settings_view.py) (968 Zeilen)
 > Settings & Boost Configuration View for STB Pro Qt6.
 Provides comprehensive controls for Portal Handshake, Scanner & Probing,
 Stream Ringbuffer & Playback, External Player Engines, NordVPN Ban-Recovery,
 and UI / System preferences with live persistence to config.json.
 
 #### Klassen & Komponenten
-- **[`SettingsView`](ui/views/settings_view.py#L45-L953)** : *QWidget* — `L45-L953`
+- **[`SettingsView`](ui/views/settings_view.py#L45-L968)** : *QWidget* — `L45-L968`
   - **Signals**: `settings_saved`, `buffer_settings_changed`, `vpn_settings_changed`, `ui_scale_changed`, `cache_cleared`
   - **Wichtige Methoden:**
     - [`__init__(config_mgr, vpn_mgr, parent)`](ui/views/settings_view.py#L52) — `L52`
@@ -906,15 +906,15 @@ and UI / System preferences with live persistence to config.json.
     - [`_build_buffering_tab()`](ui/views/settings_view.py#L332) — `L332`
     - [`_build_player_tab()`](ui/views/settings_view.py#L447) — `L447`
     - [`_build_vpn_tab()`](ui/views/settings_view.py#L527) — `L527`
-    - [`_build_gui_tab()`](ui/views/settings_view.py#L638) — `L638`
-    - [`load_from_config()`](ui/views/settings_view.py#L689) — `L689`
-    - [`save_to_config()`](ui/views/settings_view.py#L778) — `L778`
-    - [`reset_to_defaults()`](ui/views/settings_view.py#L864) — `L864`
-    - [`_browse_file(line_edit, filter_str)`](ui/views/settings_view.py#L882) — `L882`
-    - [`_auto_detect_players()`](ui/views/settings_view.py#L887) — `L887`
-    - [`_update_vpn_badge()`](ui/views/settings_view.py#L915) — `L915`
-    - [`_clear_all_burned_ips()`](ui/views/settings_view.py#L935) — `L935`
-    - [`_clear_caches()`](ui/views/settings_view.py#L946) — `L946`
+    - [`_build_gui_tab()`](ui/views/settings_view.py#L651) — `L651`
+    - [`load_from_config()`](ui/views/settings_view.py#L702) — `L702`
+    - [`save_to_config()`](ui/views/settings_view.py#L792) — `L792`
+    - [`reset_to_defaults()`](ui/views/settings_view.py#L879) — `L879`
+    - [`_browse_file(line_edit, filter_str)`](ui/views/settings_view.py#L897) — `L897`
+    - [`_auto_detect_players()`](ui/views/settings_view.py#L902) — `L902`
+    - [`_update_vpn_badge()`](ui/views/settings_view.py#L930) — `L930`
+    - [`_clear_all_burned_ips()`](ui/views/settings_view.py#L950) — `L950`
+    - [`_clear_caches()`](ui/views/settings_view.py#L961) — `L961`
 
 ---
 
@@ -1273,24 +1273,24 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
 
 ---
 
-### 📄 [`tests/test_settings_and_sidebar.py`](tests/test_settings_and_sidebar.py) (301 Zeilen)
+### 📄 [`tests/test_settings_and_sidebar.py`](tests/test_settings_and_sidebar.py) (305 Zeilen)
 > Unit tests for Sidebar Toggle Button ('Verbindung..'), SettingsView,
 ConfigManager extended options, and live setting applications.
 
 #### Klassen & Komponenten
-- **[`TestSettingsAndSidebar`](tests/test_settings_and_sidebar.py#L25-L297)** : *unittest.TestCase* — `L25-L297`
+- **[`TestSettingsAndSidebar`](tests/test_settings_and_sidebar.py#L25-L301)** : *unittest.TestCase* — `L25-L301`
   - **Wichtige Methoden:**
     - [`setUpClass(cls)`](tests/test_settings_and_sidebar.py#L27) — `L27`
     - [`test_01_sidebar_button_label_and_toggle()`](tests/test_settings_and_sidebar.py#L30) — `L30` *(Verify the top bar sidebar toggle button displays 'Verbindung..' and emits sidebar_toggled.)*
     - [`test_02_top_bar_settings_nav_pill()`](tests/test_settings_and_sidebar.py#L46) — `L46` *(Verify TopNavigationBar includes the Settings tab and emits view_changed.)*
     - [`test_03_config_manager_boost_options()`](tests/test_settings_and_sidebar.py#L63) — `L63` *(Verify ConfigManager defines and loads all handshake, scan, buffer, and vpn settings.)*
-    - [`test_04_settings_view_load_modify_save()`](tests/test_settings_and_sidebar.py#L102) — `L102` *(Verify SettingsView loads config, modifies fields, and emits save signals.)*
-    - [`test_05_main_window_settings_live_application()`](tests/test_settings_and_sidebar.py#L143) — `L143` *(Verify MainWindow integrates SettingsView, switches to it, and applies live updates.)*
-    - [`test_06_device_id_mode_random_vs_deterministic()`](tests/test_settings_and_sidebar.py#L177) — `L177` *(Verify StbClient respects device_id_mode='random' vs 'deterministic'.)*
-    - [`test_07_pcr_rate_smoothing()`](tests/test_settings_and_sidebar.py#L200) — `L200` *(Verify BufferSettings and _Session apply PCR rate smoothing when enabled.)*
-    - [`test_08_check_mac_account_boost_options()`](tests/test_settings_and_sidebar.py#L226) — `L226` *(Verify check_mac_account accepts and uses genre_param, sortby_param, and fallback_get_all.)*
-    - [`test_09_vpn_fallback_country_and_reload()`](tests/test_settings_and_sidebar.py#L259) — `L259` *(Verify NordVpnManager respects configured vpn_fallback_country and reload_config.)*
-    - [`test_10_external_player_caching_and_hwdec()`](tests/test_settings_and_sidebar.py#L276) — `L276` *(Verify ExternalPlayerRunner passes caching_ms and hw_decode flags without crashing.)*
+    - [`test_04_settings_view_load_modify_save()`](tests/test_settings_and_sidebar.py#L103) — `L103` *(Verify SettingsView loads config, modifies fields, and emits save signals.)*
+    - [`test_05_main_window_settings_live_application()`](tests/test_settings_and_sidebar.py#L147) — `L147` *(Verify MainWindow integrates SettingsView, switches to it, and applies live updates.)*
+    - [`test_06_device_id_mode_random_vs_deterministic()`](tests/test_settings_and_sidebar.py#L181) — `L181` *(Verify StbClient respects device_id_mode='random' vs 'deterministic'.)*
+    - [`test_07_pcr_rate_smoothing()`](tests/test_settings_and_sidebar.py#L204) — `L204` *(Verify BufferSettings and _Session apply PCR rate smoothing when enabled.)*
+    - [`test_08_check_mac_account_boost_options()`](tests/test_settings_and_sidebar.py#L230) — `L230` *(Verify check_mac_account accepts and uses genre_param, sortby_param, and fallback_get_all.)*
+    - [`test_09_vpn_fallback_country_and_reload()`](tests/test_settings_and_sidebar.py#L263) — `L263` *(Verify NordVpnManager respects configured vpn_fallback_country and reload_config.)*
+    - [`test_10_external_player_caching_and_hwdec()`](tests/test_settings_and_sidebar.py#L280) — `L280` *(Verify ExternalPlayerRunner passes caching_ms and hw_decode flags without crashing.)*
 
 #### Wichtige Konstanten / Konfigurationen
 - `APP_DIR` (L11)
@@ -1333,13 +1333,13 @@ ConfigManager extended options, and live setting applications.
 
 ---
 
-### 📄 [`tests/test_vpn_and_stream_errors.py`](tests/test_vpn_and_stream_errors.py) (301 Zeilen)
+### 📄 [`tests/test_vpn_and_stream_errors.py`](tests/test_vpn_and_stream_errors.py) (334 Zeilen)
 > Unit Tests für IP- und ISP-Sperren-Erkennung sowie NordVPN-Manager.
 Testet JSON-Fehler-Payloads (auch gzipped), HTML-WAF-Sperren,
 Länder-Heuristiken und die StreamBuffer-Schutzlogik.
 
 #### Klassen & Komponenten
-- **[`TestVpnAndStreamErrors`](tests/test_vpn_and_stream_errors.py#L15-L297)** : *unittest.TestCase* — `L15-L297`
+- **[`TestVpnAndStreamErrors`](tests/test_vpn_and_stream_errors.py#L15-L330)** : *unittest.TestCase* — `L15-L330`
   - **Wichtige Methoden:**
     - [`test_detect_stream_error_valid_ts()`](tests/test_vpn_and_stream_errors.py#L17) — `L17`
     - [`test_detect_stream_error_valid_hls()`](tests/test_vpn_and_stream_errors.py#L22) — `L22`
@@ -1355,7 +1355,8 @@ Länder-Heuristiken und die StreamBuffer-Schutzlogik.
     - [`test_is_ip_or_stream_ban()`](tests/test_vpn_and_stream_errors.py#L121) — `L121`
     - [`test_probe_stream_triggers_ip_ban_on_511()`](tests/test_vpn_and_stream_errors.py#L134) — `L134`
     - [`test_vpn_manager_clean_disconnect_and_sequence()`](tests/test_vpn_and_stream_errors.py#L167) — `L167`
-    - [`test_stream_buffer_aborts_immediately_on_511()`](tests/test_vpn_and_stream_errors.py#L261) — `L261`
+    - [`test_vpn_manager_rate_limit_pacing()`](tests/test_vpn_and_stream_errors.py#L269) — `L269`
+    - *... und 1 weitere Hilfsmethoden.*
 
 ---
 

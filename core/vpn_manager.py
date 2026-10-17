@@ -380,15 +380,20 @@ class NordVpnManager:
             return False
 
         now = time.time()
-        cooldown = float(self._config_mgr.get("vpn_cooldown_seconds", 15.0)) if self._config_mgr else 15.0
+        min_interval = float(self._config_mgr.get("vpn_min_switch_interval", 10.0)) if self._config_mgr else 10.0
+        cooldown = max(min_interval, float(self._config_mgr.get("vpn_cooldown_seconds", 15.0)) if self._config_mgr else 15.0)
         with self._lock:
-            # Konfigurierbarer Cooldown zwischen Server-Wechseln, um NordVPN-Gerätelimits zu schützen
-            if self._is_switching or (now - self._last_switch_time < cooldown):
+            # Konfigurierbarer Cooldown & Rate-Limit-Intervall (Schutz vor NordVPN API-Limit und Ghost-Sessions)
+            if self._is_switching:
                 if callback:
                     callback(False, f"Server-Wechsel läuft bereits oder Cooldown aktiv ({int(cooldown)}s).")
                 return False
+            if now - self._last_switch_time < min_interval:
+                rem = max(1.0, min_interval - (now - self._last_switch_time))
+                if callback:
+                    callback(False, f"Server-Wechsel läuft bereits oder Rate-Limit aktiv ({int(rem)}s verbleibend).")
+                return False
             self._is_switching = True
-            self._last_switch_time = now
 
             country = (target_country or "").strip()
             if not country:
@@ -434,6 +439,7 @@ class NordVpnManager:
             finally:
                 with self._lock:
                     self._is_switching = False
+                    self._last_switch_time = time.time()
 
                 if success:
                     info = f"NordVPN verbunden ({country}): {new_ip}"
@@ -483,6 +489,7 @@ class NordVpnManager:
 
         now = time.time()
         debounce = float(self._config_mgr.get("vpn_debounce_seconds", 2.0)) if self._config_mgr else 2.0
+        min_interval = float(self._config_mgr.get("vpn_min_switch_interval", 10.0)) if self._config_mgr else 10.0
         cooldown = float(self._config_mgr.get("vpn_cooldown_seconds", 15.0)) if self._config_mgr else 15.0
         max_hops_cfg = int(self._config_mgr.get("vpn_max_consecutive_hops", 5)) if self._config_mgr else 5
         limit_hops = max(1, min(max_hops_cfg, len(candidates)))
@@ -492,14 +499,7 @@ class NordVpnManager:
             if self._is_switching:
                 return False
 
-            # 2. Mindestens Debounce-Zeit abwarten, damit Routing und Interface nach dem letzten Wechsel stabil sind
-            if now - self._last_switch_time < debounce:
-                event_bus.log_message.emit(
-                    f"[🛡️ VPN] Rotation für '{clean_host}' verzögert (Netzwerk-Stabilisierung {debounce:.1f}s)..."
-                )
-                return False
-
-            # 3. Konsekutive Hops: Wenn ein Standort unmittelbar blockiert wird, sofort zum nächsten springen!
+            # 2. Konsekutive Hops: Wenn alle Standorte durch sind, Cooldown einhalten
             hops = self._consecutive_hops.get(clean_host, 0)
             if hops >= limit_hops:
                 if now - self._last_switch_time < cooldown:
@@ -510,19 +510,21 @@ class NordVpnManager:
                 self._consecutive_hops[clean_host] = 0
                 hops = 0
 
+            # 3. Rate-Limit-Schutz (NordVPN Anti-Abuse, 10-Min-Lockout & Session-Limits):
+            # Berechne verbleibende Wartezeit seit der letzten Verbindung.
+            # Bei mehreren konsekutiven Hops schützt ein progressiver Zuschlag (+1.5s je Hop) zusätzlich.
+            consecutive_backoff = max(0.0, float(hops - 1) * 1.5) if hops > 1 else 0.0
+            required_wait = max(debounce, min_interval + consecutive_backoff)
+            elapsed = now - self._last_switch_time
+            delay_seconds = max(0.0, required_wait - elapsed) if self._last_switch_time > 0 else 0.0
+
             self._consecutive_hops[clean_host] = hops + 1
             self._is_switching = True
-            self._last_switch_time = now
 
             prev_idx = self._host_rotation_index.get(clean_host, -1)
             next_idx = (prev_idx + 1) % len(candidates)
             self._host_rotation_index[clean_host] = next_idx
             target_country = candidates[next_idx]
-
-        event_bus.log_message.emit(
-            f"[🛡️ VPN] Starte Server-Rotation für '{clean_host}' (Hop {hops + 1}/{len(candidates)}) nach {target_country}..."
-        )
-        event_bus.vpn_status_changed.emit("switching", f"Rotiere nach {target_country}...")
 
         cli_dir = os.path.dirname(cli) if os.path.dirname(cli) else None
 
@@ -531,6 +533,33 @@ class NordVpnManager:
             success = False
 
             try:
+                # Falls seit dem letzten Wechsel noch keine 10s vergangen sind, Rate-Limit-Pause einhalten
+                if delay_seconds > 0.1:
+                    _safe_emit(
+                        event_bus.log_message,
+                        f"[🛡️ VPN Rate-Limit] Rate-Limit Schutz aktiv (Hop {hops + 1}/{len(candidates)}): "
+                        f"Warte {delay_seconds:.1f}s vor nächstem Serverwechsel nach {target_country} "
+                        f"(Schutz vor NordVPN API-Limit & Ghost-Sessions)...",
+                    )
+                    _safe_emit(
+                        event_bus.vpn_status_changed,
+                        "switching",
+                        f"Warte {int(delay_seconds)}s (Rate-Limit Schutz)...",
+                    )
+                    t_end = time.time() + delay_seconds
+                    while time.time() < t_end:
+                        time.sleep(0.25)
+
+                _safe_emit(
+                    event_bus.log_message,
+                    f"[🛡️ VPN] Starte Server-Rotation für '{clean_host}' (Hop {hops + 1}/{len(candidates)}) nach {target_country}...",
+                )
+                _safe_emit(
+                    event_bus.vpn_status_changed,
+                    "switching",
+                    f"Rotiere nach {target_country}...",
+                )
+
                 # Verbindung zum Zielland aufbauen (NordVPN wechselt den Server nahtlos ohne Auto-Connect-Modal)
                 cmd = [cli, "-c", "-g", target_country]
                 subprocess.run(
@@ -567,13 +596,14 @@ class NordVpnManager:
             finally:
                 with self._lock:
                     self._is_switching = False
+                    self._last_switch_time = time.time()
 
                 if success:
                     info = f"NordVPN verbunden ({target_country}): {final_ip}"
                     _safe_emit(event_bus.log_message, f"[🛡️ VPN] {info}")
                     _safe_emit(event_bus.vpn_status_changed, "connected", info)
                     if on_success:
-                        time.sleep(0.5)
+                        time.sleep(1.2)
                         on_success()
                 else:
                     err_info = f"NordVPN Rotation fehlgeschlagen ({final_ip})"
