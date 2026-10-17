@@ -775,6 +775,7 @@
             "196150"
         ],
         "paplive.me (00:1A:79:FB:10:7A)": [
+            "196164",
             "310562",
             "302774"
         ]
@@ -783,5 +784,7 @@
     "hide_dead_channels": true,
     "validation_workers": 8,
     "last_scan_host": "paplive.me",
-    "last_scan_mac": "00:1A:79:FB:10:7A"
+    "last_scan_mac": "00:1A:79:FB:10:7A",
+    "vpn_auto_switch": true,
+    "burned_ips": {}
 }

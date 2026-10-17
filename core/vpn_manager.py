@@ -1,8 +1,9 @@
 """
 NordVPN Manager für STB Pro Qt6.
 Erkennt eine aktive NordVPN-Installation, überwacht den Verbindungsstatus und
-führt bei Erkennung von IP-/ISP-Sperren (IP_BAN / ISP_LOCK) vollautomatische
-Server- und Länder-Rotationen via NordVPN-CLI durch.
+führt bei Erkennung von IP-/ISP-Sperren (IP_BAN / ISP_LOCK) vollautomatische,
+mehrstufige Server- und Länder-Rotationen via NordVPN-CLI durch.
+Speichert verbrannte IPs pro Host und respektiert Benutzer-Präferenzen zur VPN-Steuerung.
 """
 import os
 import re
@@ -10,7 +11,8 @@ import shutil
 import subprocess
 import threading
 import time
-from typing import Optional, Callable, Tuple, List
+import urllib.parse
+from typing import Optional, Callable, Tuple, List, Dict, Set
 import requests
 
 from core.signals import event_bus
@@ -19,8 +21,8 @@ from core.signals import event_bus
 class NordVpnManager:
     """
     Verwaltet die Integration mit NordVPN unter Windows.
-    Unterstützt Quick-Connect, länderspezifische Server-Rotation und
-    reaktive Auto-Umschaltung bei Stream-Blockaden.
+    Unterstützt Quick-Connect, länderspezifische Server-Rotation,
+    persistentes Tracking verbrannter IPs pro Host und reaktive Auto-Umschaltung.
     """
 
     NORD_PATHS = [
@@ -28,6 +30,16 @@ class NordVpnManager:
         r"C:\Program Files (x86)\NordVPN\NordVPN.exe",
         r"C:\Program Files\NordVPN\nordvpn.exe",
     ]
+
+    ROTATION_POOLS: Dict[str, List[str]] = {
+        "Germany": ["Germany", "Switzerland", "Austria", "Netherlands", "France", "United Kingdom"],
+        "Turkey": ["Turkey", "Germany", "Netherlands", "Bulgaria", "Greece"],
+        "Austria": ["Austria", "Germany", "Switzerland"],
+        "Switzerland": ["Switzerland", "Germany", "Austria"],
+        "Netherlands": ["Netherlands", "Germany", "Belgium", "France"],
+        "United Kingdom": ["United Kingdom", "Ireland", "Netherlands", "Germany"],
+        "United States": ["United States", "Canada"],
+    }
 
     def __init__(self):
         self._cli_path: Optional[str] = None
@@ -37,7 +49,32 @@ class NordVpnManager:
         self._auto_switch_enabled: bool = True
         self._last_known_ip: str = ""
         self._last_known_country: str = ""
+        self._burned_ips: Dict[str, Set[str]] = {}
+        self._config_mgr = None
         self._detect_cli()
+
+    def set_config_manager(self, mgr):
+        """Bindet den Konfigurations-Manager ein und synchronisiert gespeicherte Einstellungen."""
+        self._config_mgr = mgr
+        if mgr:
+            self._auto_switch_enabled = bool(mgr.get("vpn_auto_switch", True))
+            raw_burned = mgr.get("burned_ips", {})
+            if isinstance(raw_burned, dict):
+                for host, ips in raw_burned.items():
+                    if isinstance(ips, list):
+                        self._burned_ips[self._normalize_host(host)] = set(str(x) for x in ips)
+
+    @property
+    def auto_switch_enabled(self) -> bool:
+        if self._config_mgr:
+            return bool(self._config_mgr.get("vpn_auto_switch", True))
+        return self._auto_switch_enabled
+
+    @auto_switch_enabled.setter
+    def auto_switch_enabled(self, val: bool):
+        self._auto_switch_enabled = bool(val)
+        if self._config_mgr:
+            self._config_mgr.set("vpn_auto_switch", bool(val), auto_save=True)
 
     def _detect_cli(self) -> Optional[str]:
         if self._cli_path and os.path.exists(self._cli_path):
@@ -66,7 +103,6 @@ class NordVpnManager:
         if not self.is_installed():
             return False
         try:
-            # Schneller Tasklist-Check nach NordVPN-Prozessen
             res = subprocess.run(
                 ["tasklist", "/FI", "IMAGENAME eq nordvpn*"],
                 capture_output=True,
@@ -77,7 +113,7 @@ class NordVpnManager:
             out = res.stdout.lower()
             return "nordvpn" in out or "nordvpn-service" in out
         except Exception:
-            return True  # Fallback falls tasklist blockiert ist
+            return True
 
     def is_connected(self) -> bool:
         """Prüft über Netzwerkschnittstellen, ob der NordLynx-Adapter aktiv verbunden ist."""
@@ -118,14 +154,89 @@ class NordVpnManager:
         return self._last_known_ip or "Unbekannt"
 
     @staticmethod
-    def guess_country_for_profile(profile_name: str = "", portal_url: str = "") -> str:
+    def _normalize_host(host_or_url: str) -> str:
+        s = str(host_or_url or "").strip()
+        if "://" in s:
+            try:
+                parsed = urllib.parse.urlparse(s)
+                s = parsed.netloc or parsed.path
+            except Exception:
+                pass
+        if ":" in s:
+            s = s.split(":")[0]
+        return s.strip("/ ").lower()
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Verbrannte IPs Tracking
+    # ──────────────────────────────────────────────────────────────────────
+
+    def mark_ip_burned(self, host: str, ip: str, reason: str = ""):
+        """Markiert eine IP für einen bestimmten Host als gesperrt/verbrannt."""
+        clean_host = self._normalize_host(host)
+        clean_ip = str(ip or "").strip()
+        if not clean_host or not clean_ip or clean_ip in ("Unbekannt", ""):
+            return
+
+        with self._lock:
+            s = self._burned_ips.setdefault(clean_host, set())
+            if clean_ip not in s:
+                s.add(clean_ip)
+                event_bus.log_message.emit(
+                    f"[🔥 Verbrannte IP] Host '{clean_host}': IP {clean_ip} blockiert ({reason or 'IP/ISP-Block'})."
+                )
+                if self._config_mgr:
+                    self._config_mgr.add_burned_ip(clean_host, clean_ip)
+
+    def is_ip_burned(self, host: str, ip: str) -> bool:
+        """Prüft, ob eine IP für den angegebenen Host bereits als gesperrt markiert wurde."""
+        clean_host = self._normalize_host(host)
+        clean_ip = str(ip or "").strip()
+        if not clean_host or not clean_ip:
+            return False
+
+        with self._lock:
+            if clean_host in self._burned_ips and clean_ip in self._burned_ips[clean_host]:
+                return True
+            if self._config_mgr:
+                return clean_ip in self._config_mgr.get_burned_ips(clean_host)
+            return False
+
+    def get_burned_ips(self, host: str) -> List[str]:
+        """Gibt die Liste aller verbrannten IPs für einen Host zurück."""
+        clean_host = self._normalize_host(host)
+        with self._lock:
+            ips = set(self._burned_ips.get(clean_host, set()))
+            if self._config_mgr:
+                ips.update(self._config_mgr.get_burned_ips(clean_host))
+            return sorted(list(ips))
+
+    def clear_burned_ips(self, host: Optional[str] = None):
+        """Setzt verbrannte IPs zurück (für einen Host oder global)."""
+        with self._lock:
+            if host:
+                clean_host = self._normalize_host(host)
+                self._burned_ips.pop(clean_host, None)
+                if self._config_mgr:
+                    self._config_mgr.clear_burned_ips(clean_host)
+                event_bus.log_message.emit(f"[🧹 VPN] Verbrannte IPs für '{clean_host}' gelöscht.")
+            else:
+                self._burned_ips.clear()
+                if self._config_mgr:
+                    self._config_mgr.clear_burned_ips()
+                event_bus.log_message.emit("[🧹 VPN] Alle verbrannten IPs zurückgesetzt.")
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Länder- & Server-Rotation
+    # ──────────────────────────────────────────────────────────────────────
+
+    @classmethod
+    def guess_country_for_profile(cls, profile_name: str = "", portal_url: str = "") -> str:
         """
         Leitet aus dem Profilnamen oder der Portal-Domain das optimale Zielland ab.
         Beispiel: 'DE | HD paplive.me' -> 'Germany', '.tr' -> 'Turkey'
         """
         combined = f"{profile_name} {portal_url}".lower()
 
-        # Länder-Heuristik
         if re.search(r"\b(de|deutsch|germany|ger|ard|zdf)\b", combined) or ".de" in combined:
             return "Germany"
         if re.search(r"\b(tr|turk|türk|turkey)\b", combined) or ".tr" in combined:
@@ -147,8 +258,14 @@ class NordVpnManager:
         if re.search(r"\b(es|spain|spanien)\b", combined) or ".es" in combined:
             return "Spain"
 
-        # Standard-Fallback für europäische IPTV-Dienste: Germany
         return "Germany"
+
+    def get_rotation_candidates(self, base_country: str) -> List[str]:
+        """Liefert eine geordnete Liste alternativer Länder für die Rotation."""
+        pool = self.ROTATION_POOLS.get(base_country)
+        if pool:
+            return list(pool)
+        return [base_country, "Germany", "Switzerland", "Austria", "Netherlands"]
 
     def switch_server(
         self,
@@ -157,7 +274,6 @@ class NordVpnManager:
     ) -> bool:
         """
         Wechselt asynchron zu einem neuen NordVPN-Server (optional mit Länderangabe).
-        Benachrichtigt die UI über den Event-Bus und ruft den Callback nach Abschluss auf.
         """
         cli = self._detect_cli()
         if not cli:
@@ -167,7 +283,7 @@ class NordVpnManager:
 
         now = time.time()
         with self._lock:
-            # 8 Sekunden Cooldown zwischen Server-Wechseln zum Schutz des Daemons
+            # 8 Sekunden Cooldown zwischen Server-Wechseln
             if self._is_switching or (now - self._last_switch_time < 8.0):
                 if callback:
                     callback(False, "Server-Wechsel läuft bereits oder Cooldown aktiv.")
@@ -188,7 +304,6 @@ class NordVpnManager:
                 if country:
                     cmd.extend(["-g", country])
 
-                # Starte NordVPN CLI
                 subprocess.run(
                     cmd,
                     capture_output=True,
@@ -197,7 +312,6 @@ class NordVpnManager:
                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
                 )
 
-                # Warte bis Schnittstelle wieder online ist und IP wechselt (max. 12s)
                 t_start = time.time()
                 while time.time() - t_start < 12.0:
                     time.sleep(1.2)
@@ -232,6 +346,107 @@ class NordVpnManager:
         th.start()
         return True
 
+    def rotate_server_for_host(
+        self,
+        host: str,
+        profile_name: str = "",
+        on_success: Optional[Callable[[], None]] = None,
+    ) -> bool:
+        """
+        Rotiert intelligent durch verschiedene Server/Länder, bis eine IP erhalten wird,
+        die für diesen Host NICHT als verbrannt gilt.
+        """
+        if not self.auto_switch_enabled or not self.is_installed():
+            return False
+
+        cli = self._detect_cli()
+        if not cli:
+            return False
+
+        clean_host = self._normalize_host(host)
+        now = time.time()
+        with self._lock:
+            if self._is_switching or (now - self._last_switch_time < 8.0):
+                return False
+            self._is_switching = True
+            self._last_switch_time = now
+
+        base_country = self.guess_country_for_profile(profile_name, clean_host)
+        candidates = self.get_rotation_candidates(base_country)
+
+        event_bus.log_message.emit(
+            f"[🛡️ VPN] Starte intelligente Server-Rotation für '{clean_host}' (Kandidaten: {', '.join(candidates[:3])})..."
+        )
+        event_bus.vpn_status_changed.emit("switching", f"Rotiere Server für {clean_host}...")
+
+        def _rotation_worker():
+            final_ip = ""
+            final_country = ""
+            success = False
+
+            try:
+                for attempt_idx, country in enumerate(candidates[:4]):
+                    # Verbinde zu Land
+                    cmd = [cli, "-c", "-g", country]
+                    event_bus.log_message.emit(f"[🛡️ VPN] Verbindungsversuch {attempt_idx + 1}: {country}...")
+                    event_bus.vpn_status_changed.emit("switching", f"Verbinde {country}...")
+
+                    subprocess.run(
+                        cmd,
+                        capture_output=True,
+                        text=True,
+                        timeout=8,
+                        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+                    )
+
+                    # Warte auf neue IP
+                    t_start = time.time()
+                    cand_ip = ""
+                    while time.time() - t_start < 10.0:
+                        time.sleep(1.2)
+                        ip = self.get_public_ip(timeout=2.0)
+                        if ip and ip != "Unbekannt":
+                            cand_ip = ip
+                            break
+
+                    if not cand_ip:
+                        continue
+
+                    # Prüfen, ob die IP für diesen Host bereits verbrannt ist
+                    if self.is_ip_burned(clean_host, cand_ip):
+                        event_bus.log_message.emit(
+                            f"[🔥 VPN] IP {cand_ip} ({country}) ist für '{clean_host}' bereits verbrannt! Versuche nächstes Ziel..."
+                        )
+                        continue
+
+                    # Saubere, unverbrannte IP gefunden!
+                    final_ip = cand_ip
+                    final_country = country
+                    success = True
+                    break
+
+            except Exception as e:
+                final_ip = str(e)
+            finally:
+                with self._lock:
+                    self._is_switching = False
+
+                if success:
+                    info = f"NordVPN verbunden ({final_country}): {final_ip} (Clean)"
+                    event_bus.log_message.emit(f"[🛡️ VPN] {info}")
+                    event_bus.vpn_status_changed.emit("connected", info)
+                    if on_success:
+                        time.sleep(0.5)
+                        on_success()
+                else:
+                    err_info = "Keine unverbrannte IP in den Rotationspools gefunden."
+                    event_bus.log_message.emit(f"[⚠️ VPN] {err_info}")
+                    event_bus.vpn_status_changed.emit("error", err_info)
+
+        th = threading.Thread(target=_rotation_worker, daemon=True, name="NordVpnRotator")
+        th.start()
+        return True
+
     def handle_ip_ban(
         self,
         url: str,
@@ -241,22 +456,31 @@ class NordVpnManager:
     ) -> bool:
         """
         Reagiert auf eine detektierte IP_BAN / ISP_LOCK Sperre.
-        Ermittelt das optimale Zielland und leitet den Serverwechsel mit anschließendem Retry ein.
+        Markiert die aktuelle IP als verbrannt und startet bei aktiver Option die Rotation.
         """
-        if not self._auto_switch_enabled or not self.is_installed():
+        clean_host = self._normalize_host(url)
+        cur_ip = self._last_known_ip or self.get_public_ip(timeout=1.5)
+
+        # 1. Aktuelle IP als verbrannt für diesen Host markieren
+        if cur_ip and cur_ip != "Unbekannt":
+            self.mark_ip_burned(clean_host, cur_ip, reason=err_msg)
+
+        # 2. Prüfen, ob Auto-Switch vom Benutzer gewünscht und NordVPN aktiv ist
+        if not self.auto_switch_enabled:
+            event_bus.log_message.emit(
+                f"[🛡️ VPN] IP-Sperre erkannt auf '{clean_host}'. Auto-VPN ist in den Einstellungen deaktiviert."
+            )
             return False
 
-        country = self.guess_country_for_profile(profile_name, url)
-        event_bus.log_message.emit(
-            f"[🛡️ VPN] 🚫 IP-/ISP-Sperre erkannt! Rotiere NordVPN automatisch nach '{country}'..."
+        if not self.is_installed() or not self.is_running():
+            return False
+
+        # 3. Intelligente Rotation durchführen
+        return self.rotate_server_for_host(
+            host=clean_host,
+            profile_name=profile_name,
+            on_success=on_success,
         )
-
-        def _on_switched(ok: bool, new_ip: str):
-            if ok and on_success:
-                time.sleep(0.5)
-                on_success()
-
-        return self.switch_server(target_country=country, callback=_on_switched)
 
 
 # Globaler Singleton

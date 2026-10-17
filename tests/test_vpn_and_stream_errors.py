@@ -85,6 +85,50 @@ class TestVpnAndStreamErrors(unittest.TestCase):
         self.assertFalse(ok)
         cb.assert_called_with(False, "Server-Wechsel läuft bereits oder Cooldown aktiv.")
 
+    def test_burned_ips_tracking(self):
+        vm = NordVpnManager()
+        host = "http://paplive.me:8080/c/"
+        ip1 = "86.38.149.243"
+        ip2 = "45.150.175.84"
+
+        # Anfangs keine verbrannten IPs
+        vm.clear_burned_ips("paplive.me")
+        self.assertFalse(vm.is_ip_burned(host, ip1))
+
+        # IP 1 als verbrannt markieren
+        vm.mark_ip_burned(host, ip1, reason="IP_BAN Test")
+        self.assertTrue(vm.is_ip_burned("paplive.me", ip1))
+        self.assertTrue(vm.is_ip_burned(host, ip1))
+        self.assertFalse(vm.is_ip_burned(host, ip2))
+        self.assertFalse(vm.is_ip_burned("other-portal.to", ip1))
+
+        # Prüfe Liste
+        b_list = vm.get_burned_ips("paplive.me")
+        self.assertIn(ip1, b_list)
+
+        # Löschen für Host
+        vm.clear_burned_ips("paplive.me")
+        self.assertFalse(vm.is_ip_burned(host, ip1))
+
+    def test_rotation_candidates(self):
+        vm = NordVpnManager()
+        cands = vm.get_rotation_candidates("Germany")
+        self.assertIn("Germany", cands)
+        self.assertIn("Switzerland", cands)
+        self.assertIn("Austria", cands)
+        self.assertIn("Netherlands", cands)
+
+    def test_auto_switch_toggle(self):
+        vm = NordVpnManager()
+        vm.auto_switch_enabled = True
+        self.assertTrue(vm.auto_switch_enabled)
+
+        vm.auto_switch_enabled = False
+        self.assertFalse(vm.auto_switch_enabled)
+        # Wenn deaktiviert, darf handle_ip_ban keinen Server-Wechsel starten
+        ok = vm.handle_ip_ban("http://test.com/stream", "IP_BAN", "Test Profile")
+        self.assertFalse(ok)
+
 
 if __name__ == "__main__":
     unittest.main()

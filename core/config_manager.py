@@ -108,6 +108,8 @@ class ConfigManager:
             "start_maximized": True,
             "hide_dead_channels": True,
             "validation_workers": 8,
+            "vpn_auto_switch": True,
+            "burned_ips": {},
         }
 
     def _load(self) -> Dict[str, Any]:
@@ -223,4 +225,30 @@ class ConfigManager:
         if m:
             return max(1, int(m.group(1)))
         return 10
+
+    def get_burned_ips(self, host: str) -> List[str]:
+        b = self.config.get("burned_ips", {})
+        if not isinstance(b, dict):
+            return []
+        return [str(x) for x in b.get(host, [])]
+
+    def add_burned_ip(self, host: str, ip: str):
+        if not host or not ip or ip == "Unbekannt":
+            return
+        if "burned_ips" not in self.config or not isinstance(self.config["burned_ips"], dict):
+            self.config["burned_ips"] = {}
+        ips = list(self.config["burned_ips"].get(host, []))
+        if ip not in ips:
+            ips.append(ip)
+            self.config["burned_ips"][host] = ips
+            self.save()
+
+    def clear_burned_ips(self, host: Optional[str] = None):
+        if "burned_ips" not in self.config or not isinstance(self.config["burned_ips"], dict):
+            self.config["burned_ips"] = {}
+        if host:
+            self.config["burned_ips"].pop(host, None)
+        else:
+            self.config["burned_ips"] = {}
+        self.save()
 

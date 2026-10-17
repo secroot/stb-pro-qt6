@@ -24,6 +24,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLineEdit,
     QMainWindow,
+    QMenu,
     QMessageBox,
     QPlainTextEdit,
     QSpinBox,
@@ -449,6 +450,7 @@ class MainWindow(QMainWindow):
         # Initialer NordVPN-Status Check
         try:
             from core.vpn_manager import vpn_manager
+            vpn_manager.set_config_manager(self.config_mgr)
             if vpn_manager.is_installed():
                 if vpn_manager.is_connected():
                     self.top_bar.update_vpn_badge("🛡️ VPN: Aktiv", "connected")
@@ -1250,28 +1252,37 @@ class MainWindow(QMainWindow):
     def _on_stream_ip_ban_detected(self, url: str, err_detail: str):
         event_bus.log_message.emit(f"[🚫 IP-Sperre] Stream von Server verweigert: {err_detail}")
         from core.vpn_manager import vpn_manager
-        if vpn_manager.is_installed() and vpn_manager.is_running():
-            cur_ch = self.state.playing_channel
-            prof_name = self.state.current_profile_name
-            target_country = vpn_manager.guess_country_for_profile(prof_name, url)
+        cur_ch = self.state.playing_channel
+        prof_name = self.state.current_profile_name
+        clean_host = vpn_manager._normalize_host(url or getattr(self.active_client, "portal_url", "") or prof_name)
 
+        if not vpn_manager.auto_switch_enabled:
+            cur_ip = vpn_manager.get_public_ip(timeout=1.0)
+            vpn_manager.mark_ip_burned(clean_host, cur_ip, reason=err_detail)
             self.live_view.set_video_status_text(
-                f"🚫 IP-Sperre erkannt! Wechsle NordVPN ({target_country}) & starte neu...",
+                f"🚫 {err_detail} (IP {cur_ip} verbrannt – Auto-VPN ist deaktiviert)",
+                "IP GESPERRT",
+            )
+            return
+
+        if vpn_manager.is_installed() and vpn_manager.is_running():
+            self.live_view.set_video_status_text(
+                f"🚫 IP-Sperre auf '{clean_host}'! Rotiere zu frischem Server & starte neu...",
                 "AUTO-VPN",
             )
-            self.top_bar.update_vpn_badge(f"🛡️ VPN: {target_country}...", "switching")
+            self.top_bar.update_vpn_badge("🛡️ VPN: Rotation...", "switching")
             if cur_ch:
                 self.osd.update_info(
                     number=cur_ch.number,
                     title=cur_ch.name,
-                    category=f"Auto-VPN: {target_country}",
+                    category=f"Auto-VPN Rotation ({clean_host})",
                     is_playing=False,
                 )
 
             def _retry_playback():
                 if cur_ch and self.state.playing_channel and str(cur_ch.id) == str(self.state.playing_channel.id):
                     event_bus.log_message.emit(
-                        f"[🛡️ VPN] Neuer Server aktiv! Starte Kanal '{cur_ch.name}' neu..."
+                        f"[🛡️ VPN] Frische IP aktiv! Starte Kanal '{cur_ch.name}' neu..."
                     )
                     self.play_channel(cur_ch)
 
@@ -1282,8 +1293,10 @@ class MainWindow(QMainWindow):
                 on_success=_retry_playback,
             )
         else:
+            cur_ip = vpn_manager.get_public_ip(timeout=1.0)
+            vpn_manager.mark_ip_burned(clean_host, cur_ip, reason=err_detail)
             self.live_view.set_video_status_text(
-                f"🚫 {err_detail} (NordVPN starten für Auto-Entsperrung)",
+                f"🚫 {err_detail} (NordVPN starten für automatische Entsperrung)",
                 "IP GESPERRT",
             )
 
@@ -1298,12 +1311,85 @@ class MainWindow(QMainWindow):
             )
             return
 
-        cur_prof = self.state.current_profile_name
-        country = vpn_manager.guess_country_for_profile(cur_prof)
-        self.top_bar.update_vpn_badge(f"🛡️ VPN: {country}...", "switching")
-        ok = vpn_manager.switch_server(target_country=country)
-        if not ok:
-            event_bus.log_message.emit("[🛡️ VPN] Serverwechsel läuft bereits oder Cooldown aktiv.")
+        menu = QMenu(self)
+        menu.setStyleSheet("""
+            QMenu {
+                background-color: #0F172A;
+                color: #F8FAFC;
+                border: 1px solid #334155;
+                border-radius: 8px;
+                padding: 4px;
+                font-size: 11px;
+            }
+            QMenu::item {
+                padding: 6px 20px 6px 12px;
+                border-radius: 4px;
+            }
+            QMenu::item:selected {
+                background-color: #1E293B;
+                color: #38BDF8;
+            }
+            QMenu::separator {
+                height: 1px;
+                background-color: #1E293B;
+                margin: 4px 6px;
+            }
+        """)
+
+        # Option: Auto-Switch Toggle
+        act_auto = menu.addAction("🛡️ Auto-VPN bei Sperren aktivieren")
+        act_auto.setCheckable(True)
+        act_auto.setChecked(vpn_manager.auto_switch_enabled)
+
+        def _toggle_auto(checked: bool):
+            vpn_manager.auto_switch_enabled = checked
+            self.config_mgr.set("vpn_auto_switch", checked, auto_save=True)
+            status_txt = "aktiviert" if checked else "deaktiviert"
+            event_bus.log_message.emit(f"[🛡️ VPN] Automatische VPN-Steuerung {status_txt}.")
+
+        act_auto.toggled.connect(_toggle_auto)
+
+        menu.addSeparator()
+
+        # Action: Quick Connect
+        act_rotate = menu.addAction("🔄 Server jetzt rotieren (Quick Connect)")
+        act_rotate.triggered.connect(lambda: vpn_manager.switch_server())
+
+        # Submenu: Länder
+        menu_countries = menu.addMenu("📍 Land gezielt wählen")
+        for country, label in [
+            ("Germany", "🇩🇪 Deutschland"),
+            ("Switzerland", "🇨🇭 Schweiz"),
+            ("Austria", "🇦🇹 Österreich"),
+            ("Netherlands", "🇳🇱 Niederlande"),
+            ("United Kingdom", "🇬🇧 Großbritannien"),
+            ("United States", "🇺🇸 USA"),
+            ("Turkey", "🇹🇷 Türkei"),
+            ("France", "🇫🇷 Frankreich"),
+        ]:
+            act_c = menu_countries.addAction(label)
+            act_c.triggered.connect(lambda checked=False, c=country: vpn_manager.switch_server(target_country=c))
+
+        menu.addSeparator()
+
+        # Verbrannte IPs Info & Reset
+        cur_host = vpn_manager._normalize_host(
+            getattr(self.active_client, "portal_url", "") or self.state.current_profile_name
+        )
+        burned_list = vpn_manager.get_burned_ips(cur_host)
+        menu.addAction(f"🔥 Verbrannte IPs ({cur_host}): {len(burned_list)}").setEnabled(False)
+
+        if burned_list:
+            act_clear_host = menu.addAction(f"🧹 Verbrannte IPs für '{cur_host}' löschen")
+            act_clear_host.triggered.connect(lambda: vpn_manager.clear_burned_ips(cur_host))
+
+        act_clear_all = menu.addAction("🗑 Alle verbrannten IPs zurücksetzen")
+        act_clear_all.triggered.connect(lambda: vpn_manager.clear_burned_ips(None))
+
+        # Positionieren direkt unter dem VPN-Button
+        btn = self.top_bar.btn_vpn
+        pos = btn.mapToGlobal(btn.rect().bottomLeft())
+        menu.exec(pos)
 
     def _on_play_pause(self):
         playing = self.vlc_ctrl.toggle_play_pause()

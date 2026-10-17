@@ -459,6 +459,12 @@ def probe_stream(
 
                 err_payload = detect_stream_error_payload(sample_bytes, content_type)
                 if err_payload:
+                    if any(k in err_payload for k in ("IP-Sperre", "ISP-Sperre", "IP_BAN", "ISP_LOCK")):
+                        try:
+                            from core.signals import event_bus
+                            event_bus.stream_ip_ban_detected.emit(url, err_payload)
+                        except Exception:
+                            pass
                     return StreamProbeResult(
                         is_alive=False,
                         status_code=status_code,
@@ -467,6 +473,12 @@ def probe_stream(
                     )
             else:
                 diag = diagnose_iptv_status(status_code)
+                if status_code in (456, 407):
+                    try:
+                        from core.signals import event_bus
+                        event_bus.stream_ip_ban_detected.emit(url, diag)
+                    except Exception:
+                        pass
                 return StreamProbeResult(
                     is_alive=False,
                     status_code=status_code,
