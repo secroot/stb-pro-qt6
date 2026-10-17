@@ -88,6 +88,12 @@ class NordVpnManager:
             self._config_mgr.set("vpn_auto_switch", bool(val), auto_save=True)
 
     def _detect_cli(self) -> Optional[str]:
+        if self._config_mgr:
+            custom_p = str(self._config_mgr.get("vpn_custom_cli_path", "")).strip()
+            if custom_p and os.path.exists(custom_p):
+                self._cli_path = custom_p
+                return custom_p
+
         if self._cli_path and os.path.exists(self._cli_path):
             return self._cli_path
 
@@ -284,6 +290,15 @@ class NordVpnManager:
 
     def get_rotation_candidates(self, base_country: str) -> List[str]:
         """Liefert eine geordnete Liste alternativer Länder für die Rotation."""
+        if self._config_mgr:
+            custom_pool = self._config_mgr.get("vpn_rotation_pool")
+            if custom_pool and isinstance(custom_pool, list) and len(custom_pool) > 0:
+                clean_pool = [str(x).strip() for x in custom_pool if str(x).strip()]
+                if clean_pool:
+                    if base_country in clean_pool:
+                        return [base_country] + [c for c in clean_pool if c != base_country]
+                    return clean_pool
+
         pool = self.ROTATION_POOLS.get(base_country)
         if pool:
             return list(pool)
@@ -346,26 +361,19 @@ class NordVpnManager:
             return False
 
         now = time.time()
+        cooldown = float(self._config_mgr.get("vpn_cooldown_seconds", 15.0)) if self._config_mgr else 15.0
         with self._lock:
-            # 15 Sekunden Cooldown zwischen Server-Wechseln, um NordVPN-Gerätelimits zu schützen
-            if self._is_switching or (now - self._last_switch_time < 15.0):
+            # Konfigurierbarer Cooldown zwischen Server-Wechseln, um NordVPN-Gerätelimits zu schützen
+            if self._is_switching or (now - self._last_switch_time < cooldown):
                 if callback:
-                    callback(False, "Server-Wechsel läuft bereits oder Cooldown aktiv (15s).")
+                    callback(False, f"Server-Wechsel läuft bereits oder Cooldown aktiv ({int(cooldown)}s).")
                 return False
             self._is_switching = True
             self._last_switch_time = now
 
             country = (target_country or "").strip()
             if not country:
-                fallback_candidates = [
-                    "Switzerland",
-                    "Austria",
-                    "Netherlands",
-                    "Berlin",
-                    "Germany",
-                    "France",
-                    "United Kingdom",
-                ]
+                fallback_candidates = self.get_rotation_candidates("Germany")
                 self._global_rotation_idx = (self._global_rotation_idx + 1) % len(fallback_candidates)
                 country = fallback_candidates[self._global_rotation_idx]
 
@@ -449,24 +457,29 @@ class NordVpnManager:
             candidates = ["Switzerland", "Austria", "Netherlands", "Berlin", "Germany"]
 
         now = time.time()
+        debounce = float(self._config_mgr.get("vpn_debounce_seconds", 2.0)) if self._config_mgr else 2.0
+        cooldown = float(self._config_mgr.get("vpn_cooldown_seconds", 15.0)) if self._config_mgr else 15.0
+        max_hops_cfg = int(self._config_mgr.get("vpn_max_consecutive_hops", 5)) if self._config_mgr else 5
+        limit_hops = max(1, min(max_hops_cfg, len(candidates)))
+
         with self._lock:
             # 1. Kein paralleler Umschaltvorgang
             if self._is_switching:
                 return False
 
-            # 2. Mindestens 2.0s Debounce, damit Routing und Interface nach dem letzten Wechsel stabil sind
-            if now - self._last_switch_time < 2.0:
+            # 2. Mindestens Debounce-Zeit abwarten, damit Routing und Interface nach dem letzten Wechsel stabil sind
+            if now - self._last_switch_time < debounce:
                 event_bus.log_message.emit(
-                    f"[🛡️ VPN] Rotation für '{clean_host}' verzögert (Netzwerk-Stabilisierung 2s)..."
+                    f"[🛡️ VPN] Rotation für '{clean_host}' verzögert (Netzwerk-Stabilisierung {debounce:.1f}s)..."
                 )
                 return False
 
             # 3. Konsekutive Hops: Wenn ein Standort unmittelbar blockiert wird, sofort zum nächsten springen!
             hops = self._consecutive_hops.get(clean_host, 0)
-            if hops >= len(candidates):
-                if now - self._last_switch_time < 15.0:
+            if hops >= limit_hops:
+                if now - self._last_switch_time < cooldown:
                     event_bus.log_message.emit(
-                        f"[🛡️ VPN] Alle {len(candidates)} Standorte für '{clean_host}' getestet (Cooldown 15s aktiv)."
+                        f"[🛡️ VPN] Alle {limit_hops} Standorte für '{clean_host}' getestet (Cooldown {int(cooldown)}s aktiv)."
                     )
                     return False
                 self._consecutive_hops[clean_host] = 0

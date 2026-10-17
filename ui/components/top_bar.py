@@ -64,6 +64,7 @@ class TopNavigationBar(QFrame):
             ("scanner", "🎯 MAC Scanner"),
             ("inspector", "🔬 Inspector"),
             ("console", "🖥 Konsole"),
+            ("settings", "⚙️ Einstellungen"),
         ]
         for key, label in nav_items:
             btn = QPushButton(label)
@@ -94,7 +95,7 @@ class TopNavigationBar(QFrame):
         # Provider / Account Status Chip (clickable for Account JSON / Details)
         self.btn_provider_status = QPushButton("⚪ Nicht verbunden")
         self.btn_provider_status.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        self.btn_provider_status.setMinimumWidth(140)
+        self.btn_provider_status.setMinimumWidth(110)
         self.btn_provider_status.setMaximumWidth(420)
         self.btn_provider_status.setFixedHeight(28)
         self.btn_provider_status.setToolTip("Klicken für Account-/Handshake-Details")
@@ -125,11 +126,12 @@ class TopNavigationBar(QFrame):
         row2.setContentsMargins(0, 0, 0, 0)
         row2.setSpacing(6)
 
-        # Seitenleisten-Button: In die zweite Reihe linksbündig (direkt unter dem Logo)
-        self.btn_sidebar = QPushButton("☰")
-        self.btn_sidebar.setObjectName("IconButton")
-        self.btn_sidebar.setFixedSize(32, 24)
-        self.btn_sidebar.setToolTip("Seitenleiste ein-/ausblenden [B]")
+        # Seitenleisten-Button: In die zweite Reihe linksbündig mit Text "Verbindung.."
+        self.btn_sidebar = QPushButton("☰ Verbindung..")
+        self.btn_sidebar.setObjectName("SidebarToggle")
+        self.btn_sidebar.setFixedHeight(24)
+        self.btn_sidebar.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_sidebar.setToolTip("Seitenleiste (Verbindung & Portale) ein-/ausblenden [B]")
         self.btn_sidebar.clicked.connect(self.sidebar_toggled.emit)
         row2.addWidget(self.btn_sidebar)
 
@@ -188,10 +190,12 @@ class TopNavigationBar(QFrame):
     def _update_provider_elide(self):
         prefix = "🟢 " if self._provider_connected else "⚪ "
         full_txt = f"{prefix}{self._provider_summary}"
-        avail_w = max(140, min(420, self.width() - 640))
+        left_w = self.lbl_brand.sizeHint().width() + sum(btn.sizeHint().width() + 8 for btn in self._nav_buttons.values()) + 24
+        right_w = (self.btn_rec_indicator.sizeHint().width() + 8 if self.btn_rec_indicator.isVisible() else 0) + self.btn_vpn.sizeHint().width() + 24
+        avail_w = max(90, min(420, self.width() - left_w - right_w))
         self.btn_provider_status.setMaximumWidth(avail_w)
         fm = QFontMetrics(self.btn_provider_status.font())
-        elided = fm.elidedText(full_txt, Qt.TextElideMode.ElideRight, avail_w - 24)
+        elided = fm.elidedText(full_txt, Qt.TextElideMode.ElideRight, max(20, avail_w - 24))
         self.btn_provider_status.setText(elided)
         self.btn_provider_status.setToolTip(f"{full_txt} — Klicken für Account-/Handshake-Details")
 

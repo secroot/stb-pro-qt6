@@ -27,6 +27,7 @@ class XtreamClient(_BaseXtreamClient):
         timeout: int = 8,
         user_agent: Optional[str] = None,
         enable_inspector: bool = True,
+        verify_ssl: bool = False,
     ):
         super().__init__(
             server_url=server_url,
@@ -36,6 +37,7 @@ class XtreamClient(_BaseXtreamClient):
             timeout=timeout,
             user_agent=user_agent,
         )
+        self.session.verify = verify_ssl
         self.series_categories: List[Dict[str, Any]] = []
         _attach_inspector_hook(self.session, enable=enable_inspector)
 

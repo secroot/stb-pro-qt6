@@ -104,6 +104,27 @@ QPushButton#IconButton, QPushButton[compact="true"] {{
     min-width: 24px;
 }}
 
+QPushButton#SidebarToggle {{
+    background-color: #0F172A;
+    color: #CBD5E1;
+    border: 1px solid #1E293B;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 600;
+}}
+
+QPushButton#SidebarToggle:hover {{
+    background-color: #1E293B;
+    color: #F8FAFC;
+    border-color: #818CF8;
+}}
+
+QPushButton#SidebarToggle:pressed {{
+    background-color: #4F46E5;
+    color: #FFFFFF;
+}}
+
 QPushButton:hover {{
     background-color: {ThemeColors.BG_CARD_HOVER};
     border-color: #334155;

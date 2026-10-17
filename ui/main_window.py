@@ -60,6 +60,7 @@ from core.scan_repository import ScanRepository, ScanHost, ScanAccount
 from core.signals import event_bus, worker_pool
 from core.stream_buffer import BufferSettings
 from core.stream_probe import probe_stream
+from core.vpn_manager import vpn_manager
 from player.external_player import ExternalPlayerRunner
 from player.osd_overlay import FullscreenOSDOverlay
 from player.vlc_controller import VLCPlayerController
@@ -80,6 +81,7 @@ from ui.views import (
     InspectorView,
     LiveTVView,
     ScannerView,
+    SettingsView,
     VODView,
 )
 
@@ -217,6 +219,11 @@ class MainWindow(QMainWindow):
         self.scanner_view = ScannerView(parent=self)
         self.inspector_view = InspectorView(parent=self)
         self.console_view = ConsoleView(parent=self)
+        self.settings_view = SettingsView(
+            config_mgr=self.config_mgr,
+            vpn_mgr=vpn_manager,
+            parent=self,
+        )
 
         self._views_map: Dict[str, QWidget] = {
             "live": self.live_view,
@@ -224,6 +231,7 @@ class MainWindow(QMainWindow):
             "scanner": self.scanner_view,
             "inspector": self.inspector_view,
             "console": self.console_view,
+            "settings": self.settings_view,
         }
         for w in self._views_map.values():
             self.stack.addWidget(w)
@@ -358,6 +366,35 @@ class MainWindow(QMainWindow):
         # Inspector Signals
         self.inspector_view.handshake_test_requested.connect(self._run_inspector_handshake_test)
         self.inspector_view.profile_dump_requested.connect(self._dump_active_client_state)
+
+        # Settings View Signals
+        self.settings_view.settings_saved.connect(self._on_settings_applied)
+        self.settings_view.buffer_settings_changed.connect(self._on_buffer_settings_from_view)
+        self.settings_view.ui_scale_changed.connect(self._on_ui_scale_changed)
+
+    def _on_buffer_settings_from_view(self, st: BufferSettings):
+        self.vlc_ctrl.apply_settings(st)
+        self.config_mgr.set("buffer_settings", st.to_dict())
+        event_bus.log_message.emit("[🛡️ Puffer] Neue Ringpuffer-Einstellungen live übernommen.")
+
+    def _on_settings_applied(self, cfg: dict):
+        raw_buf = cfg.get("buffer_settings") or {}
+        st = BufferSettings.from_dict(raw_buf)
+        self.vlc_ctrl.apply_settings(st)
+        scan_threads = int(cfg.get("scan_threads", 8))
+        if hasattr(self.scanner_view, "spin_threads"):
+            self.scanner_view.spin_threads.setValue(scan_threads)
+        scan_delay = float(cfg.get("scan_delay_s", 0.0))
+        delay_ms = int(round(scan_delay * 1000))
+        if hasattr(self.scanner_view, "combo_delay"):
+            target_str = f"{delay_ms} ms"
+            idx = self.scanner_view.combo_delay.findText(target_str)
+            if idx >= 0:
+                self.scanner_view.combo_delay.setCurrentIndex(idx)
+        hide_dead = bool(cfg.get("hide_dead_channels", False))
+        if hasattr(self.live_view, "chk_hide_dead") and self.live_view.chk_hide_dead.isChecked() != hide_dead:
+            self.live_view.chk_hide_dead.setChecked(hide_dead)
+        event_bus.log_message.emit("[⚙️] Konfigurations-Optionen erfolgreich aktualisiert & live aktiv.")
 
     def _is_text_input_focused(self) -> bool:
         fw = QApplication.focusWidget()
@@ -717,19 +754,29 @@ class MainWindow(QMainWindow):
 
         def _task():
             ptype = prof.portal_type
+            ssl_ver = bool(self.config_mgr.get("ssl_verify", False))
+            hs_connect = float(self.config_mgr.get("handshake_connect_timeout", 4.5))
+            hs_read = float(self.config_mgr.get("handshake_read_timeout", 8.0))
+            tok_refresh = int(self.config_mgr.get("token_refresh_interval_s", 75))
+            def_ua = str(self.config_mgr.get("custom_user_agent_default", "")).strip() or None
+            def_model = str(self.config_mgr.get("default_stb_model", "MAG 250"))
+
             if ptype == "stalker":
                 norm_ep = cached_eps.get(prof.url.strip().rstrip("/"))
                 client = StbClient(
                     portal_url=prof.url,
                     mac=prof.mac,
-                    model=prof.model,
+                    model=prof.model or def_model,
                     serial_number=prof.serial_number or None,
                     device_id=prof.device_id or None,
                     device_id2=prof.device_id2 or None,
                     signature=prof.signature or None,
-                    user_agent=prof.user_agent or None,
+                    user_agent=prof.user_agent or def_ua,
                     timeout=timeout_s,
                     normalized_load_url=norm_ep,
+                    verify_ssl=ssl_ver,
+                    connect_timeout=hs_connect,
+                    read_timeout=hs_read,
                 )
                 if prof.proxy:
                     client.session.proxies.update({"http": prof.proxy, "https": prof.proxy})
@@ -744,7 +791,7 @@ class MainWindow(QMainWindow):
                     pass
                 genres_raw = client.get_genres()
                 channels_raw = client.get_all_channels()
-                client.start_keepalive(interval_seconds=75)
+                client.start_keepalive(interval_seconds=tok_refresh)
                 summary = f"Stalker: {prof.mac} ({len(channels_raw)} Sender)"
                 if exp_str and exp_str not in ("0000-00-00 00:00:00", "Unbekannt"):
                     summary += f" | Exp: {exp_str[:10]}"
@@ -763,34 +810,47 @@ class MainWindow(QMainWindow):
                     password=prof.password,
                     output_format=prof.xc_format or "ts",
                     timeout=timeout_s,
-                    user_agent=prof.user_agent or None,
+                    user_agent=prof.user_agent or def_ua,
+                    verify_ssl=ssl_ver,
                 )
                 if prof.proxy:
                     client.session.proxies.update({"http": prof.proxy, "https": prof.proxy})
-                client.authenticate()
-                p_sum = client.get_profile_summary()
+                auth_ok = client.authenticate()
+                if not auth_ok:
+                    raise PermissionError("Xtream Codes Authentifizierung fehlgeschlagen.")
                 genres_raw = client.get_live_categories()
-                channels_raw = client.get_all_channels()
-                summary = f"XC: {prof.username} ({len(channels_raw)} Sender | Exp: {p_sum.get('expire_date', '—')})"
+                channels_raw = client.get_live_streams()
+                exp_str = client.get_expiration_date()
+                summary = f"Xtream: {prof.username} ({len(channels_raw)} Sender)"
+                if exp_str and exp_str not in ("0000-00-00 00:00:00", "Unbekannt"):
+                    summary += f" | Exp: {exp_str[:10]}"
                 return {
                     "client": client,
                     "genres": genres_raw,
                     "channels": channels_raw,
                     "summary": summary,
-                    "expire": p_sum.get("expire_date", "Aktiv"),
+                    "expire": exp_str or "Aktiv",
                 }
 
-            else:
-                client = M3UClient(source=prof.m3u_url or prof.url, timeout=timeout_s)
-                channels_raw = client.load_playlist()
-                genres_raw = client.genres
-                summary = f"M3U ({len(channels_raw)} Sender)"
+            elif ptype == "m3u":
+                client = M3UClient(
+                    source=prof.url or prof.m3u_source,
+                    timeout=timeout_s,
+                    user_agent=prof.user_agent or def_ua,
+                )
+                if hasattr(client, "session"):
+                    client.session.verify = ssl_ver
+                if prof.proxy:
+                    client.session.proxies.update({"http": prof.proxy, "https": prof.proxy})
+                channels_raw = client.load()
+                genres_raw = client.get_categories()
+                summary = f"M3U: ({len(channels_raw)} Sender)"
                 return {
                     "client": client,
                     "genres": genres_raw,
                     "channels": channels_raw,
                     "summary": summary,
-                    "expire": "Playlist",
+                    "expire": "Unbegrenzt",
                 }
 
         worker_pool.run_async(
@@ -2272,6 +2332,10 @@ class MainWindow(QMainWindow):
 
         total = len(unique_macs)
         timeout_s = self.config_mgr.get_timeout_seconds()
+        scan_probe_t = float(self.config_mgr.get("scan_probe_timeout", 5.0))
+        scan_auto_requeue = bool(self.config_mgr.get("scan_auto_requeue", True))
+        scan_max_retries = int(self.config_mgr.get("scan_max_requeue_retries", 2))
+        ssl_verify = bool(self.config_mgr.get("ssl_verify", False))
         cached_eps = self.config_mgr.get("cached_endpoints", {}) or {}
         norm_portal = portal_url.strip().rstrip("/")
         shared_ep = [cached_eps.get(norm_portal)]
@@ -2297,7 +2361,7 @@ class MainWindow(QMainWindow):
         # Dadurch entfallen für alle weiteren 10.000 MACs zeitraubende Fallback-Probes auf 6 verschiedene URLs!
         if not shared_ep[0] and unique_macs:
             try:
-                probe_cl = StbClient(portal_url=portal_url, mac=unique_macs[0], model=model, timeout=timeout_s)
+                probe_cl = StbClient(portal_url=portal_url, mac=unique_macs[0], model=model, timeout=int(scan_probe_t), verify_ssl=ssl_verify)
                 for ep in probe_cl._get_candidate_endpoints()[:5]:
                     try:
                         probe_cl._execute_request(
@@ -2344,6 +2408,7 @@ class MainWindow(QMainWindow):
                 )
                 worker_session.mount("http://", worker_adapter)
                 worker_session.mount("https://", worker_adapter)
+                worker_session.verify = ssl_verify
                 ua_str = STB_PRESETS.get(model, STB_PRESETS.get("MAG 250", {})).get(
                     "user_agent", "Mozilla/5.0 (QtEmbedded; U; Linux; C)"
                 )
@@ -2391,9 +2456,10 @@ class MainWindow(QMainWindow):
                                 portal_url=portal_url,
                                 mac=mac,
                                 model=model,
-                                timeout=min(5, timeout_s),
+                                timeout=min(int(scan_probe_t), timeout_s),
                                 normalized_load_url=shared_ep[0],
                                 session=worker_session,
+                                verify_ssl=ssl_verify,
                             )
                             res["portal_url"] = portal_url
 
@@ -2434,7 +2500,7 @@ class MainWindow(QMainWindow):
                                 res.get("valid")
                                 and ch_cnt == 0
                                 and any(y in str(res.get("expire") or "") for y in ("2025", "2026", "2027", "2028", "2029", "2030"))
-                                and retries < 2
+                                and retries < scan_max_retries
                             )
                             is_transient = bool(
                                 is_transient
@@ -2444,14 +2510,14 @@ class MainWindow(QMainWindow):
 
                             # WENN TRANSIENT (Timeout/503/429/Kanalfehler): MAC hinten anstellen und erneut probieren!
                             # Scanner pausiert NICHT global, sondern prüft direkt nächste MACs mit voller Geschwindigkeit.
-                            if is_transient and not self._scan_stop_ev.is_set():
+                            if scan_auto_requeue and is_transient and retries < scan_max_retries and not self._scan_stop_ev.is_set():
                                 retries += 1
                                 retry_counts[mac] = retries
                                 work_q.put(mac)
                                 rem_q = work_q.qsize()
                                 reason_txt = "Kanal-Timeout" if (has_ch_error or active_date_missing_channels) else (stat_str or "Timeout/503/429")
                                 event_bus.log_message.emit(
-                                    f"[⏳ Requeue] {mac} ({reason_txt}) -> hinten angestellt (Retry #{retries}, Warteschlange: {rem_q})."
+                                    f"[⏳ Requeue] {mac} ({reason_txt}) -> hinten angestellt (Retry #{retries}/{scan_max_retries}, Warteschlange: {rem_q})."
                                 )
                                 continue
 
@@ -2620,6 +2686,8 @@ class MainWindow(QMainWindow):
             st.clamp()
             self.vlc_ctrl.apply_settings(st)
             self.config_mgr.set("buffer_settings", st.to_dict())
+            if hasattr(self, "settings_view"):
+                self.settings_view.load_from_config()
 
     def open_jobs_dialog(self):
         dlg = JobsDialog(self.recorder, parent=self)

@@ -58,9 +58,17 @@ def _attach_inspector_hook(session, enable: bool = True):
     session.hooks.setdefault("response", []).append(_on_response)
 
 
+try:
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+except Exception:
+    pass
+
+
 class StbClient(_BaseStbClient):
     """
-    Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging.
+    Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging
+    und konfigurierbarer SSL-Zertifikatsprüfung.
     """
     def __init__(
         self,
@@ -75,6 +83,10 @@ class StbClient(_BaseStbClient):
         timeout: int = 8,
         normalized_load_url: Optional[str] = None,
         enable_inspector: bool = True,
+        verify_ssl: bool = False,
+        session: Optional[Any] = None,
+        connect_timeout: Optional[float] = None,
+        read_timeout: Optional[float] = None,
     ):
         super().__init__(
             portal_url=portal_url,
@@ -87,7 +99,15 @@ class StbClient(_BaseStbClient):
             user_agent=user_agent,
             timeout=timeout,
             normalized_load_url=normalized_load_url,
+            session=session,
         )
+        self.session.verify = verify_ssl
+        if connect_timeout is not None and read_timeout is not None:
+            self.req_timeout = (float(connect_timeout), float(read_timeout))
+        elif connect_timeout is not None:
+            self.req_timeout = (float(connect_timeout), self.req_timeout[1])
+        elif read_timeout is not None:
+            self.req_timeout = (self.req_timeout[0], float(read_timeout))
         _attach_inspector_hook(self.session, enable=enable_inspector)
 
 
@@ -102,9 +122,12 @@ def check_mac_account(
     timeout: int = 8,
     normalized_load_url: Optional[str] = None,
     session: Optional[Any] = None,
+    verify_ssl: bool = False,
 ) -> Dict[str, Any]:
     """Prüft einen einzelnen MAC-Account schnell im Hintergrund (ohne Inspector-Spam)."""
     from stb_client import check_mac_account as _base_check
+    if session is not None:
+        session.verify = verify_ssl
     return _base_check(
         portal_url=portal_url,
         mac=mac,

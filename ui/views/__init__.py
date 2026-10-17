@@ -6,6 +6,7 @@ from ui.views.vod_view import VODView
 from ui.views.scanner_view import ScannerView
 from ui.views.inspector_view import InspectorView
 from ui.views.console_view import ConsoleView
+from ui.views.settings_view import SettingsView
 
 __all__ = [
     "LiveTVView",
@@ -13,4 +14,5 @@ __all__ = [
     "ScannerView",
     "InspectorView",
     "ConsoleView",
+    "SettingsView",
 ]

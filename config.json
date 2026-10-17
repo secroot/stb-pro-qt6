@@ -521,9 +521,63 @@
             "xc_format": "ts",
             "m3u_source": "",
             "proxy": ""
+        },
+        {
+            "name": "web2021.biz (00:1A:79:A8:67:59)",
+            "provider_type": "Stalker MAC",
+            "portal_url": "http://web2021.biz:8080/c/",
+            "mac": "00:1A:79:A8:67:59",
+            "model": "MAG 250",
+            "serial_number": "9E0939330DF61",
+            "device_id": "9FAC263EDFBA9E4E90D040967B38557C5A3F626074CDE6EFED1B8B2A3808FAE4",
+            "device_id2": "54117DEC6EA9EA24E49F3EB7A048D636F6E0EF8DB1C7EBFAECF4B06A327BD419",
+            "signature": "54117DEC6EA9EA24E49F3EB7A048D636F6E0EF8DB1C7EBFAECF4B06A327BD419",
+            "user_agent": "",
+            "xc_url": "",
+            "username": "",
+            "password": "",
+            "xc_format": "ts",
+            "m3u_source": "",
+            "proxy": ""
+        },
+        {
+            "name": "web2021.biz (00:1A:79:3B:13:12)",
+            "provider_type": "Stalker MAC",
+            "portal_url": "http://web2021.biz:8080/c/",
+            "mac": "00:1A:79:3B:13:12",
+            "model": "MAG 250",
+            "serial_number": "606B1DB5E537F",
+            "device_id": "0A5D8B0E050EABBF113160EE392ADE7195E4F9F2A60C2D2B218D31DFC2EE3E0C",
+            "device_id2": "20F03E69F3780664EC8ADD7E9FE1063EAA9E30C9ADECF876525E340B69BA41F6",
+            "signature": "20F03E69F3780664EC8ADD7E9FE1063EAA9E30C9ADECF876525E340B69BA41F6",
+            "user_agent": "",
+            "xc_url": "",
+            "username": "",
+            "password": "",
+            "xc_format": "ts",
+            "m3u_source": "",
+            "proxy": ""
+        },
+        {
+            "name": "web2021.biz (00:1A:79:6E:C4:35)",
+            "provider_type": "Stalker MAC",
+            "portal_url": "http://line.tivi-ott.net/c/",
+            "mac": "00:1A:79:6E:C4:35",
+            "model": "MAG 250",
+            "serial_number": "856858FA57A57",
+            "device_id": "0FE40A1AA2DA2E1DF6722D23D2EA69499ACF262C292672B58A57120EC3E929B2",
+            "device_id2": "3C86BAA76FAD11272FDE842586354143AFE15552D518AFB661010BEAF013B439",
+            "signature": "3C86BAA76FAD11272FDE842586354143AFE15552D518AFB661010BEAF013B439",
+            "user_agent": "",
+            "xc_url": "",
+            "username": "",
+            "password": "",
+            "xc_format": "ts",
+            "m3u_source": "",
+            "proxy": ""
         }
     ],
-    "last_profile": "pro.8k-strong.tv (00:1A:79:00:13:BE)",
+    "last_profile": "iptv.darktv.eu (00:1A:79:73:1F:16)",
     "vlc_path": "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
     "ffplay_path": "C:\\Users\\basti\\AppData\\Local\\Microsoft\\WinGet\\Links\\ffplay.exe",
     "selected_player": "Integrierter Player",
@@ -605,7 +659,7 @@
         ]
     },
     "theme": "Dark",
-    "player_volume": 0,
+    "player_volume": 28,
     "connection_timeout_label": "3s Ultraschnell",
     "cached_endpoints": {
         "http://zerotv.eu:8080/c/": "http://zerotv.eu:8080/c/server/load.php",
@@ -637,22 +691,23 @@
         "http://nasaiptv.com:8080/c": "http://nasaiptv.com:8080/c/portal.php",
         "http://pro.8k-strong.tv:80/c": "http://pro.8k-strong.tv:80/c/portal.php",
         "http://hottest.vip/c": "http://hottest.vip/c/portal.php",
-        "http://web2021.biz:8080/c": "http://web2021.biz:8080/c/portal.php"
+        "http://web2021.biz:8080/c": "http://web2021.biz:8080/c/portal.php",
+        "http://line.tivi-ott.net/c": "http://line.tivi-ott.net/c/portal.php"
     },
     "buffer_settings": {
         "mode": "proxy",
-        "vlc_caching_ms": 1500,
-        "start_seconds": 1.5,
-        "buffer_seconds": 20.0,
-        "max_mb": 128,
+        "vlc_caching_ms": 1000,
+        "start_seconds": 1.2,
+        "buffer_seconds": 18.0,
+        "max_mb": 96,
         "fallback_kbps": 6000,
         "reconnect": true,
         "max_retries": 10,
-        "timeout_connect": 6.0,
-        "timeout_read": 12.0,
+        "timeout_connect": 5.0,
+        "timeout_read": 10.0,
         "hw_decode": true,
         "preview_enabled": true,
-        "preview_max_age_min": 3,
+        "preview_max_age_min": 15,
         "proxy": ""
     },
     "ui_scale": "Auto",
@@ -728,8 +783,12 @@
             "889553"
         ],
         "iptv.darktv.eu (00:1A:79:73:1F:16)": [
-            "184023",
+            "184019",
+            "4460",
+            "4459",
             "4456",
+            "184009",
+            "184023",
             "4461"
         ],
         "pro.8k-strong.tv (00:1A:79:00:1B:D9)": [
@@ -742,6 +801,10 @@
             "302774"
         ],
         "pro.8k-strong.tv (00:1A:79:00:13:BE)": [
+            "480044",
+            "340448",
+            "340446",
+            "380134",
             "878522",
             "878523",
             "340444",
@@ -791,13 +854,21 @@
             "196164",
             "310562",
             "302774"
+        ],
+        "web2021.biz (00:1A:79:6E:C4:35)": [
+            "893915"
+        ],
+        "web2021.biz (00:1A:79:A8:67:59)": [
+            "3470",
+            "768",
+            "3453"
         ]
     },
     "start_maximized": true,
-    "hide_dead_channels": true,
+    "hide_dead_channels": false,
     "validation_workers": 8,
-    "last_scan_host": "pro.8k-strong.tv",
-    "last_scan_mac": "00:1A:79:00:13:BE",
+    "last_scan_host": "iptv.darktv.eu",
+    "last_scan_mac": "00:1A:79:73:1F:16",
     "vpn_auto_switch": true,
     "burned_ips": {
         "pro.8k-strong.tv": [
@@ -809,7 +880,59 @@
             "187.14.56.13",
             "45.150.175.157",
             "5.253.115.49",
-            "187.15.172.71"
+            "187.15.172.71",
+            "187.40.49.135",
+            "187.40.45.110",
+            "187.40.41.23",
+            "187.40.42.198",
+            "187.40.49.53",
+            "187.40.41.44"
+        ],
+        "line.tivi-ott.net": [
+            "187.40.41.176",
+            "187.40.41.134"
+        ],
+        "rv.fluxhdebit.biz": [
+            "176.223.173.11"
+        ],
+        "iptv.darktv.eu": [
+            "187.15.171.122",
+            "86.104.249.98",
+            "187.15.172.161",
+            "187.15.171.78",
+            "187.15.158.140"
         ]
-    }
+    },
+    "validation_probe_timeout": 3.0,
+    "validation_auto_start": true,
+    "ssl_verify": false,
+    "handshake_connect_timeout": 4.5,
+    "handshake_read_timeout": 8.0,
+    "token_refresh_interval_s": 75,
+    "default_stb_model": "MAG 250",
+    "device_id_mode": "deterministic",
+    "custom_user_agent_default": "",
+    "scan_threads": 8,
+    "scan_delay_s": 0.0,
+    "scan_probe_timeout": 5.0,
+    "scan_auto_requeue": true,
+    "scan_max_requeue_retries": 2,
+    "scan_genre_param": "*",
+    "scan_sortby_param": "number",
+    "scan_fallback_get_all": true,
+    "pcr_smoothing_enabled": true,
+    "vpn_cooldown_seconds": 15.0,
+    "vpn_debounce_seconds": 2.0,
+    "vpn_max_consecutive_hops": 5,
+    "vpn_fallback_country": "Germany",
+    "vpn_custom_cli_path": "",
+    "vpn_rotation_pool": [
+        "Switzerland",
+        "Austria",
+        "Netherlands",
+        "Berlin",
+        "Germany",
+        "France",
+        "United Kingdom"
+    ]
 }

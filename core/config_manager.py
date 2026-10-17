@@ -108,7 +108,63 @@ class ConfigManager:
             "start_maximized": True,
             "hide_dead_channels": True,
             "validation_workers": 8,
+            "validation_probe_timeout": 3.0,
+            "validation_auto_start": True,
+
+            # --- Connection & Handshake Defaults ---
+            "ssl_verify": False,
+            "handshake_connect_timeout": 4.5,
+            "handshake_read_timeout": 8.0,
+            "token_refresh_interval_s": 75,
+            "default_stb_model": "MAG 250",
+            "device_id_mode": "deterministic",
+            "custom_user_agent_default": "",
+
+            # --- Scanning & Probing Settings ---
+            "scan_threads": 8,
+            "scan_delay_s": 0.0,
+            "scan_probe_timeout": 5.0,
+            "scan_auto_requeue": True,
+            "scan_max_requeue_retries": 2,
+            "scan_genre_param": "*",
+            "scan_sortby_param": "number",
+            "scan_fallback_get_all": True,
+
+            # --- Playback & Stream Buffering ---
+            "buffer_settings": {
+                "mode": "proxy",
+                "vlc_caching_ms": 1200,
+                "start_seconds": 0.8,
+                "buffer_seconds": 15.0,
+                "max_mb": 128,
+                "fallback_kbps": 6000,
+                "reconnect": True,
+                "max_retries": 10,
+                "timeout_connect": 5.0,
+                "timeout_read": 10.0,
+                "hw_decode": True,
+                "preview_enabled": True,
+                "preview_max_age_min": 15,
+                "proxy": "",
+            },
+            "pcr_smoothing_enabled": True,
+
+            # --- VPN Configuration ---
             "vpn_auto_switch": True,
+            "vpn_cooldown_seconds": 15.0,
+            "vpn_debounce_seconds": 2.0,
+            "vpn_max_consecutive_hops": 5,
+            "vpn_fallback_country": "Germany",
+            "vpn_custom_cli_path": "",
+            "vpn_rotation_pool": [
+                "Switzerland",
+                "Austria",
+                "Netherlands",
+                "Berlin",
+                "Germany",
+                "France",
+                "United Kingdom",
+            ],
             "burned_ips": {},
         }
 
@@ -121,6 +177,10 @@ class ConfigManager:
                     for k, v in defaults.items():
                         if k not in cfg:
                             cfg[k] = v
+                        elif isinstance(v, dict) and isinstance(cfg.get(k), dict):
+                            for sub_k, sub_v in v.items():
+                                if sub_k not in cfg[k]:
+                                    cfg[k][sub_k] = sub_v
                     return cfg
             except Exception:
                 pass
