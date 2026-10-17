@@ -46,7 +46,15 @@ from core.logo_cache import logo_cache
 from core.m3u_exporter import build_m3u_playlist
 from core.mac_database import MacDatabase
 from core.models import AppState, Channel, EPGProgram, Profile, StreamProbeResult, quality_from_dimensions
-from core.preview_grabber import ThumbGrabber, grab_thumbnail, load_cached_thumb, save_thumb, thumb_age_s
+from core.preview_grabber import (
+    THUMB_DIR,
+    ThumbGrabber,
+    grab_thumbnail,
+    is_blank_or_black_jpeg,
+    load_cached_thumb,
+    save_thumb,
+    thumb_age_s,
+)
 from core.recorder import Recorder
 from core.scan_repository import ScanRepository, ScanHost, ScanAccount
 from core.signals import event_bus, worker_pool
@@ -1298,7 +1306,8 @@ class MainWindow(QMainWindow):
                                 self.active_client.session.cookies.clear()
                             except Exception:
                                 pass
-                    self.play_channel(cur_ch)
+                    # Zwingend im Qt-Main-Thread ausführen, um QTimer-Thread-Affinity Fehler zu verhindern
+                    worker_pool.dispatch_to_ui(self.play_channel, cur_ch)
 
             vpn_manager.handle_ip_ban(
                 url=url,
@@ -1958,6 +1967,7 @@ class MainWindow(QMainWindow):
             f"[+] 📸 Vorschaubilder-Abruf abgeschlossen ({count} Sender verarbeitet)."
         )
 
+    @Slot(str)
     def _on_vlc_state_changed(self, state: str):
         if state == "playing":
             self._live_snapshot_timer.start(1800)
@@ -1971,6 +1981,7 @@ class MainWindow(QMainWindow):
         cid = str(ch.id)
         prof_name = self.state.current_profile_name
         cache_key = f"{prof_name}:{cid}" if prof_name else cid
+        os.makedirs(THUMB_DIR, exist_ok=True)
         tmp_snap = os.path.join(THUMB_DIR, f"live_{cid}.jpg")
         try:
             if self.vlc_ctrl.snapshot(tmp_snap):
@@ -1978,7 +1989,6 @@ class MainWindow(QMainWindow):
                 if os.path.exists(tmp_snap):
                     with open(tmp_snap, "rb") as f:
                         snap_data = f.read()
-                    from core.preview_grabber import is_blank_or_black_jpeg
                     if not is_blank_or_black_jpeg(snap_data):
                         save_thumb(cache_key, snap_data)
                         self.live_view.delegate.set_thumbnail(cid, snap_data)

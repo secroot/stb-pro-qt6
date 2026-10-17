@@ -824,6 +824,21 @@ class TestUIAndEngine(unittest.TestCase):
         finally:
             sv.close()
 
+    def test_15_snapshot_playing_channel_no_name_error(self):
+        """Verifies _snapshot_playing_channel executes without NameError for THUMB_DIR."""
+        from unittest.mock import MagicMock
+        win = MainWindow()
+        try:
+            win.state.playing_channel = Channel(id="9999", name="Test Live Snap", number=1, cmd="http://test")
+            win.vlc_ctrl.is_playing = True
+            win.vlc_ctrl.snapshot = MagicMock(return_value=False)
+
+            # Muss fehlerfrei durchlaufen (kein NameError: THUMB_DIR)
+            win._snapshot_playing_channel()
+            win.vlc_ctrl.snapshot.assert_called_once()
+        finally:
+            win.close()
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

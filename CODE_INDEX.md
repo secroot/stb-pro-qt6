@@ -93,7 +93,7 @@
 | `MacDatabase` | **Class / Widget** | [core/mac_database.py](core/mac_database.py#L26-L238) | `L26-L238` | Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern. |
 | `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L31-L211) | `L31-L211` | Basis: QDialog |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
-| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L79-L2779) | `L79-L2779` | Basis: QMainWindow |
+| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L87-L2789) | `L87-L2789` | Basis: QMainWindow |
 | `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L21-L539) | `L21-L539` | Verwaltet die Integration mit NordVPN unter Windows. |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
 | `pcr_bitrate_kbps` | **Function** | [core/stream_probe.py](core/stream_probe.py#L38-L66) | `L38-L66` | Echte Mux-Bitrate aus MPEG-TS-PCR. |
@@ -121,7 +121,7 @@
 | `StreamBufferProxy` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L585-L629) | `L585-L629` | Basis:  |
 | `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L456-L474) | `L456-L474` | Basis:  |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
-| `TestUIAndEngine` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L90-L825) | `L90-L825` | Basis: unittest.TestCase |
+| `TestUIAndEngine` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L90-L840) | `L90-L840` | Basis: unittest.TestCase |
 | `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L240) | `L15-L240` | Basis: unittest.TestCase |
 | `ThemeColors` | **Class / Widget** | [ui/theme.py](ui/theme.py#L11-L43) | `L11-L43` | Design tokens matching and refining the Obsidian Cyber-Cinema palette. |
 | `thumb_age_s` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L147-L151) | `L147-L151` | def thumb_age_s(key) |
@@ -713,31 +713,31 @@ Nutzt Qt Signals für reaktive Status- und Puffer-Updates ohne UI-Blockade.
 
 ---
 
-### 📄 [`ui/main_window.py`](ui/main_window.py) (2781 Zeilen)
+### 📄 [`ui/main_window.py`](ui/main_window.py) (2791 Zeilen)
 > Main Application Window (Orchestrator) for STB Pro v6.0 Qt6 Edition.
 Coordinates Sidebar, TopNavigationBar, LiveTVView, VODView, ScannerView, InspectorView, ConsoleView,
 LibVLC Hardware Player, External Player Runner, Fullscreen HUD Overlay, PiP Mini-Player,
 Multi-Thread MAC Scanner, Parallel Category Validator, and all 7 Dialogs.
 
 #### Klassen & Komponenten
-- **[`MainWindow`](ui/main_window.py#L79-L2779)** : *QMainWindow* — `L79-L2779`
+- **[`MainWindow`](ui/main_window.py#L87-L2789)** : *QMainWindow* — `L87-L2789`
   - **Signals**: `_val_progress_sig`, `_val_finished_sig`, `_val_thumb_progress_sig`, `_val_thumb_finished_sig`, `_epg_loaded_sig`, `_probe_done_sig`, `_preview_ready_sig`
   - **Wichtige Methoden:**
-    - [`__init__()`](ui/main_window.py#L89) — `L89`
-    - [`_build_ui()`](ui/main_window.py#L188) — `L188`
-    - [`_bind_signals()`](ui/main_window.py#L243) — `L243`
-    - [`_is_text_input_focused()`](ui/main_window.py#L354) — `L354`
-    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L358) — `L358`
-    - [`_cycle_aspect_ratio()`](ui/main_window.py#L367) — `L367`
-    - [`_setup_shortcuts()`](ui/main_window.py#L372) — `L372`
-    - [`_load_initial_config()`](ui/main_window.py#L395) — `L395`
-    - [`switch_view(view_key)`](ui/main_window.py#L468) — `L468`
-    - [`toggle_sidebar()`](ui/main_window.py#L476) — `L476`
-    - [`toggle_cinema_mode()`](ui/main_window.py#L481) — `L481`
-    - [`toggle_pip_mode()`](ui/main_window.py#L488) — `L488` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
-    - [`toggle_fullscreen()`](ui/main_window.py#L530) — `L530`
-    - [`enter_fullscreen()`](ui/main_window.py#L539) — `L539`
-    - [`exit_fullscreen()`](ui/main_window.py#L558) — `L558`
+    - [`__init__()`](ui/main_window.py#L97) — `L97`
+    - [`_build_ui()`](ui/main_window.py#L196) — `L196`
+    - [`_bind_signals()`](ui/main_window.py#L251) — `L251`
+    - [`_is_text_input_focused()`](ui/main_window.py#L362) — `L362`
+    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L366) — `L366`
+    - [`_cycle_aspect_ratio()`](ui/main_window.py#L375) — `L375`
+    - [`_setup_shortcuts()`](ui/main_window.py#L380) — `L380`
+    - [`_load_initial_config()`](ui/main_window.py#L403) — `L403`
+    - [`switch_view(view_key)`](ui/main_window.py#L476) — `L476`
+    - [`toggle_sidebar()`](ui/main_window.py#L484) — `L484`
+    - [`toggle_cinema_mode()`](ui/main_window.py#L489) — `L489`
+    - [`toggle_pip_mode()`](ui/main_window.py#L496) — `L496` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
+    - [`toggle_fullscreen()`](ui/main_window.py#L538) — `L538`
+    - [`enter_fullscreen()`](ui/main_window.py#L547) — `L547`
+    - [`exit_fullscreen()`](ui/main_window.py#L566) — `L566`
     - *... und 93 weitere Hilfsmethoden.*
 
 ---
@@ -1238,7 +1238,7 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
 
 ---
 
-### 📄 [`tests/test_ui_and_engine.py`](tests/test_ui_and_engine.py) (829 Zeilen)
+### 📄 [`tests/test_ui_and_engine.py`](tests/test_ui_and_engine.py) (844 Zeilen)
 > Automated Verification Suite for STB Pro v6.0 Qt6:
 1. Responsive UI Layout, Dynamic Scaling & Zero-Overlap / Zero-Truncation Geometry Checks
 2. StreamBufferProxy (Ringbuffer, PCR Pacing, Corrupt TS Guard, Wall-Clock Fallback, 0ms Stop)
@@ -1250,7 +1250,7 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
   - **Wichtige Methoden:**
     - [`log_message(format)`](tests/test_ui_and_engine.py#L57) — `L57`
     - [`do_GET()`](tests/test_ui_and_engine.py#L60) — `L60`
-- **[`TestUIAndEngine`](tests/test_ui_and_engine.py#L90-L825)** : *unittest.TestCase* — `L90-L825`
+- **[`TestUIAndEngine`](tests/test_ui_and_engine.py#L90-L840)** : *unittest.TestCase* — `L90-L840`
   - **Wichtige Methoden:**
     - [`setUpClass(cls)`](tests/test_ui_and_engine.py#L92) — `L92`
     - [`tearDownClass(cls)`](tests/test_ui_and_engine.py#L102) — `L102`
@@ -1264,6 +1264,7 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
     - [`test_07_quality_tag_detection_and_dynamic_resolution_sync()`](tests/test_ui_and_engine.py#L541) — `L541` *(Verify quality_from_dimensions, detect_quality_tag and dynamic UI badge updates from decoded stream.)*
     - [`test_08_group_auto_validation_and_preview_thumbnails()`](tests/test_ui_and_engine.py#L644) — `L644` *(Verify category selection auto-validates on first selection in session and loads thumbnails.)*
     - [`test_scanner_queue_retry_pause_and_folder_extract()`](tests/test_ui_and_engine.py#L700) — `L700` *(Testet die neuen Scanner-Optimierungen: Requeue bei 503/429/Timeout, Pause/Resume, Liste leeren und Ordner-Extraktion.)*
+    - [`test_15_snapshot_playing_channel_no_name_error()`](tests/test_ui_and_engine.py#L827) — `L827` *(Verifies _snapshot_playing_channel executes without NameError for THUMB_DIR.)*
 
 #### Modul-Funktionen
 - **[`_make_ts_packet(pid, pcr_seconds, tei)`](tests/test_ui_and_engine.py#L34-L51)** — `L34` — *Build a valid 188-byte MPEG-TS packet with optional PCR.*
