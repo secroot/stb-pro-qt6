@@ -362,6 +362,12 @@ class MainWindow(QMainWindow):
         self.scanner_view.apply_mac_requested.connect(self.apply_mac_from_scanner_or_db)
         self.scanner_view.prepend_db_macs_requested.connect(self._prepend_known_macs_to_scanner)
         self.scanner_view.scan_exported.connect(lambda p: self._on_reload_scans())
+        self.scanner_view._portal_signals.finished.connect(lambda res, reachables: self.config_mgr.set_reachable_portals(reachables))
+
+        # Initialer Abgleich gespeicherter erreichbarer Portale aus der Konfiguration
+        cfg_reachables = self.config_mgr.get_reachable_portals()
+        if cfg_reachables and not self.scanner_view.get_reachable_portals():
+            self.scanner_view.set_reachable_portals(cfg_reachables)
 
         # Inspector Signals
         self.inspector_view.handshake_test_requested.connect(self._run_inspector_handshake_test)
@@ -2347,9 +2353,11 @@ class MainWindow(QMainWindow):
         self,
         portal_url: str,
         mac_list: List[str],
-        model: str,
-        threads: int,
-        delay_s: float,
+        model: str = "MAG 250",
+        threads: int = 20,
+        delay_s: float = 0.0,
+        portal_rotation_list: Optional[List[str]] = None,
+        rotation_mode: str = "round_robin",
     ):
         self._scan_stop_ev.clear()
         self._scan_pause_ev.set()
@@ -2364,7 +2372,6 @@ class MainWindow(QMainWindow):
                 seen_set.add(mu)
                 unique_macs.append(mu)
 
-        total = len(unique_macs)
         timeout_s = self.config_mgr.get_timeout_seconds()
         scan_probe_t = float(self.config_mgr.get("scan_probe_timeout", 5.0))
         scan_auto_requeue = bool(self.config_mgr.get("scan_auto_requeue", True))
@@ -2389,18 +2396,52 @@ class MainWindow(QMainWindow):
         )
         self._scan_throttle = throttle
 
-        event_bus.log_message.emit(
-            f"[🎯] Starte Multi-MAC Scan auf {portal_url} ({total} MACs, {threads} Threads, Modell {model}) ..."
-        )
+        # Prüfe ob Multi-Portal-Rotation aktiv ist
+        use_rotation = bool(portal_rotation_list and len(portal_rotation_list) > 0)
+        clean_rotation_portals: List[str] = []
+        if use_rotation:
+            for p in portal_rotation_list:
+                ps = p.strip()
+                if ps and ps not in clean_rotation_portals:
+                    clean_rotation_portals.append(ps)
+            if not clean_rotation_portals:
+                use_rotation = False
 
-        work_q: queue.Queue[str] = queue.Queue()
-        for m in unique_macs:
-            work_q.put(m)
+        if use_rotation:
+            if rotation_mode == "sweep":
+                # Sweep: Jede MAC wird gegen JEDES erreichbare Portal geprüft
+                work_items: List[Tuple[str, str]] = []
+                for m in unique_macs:
+                    for p in clean_rotation_portals:
+                        work_items.append((m, p))
+                total = len(work_items)
+                event_bus.log_message.emit(
+                    f"[🔄] Starte Multi-Portal Sweep-Scan ({len(unique_macs)} MACs × {len(clean_rotation_portals)} Portale = {total} Checks, {threads} Threads, Modell {model}) ..."
+                )
+            else:
+                # Round-Robin: MACs werden über die erreichbaren Portale rotiert
+                work_items = [
+                    (m, clean_rotation_portals[idx % len(clean_rotation_portals)])
+                    for idx, m in enumerate(unique_macs)
+                ]
+                total = len(work_items)
+                event_bus.log_message.emit(
+                    f"[🔄] Starte Multi-Portal Round-Robin Scan ({total} MACs auf {len(clean_rotation_portals)} Portalen rotiert, {threads} Threads, Modell {model}) ..."
+                )
+        else:
+            work_items = [(m, portal_url) for m in unique_macs]
+            total = len(work_items)
+            event_bus.log_message.emit(
+                f"[🎯] Starte Multi-MAC Scan auf {portal_url} ({total} MACs, {threads} Threads, Modell {model}) ..."
+            )
+
+        work_q: queue.Queue[Tuple[str, str]] = queue.Queue()
+        for item in work_items:
+            work_q.put(item)
 
         # ⚡ PREFLIGHT ENDPOINT ERMITTLUNG:
         # Falls der Stalker load_url Endpoint noch unbekannt ist, ermitteln wir ihn einmalig vorab.
-        # Dadurch entfallen für alle weiteren 10.000 MACs zeitraubende Fallback-Probes auf 6 verschiedene URLs!
-        if not shared_ep[0] and unique_macs:
+        if not use_rotation and not shared_ep[0] and unique_macs:
             try:
                 probe_cl = StbClient(
                     portal_url=portal_url,
@@ -2420,7 +2461,6 @@ class MainWindow(QMainWindow):
                         shared_ep[0] = ep
                         break
                     except PermissionError:
-                        # Server hat geantwortet und die MAC abgewiesen -> exakter Stalker Endpoint gefunden!
                         shared_ep[0] = ep
                         break
                     except Exception:
@@ -2446,8 +2486,6 @@ class MainWindow(QMainWindow):
                     active_workers += 1
 
                 # ⚡ KEEPALIVE HTTP SESSION PRO WORKER:
-                # Verhindert ständiges Öffnen/Schließen von TCP/TLS Sockets pro MAC.
-                # Spart 100-300ms Overhead pro einzelner Abfrage!
                 worker_session = requests.Session()
                 worker_adapter = HTTPAdapter(
                     pool_connections=4,
@@ -2485,12 +2523,17 @@ class MainWindow(QMainWindow):
                             if work_q.empty() and in_flight == 0:
                                 break
                         try:
-                            mac = work_q.get(timeout=0.15)
+                            raw_item = work_q.get(timeout=0.15)
+                            mac, cur_portal = raw_item if isinstance(raw_item, tuple) else (raw_item, portal_url)
                         except queue.Empty:
                             continue
 
                         with lock:
                             in_flight += 1
+
+                        item_key = f"{cur_portal}|{mac}"
+                        norm_target = cur_portal.strip().rstrip("/")
+                        cached_target_ep = cached_eps.get(norm_target)
 
                         try:
                             if delay_s > 0:
@@ -2501,11 +2544,11 @@ class MainWindow(QMainWindow):
                                 continue
 
                             res = check_mac_account(
-                                portal_url=portal_url,
+                                portal_url=cur_portal,
                                 mac=mac,
                                 model=model,
                                 timeout=min(scan_probe_t, float(timeout_s)),
-                                normalized_load_url=shared_ep[0],
+                                normalized_load_url=cached_target_ep,
                                 session=worker_session,
                                 verify_ssl=ssl_verify,
                                 genre_param=scan_genre,
@@ -2513,11 +2556,10 @@ class MainWindow(QMainWindow):
                                 fallback_get_all=scan_fallback,
                                 device_id_mode=dev_mode,
                             )
-                            res["portal_url"] = portal_url
+                            res["portal_url"] = cur_portal
 
-                            if res.get("load_url") and not shared_ep[0]:
-                                shared_ep[0] = res["load_url"]
-                                cached_eps[norm_portal] = res["load_url"]
+                            if res.get("load_url") and not cached_eps.get(norm_target):
+                                cached_eps[norm_target] = res["load_url"]
                                 self.config_mgr.set("cached_endpoints", cached_eps)
 
                             err_str = str(res.get("error") or "")
@@ -2546,7 +2588,7 @@ class MainWindow(QMainWindow):
                             )
 
                             ch_cnt = int(res.get("channels") or 0)
-                            retries = retry_counts.get(mac, 0)
+                            retries = retry_counts.get(item_key, 0)
                             has_ch_error = bool(res.get("valid") and res.get("channel_error"))
                             active_date_missing_channels = bool(
                                 res.get("valid")
@@ -2561,24 +2603,23 @@ class MainWindow(QMainWindow):
                             )
 
                             # WENN TRANSIENT (Timeout/503/429/Kanalfehler): MAC hinten anstellen und erneut probieren!
-                            # Scanner pausiert NICHT global, sondern prüft direkt nächste MACs mit voller Geschwindigkeit.
                             if scan_auto_requeue and is_transient and retries < scan_max_retries and not self._scan_stop_ev.is_set():
                                 retries += 1
-                                retry_counts[mac] = retries
-                                work_q.put(mac)
+                                retry_counts[item_key] = retries
+                                work_q.put((mac, cur_portal))
                                 rem_q = work_q.qsize()
                                 reason_txt = "Kanal-Timeout" if (has_ch_error or active_date_missing_channels) else (stat_str or "Timeout/503/429")
                                 event_bus.log_message.emit(
-                                    f"[⏳ Requeue] {mac} ({reason_txt}) -> hinten angestellt (Retry #{retries}/{scan_max_retries}, Warteschlange: {rem_q})."
+                                    f"[⏳ Requeue] {mac} @ {cur_portal} ({reason_txt}) -> hinten angestellt (Retry #{retries}/{scan_max_retries}, Warteschlange: {rem_q})."
                                 )
                                 continue
 
                             # Endgültiges Ergebnis ermitteln
                             if res.get("valid") and ch_cnt > 0:
                                 res["tag"] = "hot"
-                                self.mac_db.save_found_mac(portal_url, res)
+                                self.mac_db.save_found_mac(cur_portal, res)
                                 event_bus.log_message.emit(
-                                    f"[🔥 HIT] {res['mac']} | {ch_cnt} Kanäle | Exp: {res.get('expire')} ({portal_url})"
+                                    f"[🔥 HIT] {res['mac']} | {ch_cnt} Kanäle | Exp: {res.get('expire')} ({cur_portal})"
                                 )
                             elif res.get("valid"):
                                 res["tag"] = "valid"
@@ -2586,8 +2627,8 @@ class MainWindow(QMainWindow):
                                 res["tag"] = "invalid"
 
                             with lock:
-                                if mac not in conclusive_macs:
-                                    conclusive_macs.add(mac)
+                                if item_key not in conclusive_macs:
+                                    conclusive_macs.add(item_key)
                                     done += 1
                                 cur_done = done
 

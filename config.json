@@ -575,9 +575,45 @@
             "xc_format": "ts",
             "m3u_source": "",
             "proxy": ""
+        },
+        {
+            "name": "hottest.vip (00:2A:01:90:CE:8B)",
+            "provider_type": "Stalker MAC",
+            "portal_url": "http://hottest.vip/c/",
+            "mac": "00:2A:01:90:CE:8B",
+            "model": "MAG 250",
+            "serial_number": "7FFC2C28B895A",
+            "device_id": "17CA4335C126586781F56DF7D9038FD31A2A1B972864FBF6B5298F35310E97A4",
+            "device_id2": "D83BF90630D59ACAB10DF15DB4BB6E8A8829E8103095D27C13B87EC2C1D1ECEC",
+            "signature": "D83BF90630D59ACAB10DF15DB4BB6E8A8829E8103095D27C13B87EC2C1D1ECEC",
+            "user_agent": "",
+            "xc_url": "",
+            "username": "",
+            "password": "",
+            "xc_format": "ts",
+            "m3u_source": "",
+            "proxy": ""
+        },
+        {
+            "name": "clubxc.com (00:1A:79:08:44:32)",
+            "provider_type": "Stalker MAC",
+            "portal_url": "http://clubxc.com:8080/c/",
+            "mac": "00:1A:79:08:44:32",
+            "model": "MAG 250",
+            "serial_number": "9684C46CB26DF",
+            "device_id": "5EDE3C7A5B416B4753A4F310B376413C59FD34B3EB5E97B1F9176F3B841BB982",
+            "device_id2": "FEA7D23E070F7FA62B25FBC402823427FE57C83B20B645F51E6FFC747B38E189",
+            "signature": "FEA7D23E070F7FA62B25FBC402823427FE57C83B20B645F51E6FFC747B38E189",
+            "user_agent": "",
+            "xc_url": "",
+            "username": "",
+            "password": "",
+            "xc_format": "ts",
+            "m3u_source": "",
+            "proxy": ""
         }
     ],
-    "last_profile": "iptv.darktv.eu (00:1A:79:73:1F:16)",
+    "last_profile": "clubxc.com (00:1A:79:08:44:32)",
     "vlc_path": "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
     "ffplay_path": "C:\\Users\\basti\\AppData\\Local\\Microsoft\\WinGet\\Links\\ffplay.exe",
     "selected_player": "Integrierter Player",
@@ -659,7 +695,7 @@
         ]
     },
     "theme": "Dark",
-    "player_volume": 28,
+    "player_volume": 16,
     "connection_timeout_label": "3s Ultraschnell",
     "cached_endpoints": {
         "http://zerotv.eu:8080/c/": "http://zerotv.eu:8080/c/server/load.php",
@@ -784,12 +820,12 @@
             "889553"
         ],
         "iptv.darktv.eu (00:1A:79:73:1F:16)": [
+            "4460",
+            "4459",
             "375762",
             "184009",
             "184019",
             "184023",
-            "4460",
-            "4459",
             "4456",
             "4461"
         ],
@@ -864,13 +900,21 @@
             "3470",
             "768",
             "3453"
+        ],
+        "clubxc.com (00:1A:79:08:44:32)": [
+            "551441",
+            "210278",
+            "210277",
+            "210276",
+            "314477",
+            "571148"
         ]
     },
     "start_maximized": true,
-    "hide_dead_channels": false,
+    "hide_dead_channels": true,
     "validation_workers": 8,
-    "last_scan_host": "iptv.darktv.eu",
-    "last_scan_mac": "00:1A:79:73:1F:16",
+    "last_scan_host": "clubxc.com",
+    "last_scan_mac": "00:1A:79:08:44:32",
     "vpn_auto_switch": true,
     "burned_ips": {
         "pro.8k-strong.tv": [
@@ -914,7 +958,19 @@
             "86.38.149.243",
             "187.40.49.244",
             "187.15.172.59",
-            "187.15.158.227"
+            "187.15.158.227",
+            "187.40.44.197",
+            "187.40.45.112",
+            "86.104.249.170",
+            "187.15.156.210"
+        ],
+        "clubxc.com": [
+            "186.247.78.50",
+            "187.40.44.68",
+            "187.15.173.146",
+            "187.15.158.196",
+            "186.247.75.171",
+            "187.13.9.241"
         ]
     },
     "validation_probe_timeout": 3.0,
@@ -949,5 +1005,6 @@
         "Germany",
         "France",
         "United Kingdom"
-    ]
+    ],
+    "reachable_portals": []
 }

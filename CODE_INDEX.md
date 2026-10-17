@@ -35,6 +35,7 @@
 | `_normalize_stb_model` | **Function** | [ui/dialogs/profile_dialog.py](ui/dialogs/profile_dialog.py#L34-L41) | `L34-L41` | def _normalize_stb_model(model_str) |
 | `_on_response` | **Function** | [clients/stb_client.py](clients/stb_client.py#L31-L56) | `L31-L56` | def _on_response(resp) |
 | `_parse_json` | **Function** | [core/stream_probe.py](core/stream_probe.py#L549-L570) | `L549-L570` | def _parse_json(parsed) |
+| `_PortalCheckerSignals` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L76-L80) | `L76-L80` | Thread-sichere Qt-Signals für Hintergrund-Prüfungen der Stalker-Portale. |
 | `_safe_emit` | **Function** | [core/vpn_manager.py](core/vpn_manager.py#L21-L26) | `L21-L26` | Sicheres Emitten von Qt-Signalen aus Hintergrund-Threads. |
 | `_Session` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L70-L553) | `L70-L553` | Basis:  |
 | `_TopHudBar` | **Class / Widget** | [player/osd_overlay.py](player/osd_overlay.py#L16-L81) | `L16-L81` | Basis: QWidget |
@@ -52,7 +53,8 @@
 | `ChannelListModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L51-L210) | `L51-L210` | High-performance backing model for 50,000+ Live TV channels. |
 | `ChannelRoles` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L33-L48) | `L33-L48` | Basis:  |
 | `check_mac_account` | **Function** | [clients/stb_client.py](clients/stb_client.py#L123-L275) | `L123-L275` | Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarke... |
-| `ConfigManager` | **Class / Widget** | [core/config_manager.py](core/config_manager.py#L60-L314) | `L60-L314` | Verwaltet Profile, Live-/VOD-Favoriten, Verlauf, Player-Pfade und UI-Einstellungen. |
+| `check_single_portal` | **Function** | [core/portal_checker.py](core/portal_checker.py#L156-L293) | `L156-L293` | Prüft einen einzelnen Portal-Host schnell auf TCP/HTTP-Erreichbarkeit, |
+| `ConfigManager` | **Class / Widget** | [core/config_manager.py](core/config_manager.py#L60-L334) | `L60-L334` | Verwaltet Profile, Live-/VOD-Favoriten, Verlauf, Player-Pfade und UI-Einstellungen. |
 | `ConsoleView` | **Class / Widget** | [ui/views/console_view.py](ui/views/console_view.py#L26-L156) | `L26-L156` | Basis: QWidget |
 | `decode_vlc_fourcc` | **Function** | [player/vlc_controller.py](player/vlc_controller.py#L20-L101) | `L20-L101` | def decode_vlc_fourcc(codec_val) |
 | `detect_ffplay_path` | **Function** | [core/config_manager.py](core/config_manager.py#L48-L57) | `L48-L57` | def detect_ffplay_path() |
@@ -90,14 +92,17 @@
 | `JsonViewerDialog` | **Class / Widget** | [ui/dialogs/json_viewer_dialog.py](ui/dialogs/json_viewer_dialog.py#L27-L119) | `L27-L119` | Basis: QDialog |
 | `LiveTVView` | **Class / Widget** | [ui/views/live_tv_view.py](ui/views/live_tv_view.py#L155-L1199) | `L155-L1199` | Basis: QWidget |
 | `load_cached_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L120-L133) | `L120-L133` | def load_cached_thumb(key) |
+| `load_portal_list` | **Function** | [core/portal_checker.py](core/portal_checker.py#L114-L137) | `L114-L137` | Liest eine Stalker-Portal-Datei (.txt) ein, bereinigt Kommentare und |
 | `LogoCache` | **Class / Widget** | [core/logo_cache.py](core/logo_cache.py#L22-L151) | `L22-L151` | Lädt Kanal-Logos und VOD-Poster im Hintergrund als QImage (Thread-sicher!) |
 | `MacDatabase` | **Class / Widget** | [core/mac_database.py](core/mac_database.py#L26-L238) | `L26-L238` | Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern. |
 | `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L31-L211) | `L31-L211` | Basis: QDialog |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
-| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L89-L2941) | `L89-L2941` | Basis: QMainWindow |
+| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L89-L2982) | `L89-L2982` | Basis: QMainWindow |
 | `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L29-L653) | `L29-L653` | Verwaltet die Integration mit NordVPN unter Windows. |
+| `normalize_portal_url` | **Function** | [core/portal_checker.py](core/portal_checker.py#L94-L111) | `L94-L111` | Normalisiert eine Portal-URL sauber (Protokoll, Leerzeichen, Format). |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
 | `pcr_bitrate_kbps` | **Function** | [core/stream_probe.py](core/stream_probe.py#L38-L66) | `L38-L66` | Echte Mux-Bitrate aus MPEG-TS-PCR. |
+| `PortalCheckResult` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L34-L91) | `L34-L91` | Repräsentiert das Prüfergebnis eines einzelnen Stalker-Portals. |
 | `PreviewOverlayWidget` | **Class / Widget** | [ui/views/live_tv_view.py](ui/views/live_tv_view.py#L86-L152) | `L86-L152` | Standbild-Preview Thumbnail Overlay displayed inside the video viewport when |
 | `probe_stream` | **Function** | [core/stream_probe.py](core/stream_probe.py#L402-L614) | `L402-L614` | def probe_stream(url, user_agent, cookies, timeout, sample_duration, cancel, skip_ffprobe,... |
 | `Profile` | **Class / Widget** | [core/models.py](core/models.py#L333-L452) | `L333-L452` | Basis:  |
@@ -109,19 +114,22 @@
 | `read_ue` | **Function** | [core/stream_probe.py](core/stream_probe.py#L141-L147) | `L141-L147` | def read_ue() |
 | `Recorder` | **Class / Widget** | [core/recorder.py](core/recorder.py#L121-L435) | `L121-L435` | Basis:  |
 | `safe_name` | **Function** | [core/recorder.py](core/recorder.py#L29-L31) | `L29-L31` | def safe_name(name, maxlen) |
+| `save_reachable_portals_file` | **Function** | [core/portal_checker.py](core/portal_checker.py#L140-L153) | `L140-L153` | Speichert eine Liste erreichbarer Portal-URLs zeilenweise in eine .txt-Datei. |
 | `save_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L136-L144) | `L136-L144` | def save_thumb(key, data) |
 | `ScanAccount` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L24-L58) | `L24-L58` | Repräsentiert einen einzelnen gescannten MAC-Account eines Portals. |
 | `ScanHost` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L62-L85) | `L62-L85` | Repräsentiert einen Host / ein Portal mit allen zugehörigen Logins. |
-| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L66-L711) | `L66-L711` | Basis: QWidget |
+| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L83-L1252) | `L83-L1252` | Basis: QWidget |
 | `ScanRepository` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L88-L264) | `L88-L264` | Verwaltet das Einlesen, Filtern und Cachen aller Scan-Dateien aus 'mac_scans/'. |
 | `ScanResult` | **Class / Widget** | [core/models.py](core/models.py#L478-L488) | `L478-L488` | Basis:  |
 | `ScanThrottleController` | **Class / Widget** | [clients/throttle.py](clients/throttle.py#L11-L69) | `L11-L69` | Basis:  |
 | `SeriesBrowserDialog` | **Class / Widget** | [ui/dialogs/series_dialog.py](ui/dialogs/series_dialog.py#L26-L163) | `L26-L163` | Basis: QDialog |
 | `SettingsView` | **Class / Widget** | [ui/views/settings_view.py](ui/views/settings_view.py#L45-L968) | `L45-L968` | Basis: QWidget |
 | `SidebarWidget` | **Class / Widget** | [ui/components/sidebar.py](ui/components/sidebar.py#L32-L453) | `L32-L453` | Basis: QFrame |
+| `StalkerPortalChecker` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L296-L477) | `L296-L477` | Multi-threaded Stalker Portal Prüf-Engine. |
 | `StbClient` | **Class / Widget** | [clients/stb_client.py](clients/stb_client.py#L68-L120) | `L68-L120` | Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging |
 | `StreamBufferProxy` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L590-L634) | `L590-L634` | Basis:  |
 | `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L456-L474) | `L456-L474` | Basis:  |
+| `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L20-L213) | `L20-L213` | Basis: unittest.TestCase |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
 | `TestSettingsAndSidebar` | **Class / Widget** | [tests/test_settings_and_sidebar.py](tests/test_settings_and_sidebar.py#L25-L301) | `L25-L301` | Basis: unittest.TestCase |
 | `TestUIAndEngine` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L90-L840) | `L90-L840` | Basis: unittest.TestCase |
@@ -217,32 +225,32 @@ Enthält Datenmodelle, Event-Bus, Persistenz, Stream-Puffer, Probing und Recordi
 
 ---
 
-### 📄 [`core/config_manager.py`](core/config_manager.py) (315 Zeilen)
+### 📄 [`core/config_manager.py`](core/config_manager.py) (335 Zeilen)
 > Konfigurations-Manager für STB Pro Qt6.
 Unterstützt nahtlose Übernahme der bestehenden config.json aus dem Hauptverzeichnis,
 damit alle gespeicherten Profile, Favoriten und Einstellungen erhalten bleiben.
 Zusätzlich neu: Persistente VOD-Favoriten und Recently-Played-Historie!
 
 #### Klassen & Komponenten
-- **[`ConfigManager`](core/config_manager.py#L60-L314)** — `L60-L314`
+- **[`ConfigManager`](core/config_manager.py#L60-L334)** — `L60-L334`
   - *Verwaltet Profile, Live-/VOD-Favoriten, Verlauf, Player-Pfade und UI-Einstellungen.*
   - **Wichtige Methoden:**
     - [`__init__(filepath)`](core/config_manager.py#L63) — `L63`
     - [`_default_config()`](core/config_manager.py#L75) — `L75`
-    - [`_load()`](core/config_manager.py#L172) — `L172`
-    - [`save()`](core/config_manager.py#L190) — `L190`
-    - [`get(key, default)`](core/config_manager.py#L209) — `L209`
-    - [`set(key, value, auto_save)`](core/config_manager.py#L212) — `L212`
-    - [`get_profiles()`](core/config_manager.py#L217) — `L217`
-    - [`get_profile(name)`](core/config_manager.py#L222) — `L222`
-    - [`save_profile(profile, old_name)`](core/config_manager.py#L228) — `L228`
-    - [`delete_profile(name)`](core/config_manager.py#L240) — `L240`
-    - [`get_favorites(profile_name)`](core/config_manager.py#L252) — `L252`
-    - [`save_favorites(profile_name, favorites)`](core/config_manager.py#L256) — `L256`
-    - [`get_vod_favorites(profile_name)`](core/config_manager.py#L262) — `L262`
-    - [`save_vod_favorites(profile_name, favorites)`](core/config_manager.py#L266) — `L266`
-    - [`get_recently_played(profile_name)`](core/config_manager.py#L272) — `L272`
-    - *... und 5 weitere Hilfsmethoden.*
+    - [`_load()`](core/config_manager.py#L173) — `L173`
+    - [`save()`](core/config_manager.py#L191) — `L191`
+    - [`get(key, default)`](core/config_manager.py#L210) — `L210`
+    - [`set(key, value, auto_save)`](core/config_manager.py#L213) — `L213`
+    - [`get_profiles()`](core/config_manager.py#L218) — `L218`
+    - [`get_profile(name)`](core/config_manager.py#L223) — `L223`
+    - [`save_profile(profile, old_name)`](core/config_manager.py#L229) — `L229`
+    - [`delete_profile(name)`](core/config_manager.py#L241) — `L241`
+    - [`get_favorites(profile_name)`](core/config_manager.py#L253) — `L253`
+    - [`save_favorites(profile_name, favorites)`](core/config_manager.py#L257) — `L257`
+    - [`get_vod_favorites(profile_name)`](core/config_manager.py#L263) — `L263`
+    - [`save_vod_favorites(profile_name, favorites)`](core/config_manager.py#L267) — `L267`
+    - [`get_recently_played(profile_name)`](core/config_manager.py#L273) — `L273`
+    - *... und 7 weitere Hilfsmethoden.*
 
 #### Modul-Funktionen
 - **[`detect_vlc_path()`](core/config_manager.py#L19-L33)** — `L19`
@@ -373,6 +381,43 @@ Strikt typisiert und unabhängig von UI-Komponenten.
 #### Modul-Funktionen
 - **[`quality_from_dimensions(width, height)`](core/models.py#L13-L28)** — `L13` — *Ermittelt den Qualitäts-Tag (UHD/FHD/HD/SD) exakt anhand von Pixel-Dimensionen.*
 - **[`detect_quality_tag(name, raw)`](core/models.py#L31-L58)** — `L31` — *Erkennt den Qualitäts-Tag AUSSCHLIESSLICH anhand von echten Dimensionsdaten in den Metadaten.*
+
+---
+
+### 📄 [`core/portal_checker.py`](core/portal_checker.py) (477 Zeilen)
+> Stalker Portal Erreichbarkeits-Checker & Rotations-Pool.
+Prüft Stalker-Portale aus Listen (z. B. stalker_portals.txt) multi-threaded
+auf Erreichbarkeit, Latenz (Ping), HTTP-Status und Stalker-Signaturen.
+Ermöglicht das Speichern erreichbarer Portale und deren direkte Bereitstellung
+zur automatischen Rotation im MAC-Scanner.
+
+#### Klassen & Komponenten
+- **[`PortalCheckResult`](core/portal_checker.py#L34-L91)** — `L34-L91`
+  - *Repräsentiert das Prüfergebnis eines einzelnen Stalker-Portals.*
+  - **Wichtige Methoden:**
+    - [`to_dict()`](core/portal_checker.py#L48) — `L48`
+    - [`from_dict(cls, data)`](core/portal_checker.py#L64) — `L64`
+    - [`display_status()`](core/portal_checker.py#L79) — `L79`
+- **[`StalkerPortalChecker`](core/portal_checker.py#L296-L477)** — `L296-L477`
+  - *Multi-threaded Stalker Portal Prüf-Engine.*
+  - **Wichtige Methoden:**
+    - [`__init__()`](core/portal_checker.py#L302) — `L302`
+    - [`is_running()`](core/portal_checker.py#L323) — `L323`
+    - [`get_results()`](core/portal_checker.py#L326) — `L326`
+    - [`get_reachable_urls()`](core/portal_checker.py#L330) — `L330`
+    - [`stop()`](core/portal_checker.py#L334) — `L334` *(Stoppt die laufende Prüfung sofort.)*
+    - [`pause()`](core/portal_checker.py#L340) — `L340` *(Pausiert die Prüfung.)*
+    - [`resume()`](core/portal_checker.py#L344) — `L344` *(Setzt die Prüfung fort.)*
+    - [`start_check(urls, threads, timeout, verify_ssl)`](core/portal_checker.py#L348) — `L348` *(Startet die asynchrone Multi-Threaded Portalprüfung im Hintergrund.)*
+
+#### Modul-Funktionen
+- **[`normalize_portal_url(raw)`](core/portal_checker.py#L94-L111)** — `L94` — *Normalisiert eine Portal-URL sauber (Protokoll, Leerzeichen, Format).*
+- **[`load_portal_list(file_path)`](core/portal_checker.py#L114-L137)** — `L114` — *Liest eine Stalker-Portal-Datei (.txt) ein, bereinigt Kommentare und*
+- **[`save_reachable_portals_file(file_path, urls)`](core/portal_checker.py#L140-L153)** — `L140` — *Speichert eine Liste erreichbarer Portal-URLs zeilenweise in eine .txt-Datei.*
+- **[`check_single_portal(url, timeout, verify_ssl, session)`](core/portal_checker.py#L156-L293)** — `L156` — *Prüft einen einzelnen Portal-Host schnell auf TCP/HTTP-Erreichbarkeit,*
+
+#### Wichtige Konstanten / Konfigurationen
+- `DEFAULT_PORTAL_TIMEOUT` (L29), `DEFAULT_CHECKER_THREADS` (L30)
 
 ---
 
@@ -719,31 +764,31 @@ Nutzt Qt Signals für reaktive Status- und Puffer-Updates ohne UI-Blockade.
 
 ---
 
-### 📄 [`ui/main_window.py`](ui/main_window.py) (2943 Zeilen)
+### 📄 [`ui/main_window.py`](ui/main_window.py) (2984 Zeilen)
 > Main Application Window (Orchestrator) for STB Pro v6.0 Qt6 Edition.
 Coordinates Sidebar, TopNavigationBar, LiveTVView, VODView, ScannerView, InspectorView, ConsoleView,
 LibVLC Hardware Player, External Player Runner, Fullscreen HUD Overlay, PiP Mini-Player,
 Multi-Thread MAC Scanner, Parallel Category Validator, and all 7 Dialogs.
 
 #### Klassen & Komponenten
-- **[`MainWindow`](ui/main_window.py#L89-L2941)** : *QMainWindow* — `L89-L2941`
+- **[`MainWindow`](ui/main_window.py#L89-L2982)** : *QMainWindow* — `L89-L2982`
   - **Signals**: `_val_progress_sig`, `_val_finished_sig`, `_val_thumb_progress_sig`, `_val_thumb_finished_sig`, `_epg_loaded_sig`, `_probe_done_sig`, `_preview_ready_sig`
   - **Wichtige Methoden:**
     - [`__init__()`](ui/main_window.py#L99) — `L99`
     - [`_build_ui()`](ui/main_window.py#L198) — `L198`
     - [`_bind_signals()`](ui/main_window.py#L259) — `L259`
-    - [`_on_buffer_settings_from_view(st)`](ui/main_window.py#L376) — `L376`
-    - [`_on_settings_applied(cfg)`](ui/main_window.py#L381) — `L381`
-    - [`_is_text_input_focused()`](ui/main_window.py#L401) — `L401`
-    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L405) — `L405`
-    - [`_cycle_aspect_ratio()`](ui/main_window.py#L414) — `L414`
-    - [`_setup_shortcuts()`](ui/main_window.py#L419) — `L419`
-    - [`_load_initial_config()`](ui/main_window.py#L442) — `L442`
-    - [`switch_view(view_key)`](ui/main_window.py#L530) — `L530`
-    - [`toggle_sidebar()`](ui/main_window.py#L538) — `L538`
-    - [`toggle_cinema_mode()`](ui/main_window.py#L544) — `L544`
-    - [`toggle_pip_mode()`](ui/main_window.py#L552) — `L552` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
-    - [`toggle_fullscreen()`](ui/main_window.py#L594) — `L594`
+    - [`_on_buffer_settings_from_view(st)`](ui/main_window.py#L382) — `L382`
+    - [`_on_settings_applied(cfg)`](ui/main_window.py#L387) — `L387`
+    - [`_is_text_input_focused()`](ui/main_window.py#L407) — `L407`
+    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L411) — `L411`
+    - [`_cycle_aspect_ratio()`](ui/main_window.py#L420) — `L420`
+    - [`_setup_shortcuts()`](ui/main_window.py#L425) — `L425`
+    - [`_load_initial_config()`](ui/main_window.py#L448) — `L448`
+    - [`switch_view(view_key)`](ui/main_window.py#L536) — `L536`
+    - [`toggle_sidebar()`](ui/main_window.py#L544) — `L544`
+    - [`toggle_cinema_mode()`](ui/main_window.py#L550) — `L550`
+    - [`toggle_pip_mode()`](ui/main_window.py#L558) — `L558` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
+    - [`toggle_fullscreen()`](ui/main_window.py#L600) — `L600`
     - *... und 95 weitere Hilfsmethoden.*
 
 ---
@@ -858,35 +903,38 @@ VOD/Catchup Seekbar, Audio/Subtitle/Aspect/Speed Controls, Multi-Thread Category
 
 ---
 
-### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (711 Zeilen)
+### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (1252 Zeilen)
 > Multi-MAC Scanner & Pentest Generator View.
 Features 22 OUI Vendor Presets, custom wildcard masks (XX:XX:XX), sequential & random generation,
 adaptive WAF/429 Throttle Controller integration, live CPS (Checks/sec) & ETA telemetry,
 filterable hit table, and 1-click profile adoption.
 
 #### Klassen & Komponenten
-- **[`ScannerView`](ui/views/scanner_view.py#L66-L711)** : *QWidget* — `L66-L711`
+- **[`_PortalCheckerSignals`](ui/views/scanner_view.py#L76-L80)** : *QObject* — `L76-L80`
+  - *Thread-sichere Qt-Signals für Hintergrund-Prüfungen der Stalker-Portale.*
+  - **Signals**: `result_received`, `progress_updated`, `finished`
+- **[`ScannerView`](ui/views/scanner_view.py#L83-L1252)** : *QWidget* — `L83-L1252`
   - **Signals**: `start_scan_requested`, `stop_scan_requested`, `pause_scan_requested`, `resume_scan_requested`, `scan_settings_updated`, `apply_mac_requested`, `prepend_db_macs_requested`, `scan_exported`
   - **Wichtige Methoden:**
-    - [`__init__(parent)`](ui/views/scanner_view.py#L76) — `L76`
-    - [`set_portal_url(url)`](ui/views/scanner_view.py#L326) — `L326`
-    - [`_on_oui_selected(text)`](ui/views/scanner_view.py#L330) — `L330`
-    - [`generate_macs()`](ui/views/scanner_view.py#L337) — `L337`
-    - [`prepend_macs(macs)`](ui/views/scanner_view.py#L376) — `L376`
-    - [`get_candidate_macs()`](ui/views/scanner_view.py#L387) — `L387`
-    - [`clear_candidates()`](ui/views/scanner_view.py#L392) — `L392`
-    - [`_update_queue_count()`](ui/views/scanner_view.py#L396) — `L396`
-    - [`_import_from_file()`](ui/views/scanner_view.py#L400) — `L400`
-    - [`_import_from_folder()`](ui/views/scanner_view.py#L414) — `L414`
-    - [`_import_from_clipboard()`](ui/views/scanner_view.py#L461) — `L461`
-    - [`_deduplicate_list()`](ui/views/scanner_view.py#L467) — `L467`
-    - [`_on_start_clicked()`](ui/views/scanner_view.py#L477) — `L477`
-    - [`get_scan_threads()`](ui/views/scanner_view.py#L497) — `L497`
-    - [`get_scan_delay()`](ui/views/scanner_view.py#L500) — `L500`
-    - *... und 13 weitere Hilfsmethoden.*
+    - [`__init__(parent)`](ui/views/scanner_view.py#L93) — `L93`
+    - [`set_portal_url(url)`](ui/views/scanner_view.py#L538) — `L538`
+    - [`_on_oui_selected(text)`](ui/views/scanner_view.py#L542) — `L542`
+    - [`generate_macs()`](ui/views/scanner_view.py#L549) — `L549`
+    - [`prepend_macs(macs)`](ui/views/scanner_view.py#L588) — `L588`
+    - [`get_candidate_macs()`](ui/views/scanner_view.py#L599) — `L599`
+    - [`clear_candidates()`](ui/views/scanner_view.py#L604) — `L604`
+    - [`_update_queue_count()`](ui/views/scanner_view.py#L608) — `L608`
+    - [`_import_from_file()`](ui/views/scanner_view.py#L612) — `L612`
+    - [`_import_from_folder()`](ui/views/scanner_view.py#L626) — `L626`
+    - [`_import_from_clipboard()`](ui/views/scanner_view.py#L673) — `L673`
+    - [`_deduplicate_list()`](ui/views/scanner_view.py#L679) — `L679`
+    - [`_on_start_clicked()`](ui/views/scanner_view.py#L689) — `L689`
+    - [`get_scan_threads()`](ui/views/scanner_view.py#L731) — `L731`
+    - [`get_scan_delay()`](ui/views/scanner_view.py#L734) — `L734`
+    - *... und 36 weitere Hilfsmethoden.*
 
 #### Wichtige Konstanten / Konfigurationen
-- `OUI_VENDOR_PRESETS` (L38), `MAC_REGEX` (L63)
+- `OUI_VENDOR_PRESETS` (L48), `MAC_REGEX` (L73)
 
 ---
 
@@ -1260,6 +1308,20 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
 ## 📦 Automatisierte Test-Suiten
 
 ### 📄 [`tests/probe_multi_hosts.py`](tests/probe_multi_hosts.py) (134 Zeilen)
+---
+
+### 📄 [`tests/test_portal_checker.py`](tests/test_portal_checker.py) (217 Zeilen)
+#### Klassen & Komponenten
+- **[`TestPortalChecker`](tests/test_portal_checker.py#L20-L213)** : *unittest.TestCase* — `L20-L213`
+  - **Wichtige Methoden:**
+    - [`test_01_normalize_portal_url()`](tests/test_portal_checker.py#L21) — `L21`
+    - [`test_02_load_and_save_portal_list()`](tests/test_portal_checker.py#L28) — `L28`
+    - [`test_03_check_single_portal_online_and_stalker()`](tests/test_portal_checker.py#L55) — `L55`
+    - [`test_04_check_single_portal_timeout_and_error()`](tests/test_portal_checker.py#L70) — `L70`
+    - [`test_05_stalker_portal_checker_engine_multithreaded()`](tests/test_portal_checker.py#L78) — `L78`
+    - [`test_06_scanner_view_portal_rotation_ui()`](tests/test_portal_checker.py#L111) — `L111`
+    - [`test_07_main_window_start_mac_scan_multi_portal_rotation()`](tests/test_portal_checker.py#L161) — `L161`
+
 ---
 
 ### 📄 [`tests/test_scan_profiles.py`](tests/test_scan_profiles.py) (46 Zeilen)

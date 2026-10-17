@@ -167,6 +167,7 @@ class ConfigManager:
                 "United Kingdom",
             ],
             "burned_ips": {},
+            "reachable_portals": [],
         }
 
     def _load(self) -> Dict[str, Any]:
@@ -311,5 +312,24 @@ class ConfigManager:
             self.config["burned_ips"].pop(host, None)
         else:
             self.config["burned_ips"] = {}
+        self.save()
+
+    def get_reachable_portals(self) -> List[str]:
+        """Gibt die Liste der gespeicherten erreichbaren Stalker-Portale zurück."""
+        raw = self.config.get("reachable_portals", [])
+        if isinstance(raw, list):
+            return [str(x).strip() for x in raw if str(x).strip()]
+        return []
+
+    def set_reachable_portals(self, portals: List[str]):
+        """Aktualisiert und persistiert die erreichbaren Stalker-Portale."""
+        clean = []
+        seen = set()
+        for p in portals:
+            s = str(p).strip()
+            if s and s.lower() not in seen:
+                seen.add(s.lower())
+                clean.append(s)
+        self.config["reachable_portals"] = clean
         self.save()
 
