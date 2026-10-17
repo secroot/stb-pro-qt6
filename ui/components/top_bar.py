@@ -29,6 +29,7 @@ class TopNavigationBar(QFrame):
     jobs_dialog_requested = Signal()
     account_info_requested = Signal()
     record_stop_requested = Signal()
+    vpn_switch_requested = Signal()
 
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
@@ -103,6 +104,19 @@ class TopNavigationBar(QFrame):
         )
         self.btn_provider_status.clicked.connect(self.account_info_requested.emit)
         row1.addWidget(self.btn_provider_status)
+
+        # NordVPN Status & Switcher Chip
+        self.btn_vpn = QPushButton("🛡️ VPN: Bereit")
+        self.btn_vpn.setObjectName("NavPill")
+        self.btn_vpn.setFixedHeight(28)
+        self.btn_vpn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_vpn.setStyleSheet(
+            "background-color: #0F172A; color: #38BDF8; border: 1px solid #1E293B; "
+            "border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600;"
+        )
+        self.btn_vpn.setToolTip("NordVPN Status – Klicken zum Rotieren des VPN-Servers")
+        self.btn_vpn.clicked.connect(self.vpn_switch_requested.emit)
+        row1.addWidget(self.btn_vpn)
 
         root_vbox.addLayout(row1)
 
@@ -217,3 +231,26 @@ class TopNavigationBar(QFrame):
         self.btn_rec_indicator.setVisible(is_recording)
         if is_recording:
             self.btn_rec_indicator.setText(label_text)
+
+    def update_vpn_badge(self, text: str, status: str = "connected"):
+        self.btn_vpn.setText(text)
+        if status == "connected":
+            self.btn_vpn.setStyleSheet(
+                "background-color: #064E3B; color: #6EE7B7; border: 1px solid #059669; "
+                "border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 700;"
+            )
+        elif status == "switching":
+            self.btn_vpn.setStyleSheet(
+                "background-color: #78350F; color: #FDE68A; border: 1px solid #D97706; "
+                "border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 700;"
+            )
+        elif status == "error":
+            self.btn_vpn.setStyleSheet(
+                "background-color: #7F1D1D; color: #FCA5A5; border: 1px solid #DC2626; "
+                "border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 700;"
+            )
+        else:
+            self.btn_vpn.setStyleSheet(
+                "background-color: #0F172A; color: #94A3B8; border: 1px solid #1E293B; "
+                "border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600;"
+            )

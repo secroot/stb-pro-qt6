@@ -431,9 +431,99 @@
             "xc_format": "ts",
             "m3u_source": "",
             "proxy": ""
+        },
+        {
+            "name": "paplive.me (00:1A:79:4C:25:F8)",
+            "provider_type": "Stalker MAC",
+            "portal_url": "http://paplive.me:8080/c/",
+            "mac": "00:1A:79:4C:25:F8",
+            "model": "MAG 250",
+            "serial_number": "7D98C485791DF",
+            "device_id": "A354653CF8974AEAA31BAA122EE9DDB8DE3EE1C0BEE4F16E08E058BBCEB5A8D3",
+            "device_id2": "A7DEB8F0416FE3FA5EADBAFB6AD4E221A0827B733EA0E758AD5464C52F53F006",
+            "signature": "A7DEB8F0416FE3FA5EADBAFB6AD4E221A0827B733EA0E758AD5464C52F53F006",
+            "user_agent": "",
+            "xc_url": "",
+            "username": "",
+            "password": "",
+            "xc_format": "ts",
+            "m3u_source": "",
+            "proxy": ""
+        },
+        {
+            "name": "paplive.me (00:1A:79:E0:00:12)",
+            "provider_type": "Stalker MAC",
+            "portal_url": "http://paplive.me:8080/c/",
+            "mac": "00:1A:79:E0:00:12",
+            "model": "MAG 250",
+            "serial_number": "9099D96BB129D",
+            "device_id": "160348E29800664C81DB240FD962D64BC6A25E6E6A446732BB5486D54B5FD426",
+            "device_id2": "A60D79866324D0FC8157F4107A9562B11F1B8CB014F6A1E0C4DFC636EF345C72",
+            "signature": "A60D79866324D0FC8157F4107A9562B11F1B8CB014F6A1E0C4DFC636EF345C72",
+            "user_agent": "",
+            "xc_url": "",
+            "username": "",
+            "password": "",
+            "xc_format": "ts",
+            "m3u_source": "",
+            "proxy": ""
+        },
+        {
+            "name": "paplive.me (A0:BB:3E:2E:4A:40)",
+            "provider_type": "Stalker MAC",
+            "portal_url": "http://paplive.me:8080/c/",
+            "mac": "A0:BB:3E:2E:4A:40",
+            "model": "MAG 250",
+            "serial_number": "3B5058E158E51",
+            "device_id": "37958AA161AA5FEA5D390042DE6C40ACCBD6B8C7A744F41BDDCF2F80513B6F7D",
+            "device_id2": "D0F03AABFD1E2F6B1D821DD742F62D92314E7ECE742718F4E0E9B4A6BAF46B82",
+            "signature": "D0F03AABFD1E2F6B1D821DD742F62D92314E7ECE742718F4E0E9B4A6BAF46B82",
+            "user_agent": "",
+            "xc_url": "",
+            "username": "",
+            "password": "",
+            "xc_format": "ts",
+            "m3u_source": "",
+            "proxy": ""
+        },
+        {
+            "name": "paplive.me (10:27:BE:26:54:B5)",
+            "provider_type": "Stalker MAC",
+            "portal_url": "http://paplive.me:8080/c/",
+            "mac": "10:27:BE:26:54:B5",
+            "model": "MAG 250",
+            "serial_number": "E1F1177A86E75",
+            "device_id": "1A8B99C45D0BA7571AEC1EDFDF0F4B6F850E3DAB68739B96297D48C98CFAE13B",
+            "device_id2": "558740B77D749EFE8A4FFC8B4433BDADD44069906D16089ECB346C748C5E353F",
+            "signature": "558740B77D749EFE8A4FFC8B4433BDADD44069906D16089ECB346C748C5E353F",
+            "user_agent": "",
+            "xc_url": "",
+            "username": "",
+            "password": "",
+            "xc_format": "ts",
+            "m3u_source": "",
+            "proxy": ""
+        },
+        {
+            "name": "paplive.me (00:1A:79:FB:10:7A)",
+            "provider_type": "Stalker MAC",
+            "portal_url": "http://paplive.me:8080/c/",
+            "mac": "00:1A:79:FB:10:7A",
+            "model": "MAG 250",
+            "serial_number": "A958FF5CA7270",
+            "device_id": "7A99E6041D67C552950C5499E88C1AED03B32418F30D0B5F013088227C848F27",
+            "device_id2": "1495A7DDC6C9C56B80EA0C3C87F6566CAEEFBEB7C840811D513AE1BBF77DBE15",
+            "signature": "1495A7DDC6C9C56B80EA0C3C87F6566CAEEFBEB7C840811D513AE1BBF77DBE15",
+            "user_agent": "",
+            "xc_url": "",
+            "username": "",
+            "password": "",
+            "xc_format": "ts",
+            "m3u_source": "",
+            "proxy": ""
         }
     ],
-    "last_profile": "t-rex4k.top (00:1A:79:B5:91:85)",
+    "last_profile": "paplive.me (00:1A:79:FB:10:7A)",
     "vlc_path": "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
     "ffplay_path": "C:\\Users\\basti\\AppData\\Local\\Microsoft\\WinGet\\Links\\ffplay.exe",
     "selected_player": "Integrierter Player",
@@ -553,7 +643,7 @@
         "mode": "proxy",
         "vlc_caching_ms": 1500,
         "start_seconds": 1.5,
-        "buffer_seconds": 15.0,
+        "buffer_seconds": 20.0,
         "max_mb": 128,
         "fallback_kbps": 6000,
         "reconnect": true,
@@ -562,7 +652,8 @@
         "timeout_read": 12.0,
         "hw_decode": true,
         "preview_enabled": true,
-        "preview_max_age_min": 1
+        "preview_max_age_min": 3,
+        "proxy": ""
     },
     "ui_scale": "Auto",
     "last_account": {
@@ -649,15 +740,48 @@
             "1537254"
         ],
         "t-rex4k.top (00:1A:79:B5:91:85)": [
+            "889538",
+            "889482",
+            "411606",
+            "411610",
+            "411323",
+            "889539",
+            "889542",
+            "889554",
+            "889556",
             "2023756",
             "2023751",
             "2023749",
             "2023761"
+        ],
+        "paplive.me (00:1A:79:4C:25:F8)": [
+            "196215",
+            "196452",
+            "198574"
+        ],
+        "paplive.me (00:1A:79:E0:00:12)": [
+            "196150",
+            "310562"
+        ],
+        "paplive.me (A0:BB:3E:2E:4A:40)": [
+            "196217",
+            "198554",
+            "196215"
+        ],
+        "paplive.me (10:27:BE:26:54:B5)": [
+            "310562",
+            "302811",
+            "198750",
+            "196150"
+        ],
+        "paplive.me (00:1A:79:FB:10:7A)": [
+            "310562",
+            "302774"
         ]
     },
     "start_maximized": true,
     "hide_dead_channels": true,
     "validation_workers": 8,
-    "last_scan_host": "t-rex4k.top",
-    "last_scan_mac": "00:1A:79:B5:91:85"
+    "last_scan_host": "paplive.me",
+    "last_scan_mac": "00:1A:79:FB:10:7A"
 }

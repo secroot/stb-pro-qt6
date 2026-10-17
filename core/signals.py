@@ -23,6 +23,8 @@ class AppEventBus(QObject):
     scan_result_received = Signal(dict)             # (result_dict)
     scan_progress_updated = Signal(int, int)        # (done, total)
     scan_state_changed = Signal(bool)               # (is_running)
+    vpn_status_changed = Signal(str, str)           # (status_tag, message)
+    stream_ip_ban_detected = Signal(str, str)       # (stream_url, reason_or_detail)
 
 
 class _WorkerSignals(QObject):

@@ -15,7 +15,7 @@ import threading
 import time
 from typing import Any, Dict, List, Optional
 
-from PySide6.QtCore import QRect, Qt, QTimer, Signal
+from PySide6.QtCore import QRect, Qt, QTimer, Signal, Slot
 from PySide6.QtGui import QGuiApplication, QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QApplication,
@@ -247,6 +247,8 @@ class MainWindow(QMainWindow):
         event_bus.scan_result_received.connect(self.scanner_view.add_scan_result)
         event_bus.scan_progress_updated.connect(self.scanner_view.update_scan_progress)
         event_bus.scan_state_changed.connect(self.scanner_view.set_scan_running)
+        event_bus.vpn_status_changed.connect(self._on_vpn_status_changed)
+        event_bus.stream_ip_ban_detected.connect(self._on_stream_ip_ban_detected)
 
         # Internal Worker Signals
         self._val_progress_sig.connect(self._on_val_progress_ui)
@@ -272,6 +274,7 @@ class MainWindow(QMainWindow):
         self.top_bar.jobs_dialog_requested.connect(self.open_jobs_dialog)
         self.top_bar.account_info_requested.connect(self.show_account_details)
         self.top_bar.record_stop_requested.connect(self._stop_active_recordings)
+        self.top_bar.vpn_switch_requested.connect(self._on_manual_vpn_switch)
 
         # Sidebar Signals
         self.sidebar.host_selected.connect(self._on_scan_host_selected)
@@ -442,6 +445,19 @@ class MainWindow(QMainWindow):
         else:
             self.sidebar.combo_prebuffer.setCurrentIndex(4)
         self.sidebar.combo_prebuffer.blockSignals(False)
+
+        # Initialer NordVPN-Status Check
+        try:
+            from core.vpn_manager import vpn_manager
+            if vpn_manager.is_installed():
+                if vpn_manager.is_connected():
+                    self.top_bar.update_vpn_badge("🛡️ VPN: Aktiv", "connected")
+                else:
+                    self.top_bar.update_vpn_badge("🛡️ VPN: Bereit", "idle")
+            else:
+                self.top_bar.update_vpn_badge("🛡️ VPN: N/A", "idle")
+        except Exception:
+            pass
 
     # ══════════════════════════════════════════════════════════════════════
     # 2. View Navigation, Cinema Mode, PiP Mode & Fullscreen
@@ -1217,6 +1233,77 @@ class MainWindow(QMainWindow):
     def _on_play_error(self, title: str, exc: Exception):
         self.live_view.set_video_status_text(f"❌ Stream-Fehler ({title}): {exc}", "Fehler")
         event_bus.log_message.emit(f"[-] Fehler beim Auflösen von '{title}': {exc}")
+
+    @Slot(str, str)
+    def _on_vpn_status_changed(self, status: str, msg: str):
+        if status == "switching":
+            self.top_bar.update_vpn_badge("🛡️ VPN: Wechsle...", "switching")
+            self.live_view.set_video_status_text(f"🛡️ {msg}", "VPN ROTATION")
+        elif status == "connected":
+            self.top_bar.update_vpn_badge("🛡️ VPN: Aktiv", "connected")
+            self.live_view.set_video_status_text(f"✅ {msg}", "VPN AKTIV")
+        elif status == "error":
+            self.top_bar.update_vpn_badge("🛡️ VPN: Fehler", "error")
+            self.live_view.set_video_status_text(f"⚠️ {msg}", "VPN FEHLER")
+
+    @Slot(str, str)
+    def _on_stream_ip_ban_detected(self, url: str, err_detail: str):
+        event_bus.log_message.emit(f"[🚫 IP-Sperre] Stream von Server verweigert: {err_detail}")
+        from core.vpn_manager import vpn_manager
+        if vpn_manager.is_installed() and vpn_manager.is_running():
+            cur_ch = self.state.playing_channel
+            prof_name = self.state.current_profile_name
+            target_country = vpn_manager.guess_country_for_profile(prof_name, url)
+
+            self.live_view.set_video_status_text(
+                f"🚫 IP-Sperre erkannt! Wechsle NordVPN ({target_country}) & starte neu...",
+                "AUTO-VPN",
+            )
+            self.top_bar.update_vpn_badge(f"🛡️ VPN: {target_country}...", "switching")
+            if cur_ch:
+                self.osd.update_info(
+                    number=cur_ch.number,
+                    title=cur_ch.name,
+                    category=f"Auto-VPN: {target_country}",
+                    is_playing=False,
+                )
+
+            def _retry_playback():
+                if cur_ch and self.state.playing_channel and str(cur_ch.id) == str(self.state.playing_channel.id):
+                    event_bus.log_message.emit(
+                        f"[🛡️ VPN] Neuer Server aktiv! Starte Kanal '{cur_ch.name}' neu..."
+                    )
+                    self.play_channel(cur_ch)
+
+            vpn_manager.handle_ip_ban(
+                url=url,
+                err_msg=err_detail,
+                profile_name=prof_name,
+                on_success=_retry_playback,
+            )
+        else:
+            self.live_view.set_video_status_text(
+                f"🚫 {err_detail} (NordVPN starten für Auto-Entsperrung)",
+                "IP GESPERRT",
+            )
+
+    @Slot()
+    def _on_manual_vpn_switch(self):
+        from core.vpn_manager import vpn_manager
+        if not vpn_manager.is_installed():
+            QMessageBox.information(
+                self,
+                "NordVPN",
+                "NordVPN ist auf diesem System nicht unter 'C:\\Program Files\\NordVPN\\' installiert.",
+            )
+            return
+
+        cur_prof = self.state.current_profile_name
+        country = vpn_manager.guess_country_for_profile(cur_prof)
+        self.top_bar.update_vpn_badge(f"🛡️ VPN: {country}...", "switching")
+        ok = vpn_manager.switch_server(target_country=country)
+        if not ok:
+            event_bus.log_message.emit("[🛡️ VPN] Serverwechsel läuft bereits oder Cooldown aktiv.")
 
     def _on_play_pause(self):
         playing = self.vlc_ctrl.toggle_play_pause()

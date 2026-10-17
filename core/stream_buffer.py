@@ -305,11 +305,26 @@ class _Session:
                     if not self._t_first:
                         self._t_first = time.time()
 
+                    first_chunk = True
                     for chunk in r.iter_content(65536):
                         if self.stopped:
                             return
                         if not chunk:
                             continue
+                        if first_chunk:
+                            first_chunk = False
+                            from core.stream_probe import detect_stream_error_payload
+                            err_payload = detect_stream_error_payload(chunk, r.headers.get("Content-Type", ""))
+                            if err_payload:
+                                self.connected = False
+                                self.error = err_payload
+                                try:
+                                    from core.signals import event_bus
+                                    event_bus.stream_ip_ban_detected.emit(self.url, err_payload)
+                                except Exception:
+                                    pass
+                                raise IOError(err_payload)
+
                         self._last_rx = time.time()
                         if self.ts_ok:
                             self._scan(chunk)
@@ -347,6 +362,9 @@ class _Session:
                 self.error = str(e)[:140]
                 if self.stopped:
                     return
+                # Bei definitiver IP- oder ISP-Sperre keine sinnlosen Reconnects erzwingen
+                if any(k in self.error for k in ("IP-Sperre", "ISP-Sperre", "IP_BAN", "ISP_LOCK")):
+                    break
                 if not self.st.reconnect or attempts >= self.st.max_retries:
                     break
                 attempts += 1

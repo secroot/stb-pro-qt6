@@ -310,6 +310,76 @@ def diagnose_iptv_status(status_code: int) -> str:
     return mapping.get(status_code, f"HTTP {status_code} vom Stream-Server")
 
 
+def detect_stream_error_payload(data: bytes, content_type: str = "") -> Optional[str]:
+    """
+    Erkennt versteckte Fehler-Payloads (z. B. IP_BAN, ISP_LOCK_FAILED, Geo-Blocks),
+    die von IPTV-/Streaming-Clustern oft trotz HTTP 200 als JSON oder HTML ausgeliefert werden.
+    Gibt eine lesbare Diagnosemeldung zurück oder None, wenn es ein valider Stream ist.
+    """
+    if not data:
+        return None
+
+    # Echte Video-Streams beginnen mit MPEG-TS Sync 0x47 oder HLS Header #EXTM3U
+    if data[:1] == b"\x47" or data.startswith(b"#EXTM3U"):
+        return None
+
+    # Automatische Gzip-Dekomprimierung falls Server mit Content-Encoding: gzip geantwortet hat
+    raw_bytes = data
+    if raw_bytes.startswith(b"\x1f\x8b"):
+        try:
+            import gzip
+            raw_bytes = gzip.decompress(raw_bytes)
+        except Exception:
+            pass
+
+    text = ""
+    try:
+        text = raw_bytes.decode("utf-8", errors="replace").strip()
+    except Exception:
+        return None
+
+    if not text:
+        return None
+
+    # 1. JSON-Fehler-Objekt prüfen
+    c_type_low = (content_type or "").lower()
+    is_json = "json" in c_type_low or text.startswith("{") or text.startswith("[")
+    if is_json:
+        try:
+            import json
+            parsed = json.loads(text)
+            if isinstance(parsed, dict):
+                err = str(parsed.get("error") or "").strip()
+                msg = str(parsed.get("message") or parsed.get("msg") or "").strip()
+
+                if "IP_BAN" in err:
+                    return f"IP-Sperre (IP_BAN): IP nicht autorisiert oder gesperrt ({msg or 'Zugriff verweigert'})"
+                if "ISP_LOCK" in err:
+                    return f"ISP-Sperre (ISP_LOCK): Provider-Bindung fehlgeschlagen ({msg or 'Internetanbieter nicht autorisiert'})"
+                if any(k in err for k in ("GEO", "COUNTRY", "RESTRICTED")):
+                    return f"Geo-IP Sperre ({err}): Stream in dieser Region blockiert ({msg})"
+                if "MAX_CONNECTION" in err or "LIMIT" in err:
+                    return f"Multi-Connection Limit ({err}): Maximale Verbindungen erreicht ({msg})"
+                if err:
+                    detail = f": {msg}" if msg else ""
+                    return f"Stream-Server Fehler ({err}){detail}"
+                if msg:
+                    return f"Stream-Server Fehler: {msg}"
+        except Exception:
+            pass
+
+    # 2. Textuelle Patterns bei HTML / Klartext
+    low_text = text.lower()
+    if "your ip address is not authorized" in low_text or "ip_ban" in low_text:
+        return "IP-Sperre: Deine IP-Adresse ist für diesen Stream-Server nicht autorisiert (IP_BAN)"
+    if "isp verification failed" in low_text or "isp_lock" in low_text:
+        return "ISP-Sperre: Internetanbieter für diesen Account nicht autorisiert (ISP_LOCK)"
+    if "access denied" in low_text or "cloudflare" in low_text or "attention required" in low_text:
+        return "Zugriff verweigert: Cloudflare / WAF-Sperre auf Stream-Server"
+
+    return None
+
+
 def probe_stream(
     url: str,
     user_agent: str = "",
@@ -386,6 +456,15 @@ def probe_stream(
                 pcr_kbps = pcr_bitrate_kbps(sample_bytes)
                 if pcr_kbps > 0:
                     measured_kbps = pcr_kbps
+
+                err_payload = detect_stream_error_payload(sample_bytes, content_type)
+                if err_payload:
+                    return StreamProbeResult(
+                        is_alive=False,
+                        status_code=status_code,
+                        latency_ms=latency_ms,
+                        error_msg=err_payload,
+                    )
             else:
                 diag = diagnose_iptv_status(status_code)
                 return StreamProbeResult(

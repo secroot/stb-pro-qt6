@@ -14,6 +14,7 @@ from core.models import (
     detect_quality_tag,
 )
 from core.signals import event_bus, worker_pool
+from core.vpn_manager import vpn_manager, NordVpnManager
 
 __all__ = [
     "Channel",
@@ -27,4 +28,6 @@ __all__ = [
     "detect_quality_tag",
     "event_bus",
     "worker_pool",
+    "vpn_manager",
+    "NordVpnManager",
 ]
