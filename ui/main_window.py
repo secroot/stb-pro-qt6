@@ -1267,6 +1267,19 @@ class MainWindow(QMainWindow):
         prof_name = self.state.current_profile_name
         clean_host = vpn_manager._normalize_host(url or getattr(self.active_client, "portal_url", "") or prof_name)
 
+        # Vorherigen Stream und Proxy-Session sofort trennen, damit der IPTV-Server (Stalker)
+        # die Verbindung sofort freigibt und kein Multi-Connection-Limit (HTTP 456) wirft
+        if hasattr(self, "vlc_ctrl") and self.vlc_ctrl:
+            try:
+                self.vlc_ctrl.stop()
+            except Exception:
+                pass
+            if hasattr(self.vlc_ctrl, "proxy") and self.vlc_ctrl.proxy:
+                try:
+                    self.vlc_ctrl.proxy.stop_session()
+                except Exception:
+                    pass
+
         if not vpn_manager.auto_switch_enabled:
             cur_ip = vpn_manager.get_public_ip(timeout=1.0)
             vpn_manager.mark_ip_burned(clean_host, cur_ip, reason=err_detail)
@@ -1306,6 +1319,8 @@ class MainWindow(QMainWindow):
                                 self.active_client.session.cookies.clear()
                             except Exception:
                                 pass
+                    # Kurze Pause (0.8s), damit der IPTV-Server die vorherige Session sauber aus seinem Speicher leert
+                    time.sleep(0.8)
                     # Zwingend im Qt-Main-Thread ausführen, um QTimer-Thread-Affinity Fehler zu verhindern
                     worker_pool.dispatch_to_ui(self.play_channel, cur_ch)
 
@@ -1982,6 +1997,8 @@ class MainWindow(QMainWindow):
     def _on_vlc_state_changed(self, state: str):
         if state == "playing":
             self._live_snapshot_timer.start(1800)
+            from core.vpn_manager import vpn_manager
+            vpn_manager.reset_consecutive_hops()
         else:
             self._live_snapshot_timer.stop()
 

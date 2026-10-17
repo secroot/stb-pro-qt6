@@ -18,6 +18,14 @@ import requests
 from core.signals import event_bus
 
 
+def _safe_emit(sig, *args):
+    """Sicheres Emitten von Qt-Signalen aus Hintergrund-Threads."""
+    try:
+        sig.emit(*args)
+    except (RuntimeError, Exception):
+        pass
+
+
 class NordVpnManager:
     """
     Verwaltet die Integration mit NordVPN unter Windows.
@@ -52,6 +60,7 @@ class NordVpnManager:
         self._burned_ips: Dict[str, Set[str]] = {}
         self._host_rotation_index: Dict[str, int] = {}
         self._global_rotation_idx: int = -1
+        self._consecutive_hops: Dict[str, int] = {}
         self._config_mgr = None
         self._detect_cli()
 
@@ -135,8 +144,9 @@ class NordVpnManager:
         return False
 
     def get_public_ip(self, timeout: float = 3.0) -> str:
-        """Ermittelt die aktuelle öffentliche IP-Adresse."""
+        """Ermittelt die aktuelle öffentliche IP-Adresse und Standortinformationen."""
         endpoints = [
+            "https://api.nordvpn.com/v1/helpers/ips/insights",
             "https://api.ipify.org?format=json",
             "https://ipinfo.io/json",
             "https://api.myip.com",
@@ -149,6 +159,9 @@ class NordVpnManager:
                     ip = str(data.get("ip") or "").strip()
                     if ip:
                         self._last_known_ip = ip
+                        c = data.get("country")
+                        if c:
+                            self._last_known_country = str(c)
                         return ip
             except Exception:
                 continue
@@ -226,6 +239,14 @@ class NordVpnManager:
                     self._config_mgr.clear_burned_ips()
                 event_bus.log_message.emit("[🧹 VPN] Alle verbrannten IPs zurückgesetzt.")
 
+    def reset_consecutive_hops(self, host: Optional[str] = None):
+        """Setzt den Zähler für konsekutive Hops zurück (z.B. bei stabiler Wiedergabe)."""
+        with self._lock:
+            if host:
+                self._consecutive_hops.pop(self._normalize_host(host), None)
+            else:
+                self._consecutive_hops.clear()
+
     # ──────────────────────────────────────────────────────────────────────
     # Länder- & Server-Rotation
     # ──────────────────────────────────────────────────────────────────────
@@ -294,13 +315,13 @@ class NordVpnManager:
                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
                 )
                 time.sleep(1.2)
-                event_bus.log_message.emit("[🛡️ VPN] NordVPN sauber getrennt. Verbindungslimit freigegeben.")
-                event_bus.vpn_status_changed.emit("disconnected", "NordVPN getrennt")
+                _safe_emit(event_bus.log_message, "[🛡️ VPN] NordVPN sauber getrennt. Verbindungslimit freigegeben.")
+                _safe_emit(event_bus.vpn_status_changed, "disconnected", "NordVPN getrennt")
                 if callback:
                     callback(True, "NordVPN getrennt")
             except Exception as e:
-                event_bus.log_message.emit(f"[⚠️ VPN] Fehler beim Trennen: {e}")
-                event_bus.vpn_status_changed.emit("error", str(e))
+                _safe_emit(event_bus.log_message, f"[⚠️ VPN] Fehler beim Trennen: {e}")
+                _safe_emit(event_bus.vpn_status_changed, "error", str(e))
                 if callback:
                     callback(False, str(e))
 
@@ -386,12 +407,12 @@ class NordVpnManager:
 
                 if success:
                     info = f"NordVPN verbunden ({country}): {new_ip}"
-                    event_bus.log_message.emit(f"[🛡️ VPN] {info}")
-                    event_bus.vpn_status_changed.emit("connected", info)
+                    _safe_emit(event_bus.log_message, f"[🛡️ VPN] {info}")
+                    _safe_emit(event_bus.vpn_status_changed, "connected", info)
                 else:
                     err_info = f"NordVPN Wechsel fehlgeschlagen ({new_ip})"
-                    event_bus.log_message.emit(f"[⚠️ VPN] {err_info}")
-                    event_bus.vpn_status_changed.emit("error", err_info)
+                    _safe_emit(event_bus.log_message, f"[⚠️ VPN] {err_info}")
+                    _safe_emit(event_bus.vpn_status_changed, "error", err_info)
 
                 if callback:
                     try:
@@ -429,12 +450,29 @@ class NordVpnManager:
 
         now = time.time()
         with self._lock:
-            # 15 Sekunden Cooldown gegen Verbindungsfluten
-            if self._is_switching or (now - self._last_switch_time < 15.0):
+            # 1. Kein paralleler Umschaltvorgang
+            if self._is_switching:
+                return False
+
+            # 2. Mindestens 2.0s Debounce, damit Routing und Interface nach dem letzten Wechsel stabil sind
+            if now - self._last_switch_time < 2.0:
                 event_bus.log_message.emit(
-                    f"[🛡️ VPN] Rotation für '{clean_host}' ignoriert (Cooldown aktiv, Schutz vor Gerätelimit)."
+                    f"[🛡️ VPN] Rotation für '{clean_host}' verzögert (Netzwerk-Stabilisierung 2s)..."
                 )
                 return False
+
+            # 3. Konsekutive Hops: Wenn ein Standort unmittelbar blockiert wird, sofort zum nächsten springen!
+            hops = self._consecutive_hops.get(clean_host, 0)
+            if hops >= len(candidates):
+                if now - self._last_switch_time < 15.0:
+                    event_bus.log_message.emit(
+                        f"[🛡️ VPN] Alle {len(candidates)} Standorte für '{clean_host}' getestet (Cooldown 15s aktiv)."
+                    )
+                    return False
+                self._consecutive_hops[clean_host] = 0
+                hops = 0
+
+            self._consecutive_hops[clean_host] = hops + 1
             self._is_switching = True
             self._last_switch_time = now
 
@@ -444,7 +482,7 @@ class NordVpnManager:
             target_country = candidates[next_idx]
 
         event_bus.log_message.emit(
-            f"[🛡️ VPN] Starte Server-Rotation für '{clean_host}' nach {target_country} (Cooldown 15s geschützt)..."
+            f"[🛡️ VPN] Starte Server-Rotation für '{clean_host}' (Hop {hops + 1}/{len(candidates)}) nach {target_country}..."
         )
         event_bus.vpn_status_changed.emit("switching", f"Rotiere nach {target_country}...")
 
@@ -494,15 +532,15 @@ class NordVpnManager:
 
                 if success:
                     info = f"NordVPN verbunden ({target_country}): {final_ip}"
-                    event_bus.log_message.emit(f"[🛡️ VPN] {info}")
-                    event_bus.vpn_status_changed.emit("connected", info)
+                    _safe_emit(event_bus.log_message, f"[🛡️ VPN] {info}")
+                    _safe_emit(event_bus.vpn_status_changed, "connected", info)
                     if on_success:
                         time.sleep(0.5)
                         on_success()
                 else:
                     err_info = f"NordVPN Rotation fehlgeschlagen ({final_ip})"
-                    event_bus.log_message.emit(f"[⚠️ VPN] {err_info}")
-                    event_bus.vpn_status_changed.emit("error", err_info)
+                    _safe_emit(event_bus.log_message, f"[⚠️ VPN] {err_info}")
+                    _safe_emit(event_bus.vpn_status_changed, "error", err_info)
 
         th = threading.Thread(target=_rotation_worker, daemon=True, name="NordVpnRotator")
         th.start()

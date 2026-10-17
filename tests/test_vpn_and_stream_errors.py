@@ -230,7 +230,7 @@ class TestVpnAndStreamErrors(unittest.TestCase):
             called_cmds.clear()
             called_cwds.clear()
             vm._is_switching = False
-            vm._last_switch_time = 0.0
+            vm._last_switch_time = time.time() - 2.5
             with patch.object(vm, "is_installed", return_value=True), patch.object(vm, "get_public_ip", return_value="1.2.3.5"):
                 vm.rotate_server_for_host("http://paplive.me:8080/c/", profile_name="DE | HD")
                 for _ in range(40):
@@ -241,6 +241,22 @@ class TestVpnAndStreamErrors(unittest.TestCase):
                 second_target = called_cmds[0][-1]
                 self.assertNotEqual(first_target, second_target)
                 self.assertEqual(second_target, "Austria")
+
+            # 3. Dritte Rotation (konsekutiver Hop ohne 15s Blockade) -> naechster Kandidat (z.B. Netherlands)
+            called_cmds.clear()
+            called_cwds.clear()
+            vm._is_switching = False
+            vm._last_switch_time = time.time() - 2.5
+            with patch.object(vm, "is_installed", return_value=True), patch.object(vm, "get_public_ip", return_value="1.2.3.6"):
+                vm.rotate_server_for_host("http://paplive.me:8080/c/", profile_name="DE | HD")
+                for _ in range(40):
+                    if len(called_cmds) >= 1:
+                        break
+                    time.sleep(0.05)
+                self.assertEqual(len(called_cmds), 1)
+                third_target = called_cmds[0][-1]
+                self.assertNotEqual(second_target, third_target)
+                self.assertEqual(third_target, "Netherlands")
 
     def test_stream_buffer_aborts_immediately_on_511(self):
         import time
