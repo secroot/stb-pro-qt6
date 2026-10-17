@@ -78,10 +78,3 @@ logos/
 *.log
 *.dump
 
-# User Data, Secrets, and Pentest Hit Lists
-config.json
-mac_database.json
-mac_scans/
-ALL MACS.txt
-stalker_portals.txt
-*_hits_*.txt

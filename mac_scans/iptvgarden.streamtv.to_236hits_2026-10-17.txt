@@ -1,0 +1,2123 @@
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C7:79:6D
+Scandate: 2026-10-17 15:00:05
+Expire: October 20, 2026, 8:07 pm
+Channels: 16732
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C3:8A:BA
+Scandate: 2026-10-17 15:00:05
+Expire: May 19, 2027, 4:04 pm
+Channels: 11144
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C1:B5:89
+Scandate: 2026-10-17 15:00:05
+Expire: July 17, 2027, 5:19 pm
+Channels: 13119
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:51:A1:E3
+Scandate: 2026-10-17 15:00:05
+Expire: October 19, 2026, 6:42 pm
+Channels: 1261
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:2B:6F:6A
+Scandate: 2026-10-17 15:00:05
+Expire: January 16, 2027, 9:01 pm
+Channels: 3575
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BF:22:2D
+Scandate: 2026-10-17 15:00:05
+Expire: February 7, 2027, 2:02 pm
+Channels: 4412
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:63:A6:F4
+Scandate: 2026-10-17 15:00:05
+Expire: August 9, 2027, 1:28 pm
+Channels: 7384
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C3:38:E7
+Scandate: 2026-10-17 15:00:05
+Expire: March 16, 2027, 5:23 pm
+Channels: 1965
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A5:33:21
+Scandate: 2026-10-17 15:00:05
+Expire: October 20, 2026, 7:51 pm
+Channels: 16449
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:6A:FA:47
+Scandate: 2026-10-17 15:00:05
+Expire: October 23, 2026, 2:54 pm
+Channels: 448
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:48:07
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BB:43:5D
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 904
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AF:79:DA
+Scandate: 2026-10-17 15:00:05
+Expire: October 25, 2026, 1:27 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:64:F1:00
+Scandate: 2026-10-17 15:00:05
+Expire: January 19, 2027, 1:52 pm
+Channels: 9387
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B7:26:EF
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C2:0A:89
+Scandate: 2026-10-17 15:00:05
+Expire: September 29, 2027, 4:26 pm
+Channels: 16732
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:A1:A1
+Scandate: 2026-10-17 15:00:05
+Expire: November 5, 2026, 3:10 pm
+Channels: 4308
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:4C:D7:F3
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 11041
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AD:59:B6
+Scandate: 2026-10-17 15:00:05
+Expire: November 20, 2026, 11:26 am
+Channels: 15802
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BB:47:DA
+Scandate: 2026-10-17 15:00:05
+Expire: September 6, 2027, 7:06 pm
+Channels: 16697
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D2:E2:CF
+Scandate: 2026-10-17 15:00:05
+Expire: May 14, 2027, 6:19 am
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:1E:8F:9D
+Scandate: 2026-10-17 15:00:05
+Expire: June 11, 2027, 7:39 pm
+Channels: 16504
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:44:1D:2D
+Scandate: 2026-10-17 15:00:05
+Expire: May 1, 2027, 5:19 pm
+Channels: 2647
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AC:1B:3C
+Scandate: 2026-10-17 15:00:05
+Expire: March 10, 2027, 10:27 pm
+Channels: 10628
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BC:6D:D6
+Scandate: 2026-10-17 15:00:05
+Expire: December 23, 2026, 10:56 am
+Channels: 1301
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B1:FE:85
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 6209
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:7A:15:85
+Scandate: 2026-10-17 15:00:05
+Expire: December 16, 2026, 9:29 am
+Channels: 2609
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D9:DA:74
+Scandate: 2026-10-17 15:00:05
+Expire: September 24, 2027, 10:18 pm
+Channels: 10048
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BA:66:80
+Scandate: 2026-10-17 15:00:05
+Expire: November 4, 2026, 9:15 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AE:40:A5
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 5262
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A9:C2:B7
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 3600
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:2C:5A:7C
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 3486
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A9:2A:37
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 1001
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:48:D7
+Scandate: 2026-10-17 15:00:05
+Expire: December 29, 2026, 5:50 pm
+Channels: 16754
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AD:5F:BA
+Scandate: 2026-10-17 15:00:05
+Expire: October 22, 2027, 1:00 pm
+Channels: 3864
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C4:57:93
+Scandate: 2026-10-17 15:00:05
+Expire: October 21, 2026, 5:44 pm
+Channels: 1800
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:55:4C
+Scandate: 2026-10-17 15:00:05
+Expire: January 25, 2027, 2:58 pm
+Channels: 1441
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:10:D4:AA
+Scandate: 2026-10-17 15:00:05
+Expire: February 17, 2027, 6:31 pm
+Channels: 3560
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:4E:FC:E9
+Scandate: 2026-10-17 15:00:05
+Expire: January 21, 2027, 8:57 pm
+Channels: 4267
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:54:8A:65
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:65:28:33
+Scandate: 2026-10-17 15:00:05
+Expire: February 27, 2027, 4:07 pm
+Channels: 16732
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: A0:BB:3E:40:27:81
+Scandate: 2026-10-17 15:00:05
+Expire: January 4, 2027, 9:04 am
+Channels: 11814
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D1:E7:57
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 904
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C3:15:42
+Scandate: 2026-10-17 15:00:05
+Expire: September 30, 2027, 12:15 pm
+Channels: 5452
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:4C:F8:89
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 10087
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:58:1D:19
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 1300
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:41:80:27
+Scandate: 2026-10-17 15:00:05
+Expire: November 10, 2026, 4:11 pm
+Channels: 3675
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C4:3C:44
+Scandate: 2026-10-17 15:00:05
+Expire: January 11, 2027, 9:26 pm
+Channels: 1001
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:61:38:39
+Scandate: 2026-10-17 15:00:05
+Expire: January 31, 2027, 6:33 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A6:EF:70
+Scandate: 2026-10-17 15:00:05
+Expire: October 10, 2027, 12:47 pm
+Channels: 1828
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:5D:07:A3
+Scandate: 2026-10-17 15:00:05
+Expire: March 28, 2027, 3:06 pm
+Channels: 2465
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:7A:B5:C1
+Scandate: 2026-10-17 15:00:05
+Expire: October 16, 2027, 7:07 pm
+Channels: 427
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:7A:16:52
+Scandate: 2026-10-17 15:00:05
+Expire: December 16, 2026, 9:32 am
+Channels: 2609
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B5:15:5F
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 4243
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 10:27:BE:05:9F:3D
+Scandate: 2026-10-17 15:00:05
+Expire: May 19, 2027, 7:50 pm
+Channels: 16697
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:7A:16:04
+Scandate: 2026-10-17 15:00:05
+Expire: December 16, 2026, 9:31 am
+Channels: 2609
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:95:39:9F
+Scandate: 2026-10-17 15:00:05
+Expire: January 19, 2027, 8:46 pm
+Channels: 15821
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A0:33:B8
+Scandate: 2026-10-17 15:00:05
+Expire: December 6, 2026, 7:35 pm
+Channels: 16753
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:C4:68
+Scandate: 2026-10-17 15:00:05
+Expire: January 6, 2027, 8:43 am
+Channels: 15708
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:5E:CD:A7
+Scandate: 2026-10-17 15:00:05
+Expire: November 9, 2026, 3:59 pm
+Channels: 2318
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AF:65:DB
+Scandate: 2026-10-17 15:00:05
+Expire: October 27, 2026, 2:13 pm
+Channels: 3168
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:53:6C:BB
+Scandate: 2026-10-17 15:00:05
+Expire: December 30, 2026, 10:10 am
+Channels: 6768
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:1D:02:68
+Scandate: 2026-10-17 15:00:05
+Expire: February 28, 2027, 12:00 am
+Channels: 13820
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D1:A9:FF
+Scandate: 2026-10-17 15:00:05
+Expire: August 28, 2027, 2:10 pm
+Channels: 3101
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AC:DB:78
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 4491
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C4:45:5D
+Scandate: 2026-10-17 15:00:05
+Expire: October 17, 2026, 6:01 pm
+Channels: 16754
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BB:2A:2F
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 3675
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:66:1E:0B
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 1440
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AD:AB:70
+Scandate: 2026-10-17 15:00:05
+Expire: December 9, 2026, 4:33 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:CD:14:43
+Scandate: 2026-10-17 15:00:05
+Expire: October 18, 2027, 11:00 am
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BF:F5:4E
+Scandate: 2026-10-17 15:00:05
+Expire: February 22, 2027, 11:48 am
+Channels: 13303
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:55:5E:16
+Scandate: 2026-10-17 15:00:05
+Expire: July 19, 2027, 5:12 pm
+Channels: 10532
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A9:EB:B1
+Scandate: 2026-10-17 15:00:05
+Expire: July 11, 2027, 12:27 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B9:9B:CD
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 3477
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AD:7C:A4
+Scandate: 2026-10-17 15:00:05
+Expire: February 19, 2027, 6:50 pm
+Channels: 5481
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:80:0D:06
+Scandate: 2026-10-17 15:00:05
+Expire: December 18, 2026, 5:36 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:CC:F7:2E
+Scandate: 2026-10-17 15:00:05
+Expire: July 8, 2027, 12:49 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BC:31:61
+Scandate: 2026-10-17 15:00:05
+Expire: November 1, 2026, 12:44 pm
+Channels: 2083
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:7A:94:EC
+Scandate: 2026-10-17 15:00:05
+Expire: October 18, 2026, 5:14 pm
+Channels: 16680
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B0:4C:13
+Scandate: 2026-10-17 15:00:05
+Expire: March 8, 2027, 6:44 pm
+Channels: 8685
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A5:B6:59
+Scandate: 2026-10-17 15:00:05
+Expire: September 11, 2027, 5:18 pm
+Channels: 15007
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:54:DB:AF
+Scandate: 2026-10-17 15:00:05
+Expire: February 13, 2027, 7:20 pm
+Channels: 1731
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BA:2A:5B
+Scandate: 2026-10-17 15:00:05
+Expire: October 17, 2027, 3:53 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A6:00:F7
+Scandate: 2026-10-17 15:00:05
+Expire: November 13, 2026, 10:30 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:01:6E:3F
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 12918
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:ED:CF:56
+Scandate: 2026-10-17 15:00:05
+Expire: June 20, 2027, 6:25 pm
+Channels: 2457
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:42:C4:CD
+Scandate: 2026-10-17 15:00:05
+Expire: January 11, 2027, 1:09 pm
+Channels: 4880
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C6:F8:AB
+Scandate: 2026-10-17 15:00:05
+Expire: November 26, 2026, 9:24 pm
+Channels: 16697
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:15:EC:22
+Scandate: 2026-10-17 15:00:05
+Expire: November 22, 2026, 11:02 pm
+Channels: 10022
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:CD:13:98
+Scandate: 2026-10-17 15:00:05
+Expire: October 20, 2026, 6:31 pm
+Channels: 16754
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:7E:19:D6
+Scandate: 2026-10-17 15:00:05
+Expire: July 16, 2027, 2:39 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A5:92:12
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 904
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:35:A1:81
+Scandate: 2026-10-17 15:00:05
+Expire: August 11, 2027, 2:16 pm
+Channels: 3392
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AA:77:52
+Scandate: 2026-10-17 15:00:05
+Expire: March 14, 2027, 3:43 pm
+Channels: 16449
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AD:E8:A9
+Scandate: 2026-10-17 15:00:05
+Expire: September 8, 2027, 8:50 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:26:E9:6B
+Scandate: 2026-10-17 15:00:05
+Expire: May 14, 2027, 9:36 am
+Channels: 16732
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AE:D7:F8
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 15993
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D1:A2:49
+Scandate: 2026-10-17 15:00:05
+Expire: December 17, 2026, 9:48 pm
+Channels: 5758
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AA:DE:02
+Scandate: 2026-10-17 15:00:05
+Expire: November 12, 2026, 1:20 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AD:0A:22
+Scandate: 2026-10-17 15:00:05
+Expire: December 21, 2026, 4:15 pm
+Channels: 3793
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:55:48
+Scandate: 2026-10-17 15:00:05
+Expire: October 8, 2027, 9:04 am
+Channels: 6365
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:78:18:AB
+Scandate: 2026-10-17 15:00:05
+Expire: October 2, 2027, 7:04 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C1:C2:FA
+Scandate: 2026-10-17 15:00:05
+Expire: January 31, 2027, 12:57 pm
+Channels: 2132
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:5E:41:16
+Scandate: 2026-10-17 15:00:05
+Expire: January 13, 2027, 2:24 pm
+Channels: 9909
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AD:D5:7E
+Scandate: 2026-10-17 15:00:05
+Expire: May 18, 2027, 5:32 am
+Channels: 2747
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B2:0A:28
+Scandate: 2026-10-17 15:00:05
+Expire: November 9, 2026, 12:00 pm
+Channels: 6467
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B9:F7:1D
+Scandate: 2026-10-17 15:00:05
+Expire: February 21, 2027, 9:02 am
+Channels: 5847
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D1:A2:2C
+Scandate: 2026-10-17 15:00:05
+Expire: December 22, 2026, 3:34 pm
+Channels: 5121
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:36:D4:63
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 5886
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:6A:DA:2F
+Scandate: 2026-10-17 15:00:05
+Expire: January 2, 2027, 8:46 am
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:1D:07:D8
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 904
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D0:17:54
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 904
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D3:7B:F1
+Scandate: 2026-10-17 15:00:05
+Expire: October 25, 2026, 5:45 pm
+Channels: 3422
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C3:15:41
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 6530
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AD:2F:BA
+Scandate: 2026-10-17 15:00:05
+Expire: November 28, 2026, 4:52 pm
+Channels: 4050
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:65:38:35
+Scandate: 2026-10-17 15:00:05
+Expire: January 10, 2027, 5:37 pm
+Channels: 6811
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:63:D4:85
+Scandate: 2026-10-17 15:00:05
+Expire: January 4, 2027, 8:14 pm
+Channels: 16732
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:59:B1:C0
+Scandate: 2026-10-17 15:00:05
+Expire: June 29, 2027, 10:02 pm
+Channels: 10546
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BB:41:C6
+Scandate: 2026-10-17 15:00:05
+Expire: November 28, 2026, 7:37 pm
+Channels: 2917
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:69:02:44
+Scandate: 2026-10-17 15:00:05
+Expire: December 11, 2026, 8:32 am
+Channels: 852
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B0:B6:34
+Scandate: 2026-10-17 15:00:05
+Expire: November 8, 2026, 12:00 pm
+Channels: 13649
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A6:47:B7
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 3269
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:5F:C5:D8
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:6E:38:4A
+Scandate: 2026-10-17 15:00:05
+Expire: December 18, 2026, 8:50 am
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AC:54:CD
+Scandate: 2026-10-17 15:00:05
+Expire: October 19, 2026, 9:25 am
+Channels: 283
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D0:07:BD
+Scandate: 2026-10-17 15:00:05
+Expire: October 2, 2027, 2:58 am
+Channels: 16754
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:8C:0A:B2
+Scandate: 2026-10-17 15:00:05
+Expire: April 11, 2027, 6:22 pm
+Channels: 4807
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:44:FB:CF
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 12270
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:4D:12:71
+Scandate: 2026-10-17 15:00:05
+Expire: June 21, 2027, 11:13 am
+Channels: 16036
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AE:45:2C
+Scandate: 2026-10-17 15:00:05
+Expire: October 23, 2026, 2:23 pm
+Channels: 12795
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:51:96:46
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 2678
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:DE:29:FC
+Scandate: 2026-10-17 15:00:05
+Expire: January 19, 2027, 9:43 pm
+Channels: 6888
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:BD:44
+Scandate: 2026-10-17 15:00:05
+Expire: January 7, 2027, 9:38 pm
+Channels: 2162
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:7F:1E:9F
+Scandate: 2026-10-17 15:00:05
+Expire: March 2, 2027, 6:39 pm
+Channels: 2570
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:26:C9:BA
+Scandate: 2026-10-17 15:00:05
+Expire: November 9, 2026, 8:08 pm
+Channels: 3163
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:C1:DB
+Scandate: 2026-10-17 15:00:05
+Expire: February 18, 2027, 7:01 pm
+Channels: 7551
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:51:7A:5D
+Scandate: 2026-10-17 15:00:05
+Expire: October 21, 2026, 12:15 pm
+Channels: 7192
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:90:5A
+Scandate: 2026-10-17 15:00:05
+Expire: October 24, 2026, 7:11 pm
+Channels: 16449
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:48:5B:16
+Scandate: 2026-10-17 15:00:05
+Expire: April 16, 2027, 10:21 pm
+Channels: 1829
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:52:37:FA
+Scandate: 2026-10-17 15:00:05
+Expire: November 9, 2026, 7:26 am
+Channels: 8733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D0:EB:87
+Scandate: 2026-10-17 15:00:05
+Expire: June 3, 2027, 10:13 am
+Channels: 4992
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A5:30:2E
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C1:F3:5E
+Scandate: 2026-10-17 15:00:05
+Expire: July 11, 2027, 2:38 pm
+Channels: 16754
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C8:48:65
+Scandate: 2026-10-17 15:00:05
+Expire: September 11, 2027, 7:34 am
+Channels: 9327
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BB:CD:93
+Scandate: 2026-10-17 15:00:05
+Expire: November 23, 2026, 9:56 am
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:5E:8A:0B
+Scandate: 2026-10-17 15:00:05
+Expire: December 30, 2026, 7:43 pm
+Channels: 16732
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:86:51:CB
+Scandate: 2026-10-17 15:00:05
+Expire: October 20, 2026, 12:04 pm
+Channels: 7465
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:5F:EC:38
+Scandate: 2026-10-17 15:00:05
+Expire: December 18, 2026, 12:16 am
+Channels: 2042
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:3E:65
+Scandate: 2026-10-17 15:00:05
+Expire: November 5, 2026, 6:03 pm
+Channels: 3859
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:33:58:AD
+Scandate: 2026-10-17 15:00:05
+Expire: May 14, 2027, 2:56 pm
+Channels: 6975
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:20:85:32
+Scandate: 2026-10-17 15:00:05
+Expire: November 4, 2026, 6:57 pm
+Channels: 2738
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B9:8A:FD
+Scandate: 2026-10-17 15:00:05
+Expire: October 29, 2026, 5:12 pm
+Channels: 7986
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BA:98:48
+Scandate: 2026-10-17 15:00:05
+Expire: March 1, 2027, 4:06 pm
+Channels: 9295
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C1:EC:0C
+Scandate: 2026-10-17 15:00:05
+Expire: June 4, 2027, 5:16 am
+Channels: 1272
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:E6:03:89
+Scandate: 2026-10-17 15:00:05
+Expire: April 22, 2027, 7:50 pm
+Channels: 1944
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:7A:15:84
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 2609
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:65:39:4B
+Scandate: 2026-10-17 15:00:05
+Expire: November 30, 2026, 9:57 pm
+Channels: 6838
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:DE:37:DA
+Scandate: 2026-10-17 15:00:05
+Expire: February 14, 2027, 10:00 am
+Channels: 791
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D5:6C:FF
+Scandate: 2026-10-17 15:00:05
+Expire: June 19, 2027, 7:07 pm
+Channels: 11634
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C0:0F:A8
+Scandate: 2026-10-17 15:00:05
+Expire: January 12, 2027, 8:39 am
+Channels: 6477
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BE:89:AE
+Scandate: 2026-10-17 15:00:05
+Expire: December 27, 2026, 10:13 pm
+Channels: 6693
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A2:87:4B
+Scandate: 2026-10-17 15:00:05
+Expire: August 1, 2027, 7:24 pm
+Channels: 14462
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AD:27:39
+Scandate: 2026-10-17 15:00:05
+Expire: February 20, 2027, 9:17 pm
+Channels: 5500
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:5E:DE:15
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 16754
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BB:3D:6F
+Scandate: 2026-10-17 15:00:05
+Expire: October 23, 2026, 4:10 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AE:71:C3
+Scandate: 2026-10-17 15:00:05
+Expire: February 22, 2027, 1:00 pm
+Channels: 15415
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A6:6D:B2
+Scandate: 2026-10-17 15:00:05
+Expire: November 15, 2026, 7:55 pm
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 10:27:BE:04:4E:8A
+Scandate: 2026-10-17 15:00:05
+Expire: November 6, 2026, 6:39 pm
+Channels: 3680
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C5:61:8F
+Scandate: 2026-10-17 15:00:05
+Expire: May 9, 2027, 6:35 pm
+Channels: 9212
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AE:00:2D
+Scandate: 2026-10-17 15:00:05
+Expire: February 19, 2027, 4:58 pm
+Channels: 5262
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B7:9F:33
+Scandate: 2026-10-17 15:00:05
+Expire: October 21, 2026, 5:55 pm
+Channels: 15484
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C1:94:54
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 1665
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:90:40
+Scandate: 2026-10-17 15:00:05
+Expire: June 25, 2027, 6:24 pm
+Channels: 2645
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C6:3B:51
+Scandate: 2026-10-17 15:00:05
+Expire: May 23, 2027, 1:39 am
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:96:82:76
+Scandate: 2026-10-17 15:00:05
+Expire: June 1, 2027, 9:56 am
+Channels: 9720
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BF:4E:AE
+Scandate: 2026-10-17 15:00:05
+Expire: November 9, 2026, 4:56 pm
+Channels: 11040
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AE:B7:74
+Scandate: 2026-10-17 15:00:05
+Expire: June 18, 2027, 3:50 pm
+Channels: 16024
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:5E:C7:16
+Scandate: 2026-10-17 15:00:05
+Expire: June 9, 2027, 11:24 pm
+Channels: 16723
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:44:89:A9
+Scandate: 2026-10-17 15:00:05
+Expire: July 3, 2027, 6:14 pm
+Channels: 12979
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 10:27:BE:2E:14:16
+Scandate: 2026-10-17 15:00:05
+Expire: December 31, 2026, 3:12 pm
+Channels: 10133
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:4F:1B:FE
+Scandate: 2026-10-17 15:00:05
+Expire: March 21, 2028, 5:24 pm
+Channels: 2562
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:31:B1:68
+Scandate: 2026-10-17 15:00:05
+Expire: July 17, 2027, 5:52 pm
+Channels: 6255
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AA:34:67
+Scandate: 2026-10-17 15:00:05
+Expire: June 4, 2027, 12:00 am
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:4A:6F:9B
+Scandate: 2026-10-17 15:00:05
+Expire: October 18, 2026, 1:15 pm
+Channels: 4750
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:4E:4B:07
+Scandate: 2026-10-17 15:00:05
+Expire: April 14, 2027, 7:11 pm
+Channels: 5428
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B3:75:3D
+Scandate: 2026-10-17 15:00:05
+Expire: February 23, 2027, 3:25 pm
+Channels: 12338
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BA:48:FF
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 12660
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:52:96:D7
+Scandate: 2026-10-17 15:00:05
+Expire: December 13, 2026, 5:17 pm
+Channels: 16732
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C3:C6:CF
+Scandate: 2026-10-17 15:00:05
+Expire: April 11, 2027, 12:29 pm
+Channels: 16680
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D3:AF:88
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 7951
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B6:9A:C5
+Scandate: 2026-10-17 15:00:05
+Expire: March 28, 2027, 4:09 pm
+Channels: 16732
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:68:D2:1B
+Scandate: 2026-10-17 15:00:05
+Expire: July 17, 2027, 9:49 am
+Channels: 14115
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:4E:30
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 10346
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AD:F3:C1
+Scandate: 2026-10-17 15:00:05
+Expire: March 15, 2027, 5:08 pm
+Channels: 4861
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:56:5D
+Scandate: 2026-10-17 15:00:05
+Expire: December 21, 2026, 11:50 am
+Channels: 16449
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A3:8F:B2
+Scandate: 2026-10-17 15:00:05
+Expire: August 1, 2027, 6:53 pm
+Channels: 11086
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BC:36:09
+Scandate: 2026-10-17 15:00:05
+Expire: April 3, 2027, 3:37 pm
+Channels: 12474
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:64:BC:11
+Scandate: 2026-10-17 15:00:05
+Expire: December 20, 2026, 2:18 pm
+Channels: 1082
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A6:EF:AB
+Scandate: 2026-10-17 15:00:05
+Expire: November 22, 2026, 4:49 am
+Channels: 6271
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:AB:33
+Scandate: 2026-10-17 15:00:05
+Expire: October 21, 2026, 5:02 pm
+Channels: 1382
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A6:57:15
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 16717
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:D3:5E:C0
+Scandate: 2026-10-17 15:00:05
+Expire: January 8, 2027, 1:55 pm
+Channels: 1187
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:73:86:AD
+Scandate: 2026-10-17 15:00:05
+Expire: October 17, 2026, 7:02 pm
+Channels: 14662
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:38:7B:4E
+Scandate: 2026-10-17 15:00:05
+Expire: October 17, 2026, 7:52 pm
+Channels: 904
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:8F:FE:B1
+Scandate: 2026-10-17 15:00:05
+Expire: January 6, 2027, 8:11 am
+Channels: 16754
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AF:83:94
+Scandate: 2026-10-17 15:00:05
+Expire: November 26, 2026, 9:24 pm
+Channels: 16697
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AD:E8:EB
+Scandate: 2026-10-17 15:00:05
+Expire: November 9, 2026, 8:54 pm
+Channels: 4389
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:10:7C:09
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 2108
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:CD:2F:7C
+Scandate: 2026-10-17 15:00:05
+Expire: October 17, 2026, 7:53 pm
+Channels: 904
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AE:4C:92
+Scandate: 2026-10-17 15:00:05
+Expire: March 18, 2027, 5:39 pm
+Channels: 3604
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C0:A2:F3
+Scandate: 2026-10-17 15:00:05
+Expire: August 17, 2027, 7:10 am
+Channels: 1836
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B2:8C:4D
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 6661
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:58:14:35
+Scandate: 2026-10-17 15:00:05
+Expire: November 5, 2026, 4:35 pm
+Channels: 1090
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C6:A5:CD
+Scandate: 2026-10-17 15:00:05
+Expire: March 21, 2027, 8:23 pm
+Channels: 4020
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:5D:32:F2
+Scandate: 2026-10-17 15:00:05
+Expire: February 9, 2027, 1:08 am
+Channels: 3769
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:54:2D:38
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 16733
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:01:02:03
+Scandate: 2026-10-17 15:00:05
+Expire: October 3, 2027, 12:05 pm
+Channels: 16754
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BD:7D:2B
+Scandate: 2026-10-17 15:00:05
+Expire: October 21, 2026, 5:41 pm
+Channels: 16634
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A1:C3:B2
+Scandate: 2026-10-17 15:00:05
+Expire: October 19, 2026, 11:49 pm
+Channels: 904
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:C0:83:B5
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 8818
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:43:98:48
+Scandate: 2026-10-17 15:00:05
+Expire: November 6, 2026, 5:13 pm
+Channels: 1187
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:B5:0F:8E
+Scandate: 2026-10-17 15:00:05
+Expire: April 19, 2027, 6:26 pm
+Channels: 5594
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:56:B9:15
+Scandate: 2026-10-17 15:00:05
+Expire: February 22, 2027, 6:07 am
+Channels: 3698
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:BB:50:86
+Scandate: 2026-10-17 15:00:05
+Expire: October 19, 2026, 11:51 pm
+Channels: 904
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A2:96:D7
+Scandate: 2026-10-17 15:00:05
+Expire: February 27, 2027, 11:55 am
+Channels: 7790
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:2C:02:FE
+Scandate: 2026-10-17 15:00:05
+Expire: November 15, 2026, 12:00 pm
+Channels: 904
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AE:68:2B
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 16623
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A5:91:8D
+Scandate: 2026-10-17 15:00:05
+Expire: October 30, 2026, 6:05 pm
+Channels: 1723
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:41:E5:C7
+Scandate: 2026-10-17 15:00:05
+Expire: July 4, 2027, 7:15 pm
+Channels: 3816
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:A4:63:8F
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 16449
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:61:62:55
+Scandate: 2026-10-17 15:00:05
+Expire: July 15, 2027, 4:57 pm
+Channels: 7330
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AE:21:D4
+Scandate: 2026-10-17 15:00:05
+Expire: October 24, 2026, 4:34 pm
+Channels: 3970
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AE:43:30
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 13380
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:4E:56:FB
+Scandate: 2026-10-17 15:00:05
+Expire: April 25, 2027, 4:58 pm
+Channels: 3969
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:AB:D1:CB
+Scandate: 2026-10-17 15:00:05
+Expire: November 1, 2026, 12:00 pm
+Channels: 904
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://iptvgarden.streamtv.to:8080/c/
+Status: Aktiv
+Mac: 00:1A:79:89:38:DD
+Scandate: 2026-10-17 15:00:05
+Expire: 0000-00-00 00:00:00
+Channels: 10877
+---------------------------------------------
