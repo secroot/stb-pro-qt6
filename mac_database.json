@@ -3904,10 +3904,10 @@
         "channels": 6440,
         "expire": "November 28, 2026, 12:00 am",
         "status": "Aktiv",
-        "token": "EE44C4595854247028A568B246687C35",
+        "token": "FE7B06D8A0865469A6CD15C0418AF17F",
         "model": "MAG 250",
         "first_seen": "2026-10-05 05:48:02",
-        "last_seen": "2026-10-17 20:09:27"
+        "last_seen": "2026-10-17 20:51:23"
       },
       "00:1A:79:B5:97:4C": {
         "mac": "00:1A:79:B5:97:4C",
@@ -13474,10 +13474,10 @@
       "channels": 6440,
       "expire": "November 28, 2026, 12:00 am",
       "status": "Aktiv",
-      "token": "EE44C4595854247028A568B246687C35",
+      "token": "FE7B06D8A0865469A6CD15C0418AF17F",
       "model": "MAG 250",
       "first_seen": "2026-10-05 05:48:02",
-      "last_seen": "2026-10-17 20:09:27"
+      "last_seen": "2026-10-17 20:51:23"
     },
     "00:1A:79:B5:91:83": {
       "mac": "00:1A:79:B5:91:83",
