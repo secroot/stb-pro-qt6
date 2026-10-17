@@ -331,9 +331,9 @@
             "mac": "00:1A:79:11:22:33",
             "model": "MAG 250",
             "serial_number": "8F5EA4662E9AD",
-            "device_id": "7733CE7B24F2D06DBB4FC7909612EA4844F6862BF66841255A12A81208982B91",
-            "device_id2": "C0C5AD65A74E359330EB81A353D63CE33C0BA98BE2942F04BB8EB6F97077DA87",
-            "signature": "2F6057EB1C3CD3B45BD80C3CB5F1EFDA64769622618ABE68E1B53B5802DDFD75",
+            "device_id": "C0C5AD65A74E359330EB81A353D63CE33C0BA98BE2942F04BB8EB6F97077DA87",
+            "device_id2": "93D53445F856D0DB2A8DEA49CD8B1A13E0370AA3163FEE2D6B19CB178E9CE217",
+            "signature": "93D53445F856D0DB2A8DEA49CD8B1A13E0370AA3163FEE2D6B19CB178E9CE217",
             "user_agent": "",
             "xc_url": "",
             "username": "",
@@ -523,7 +523,7 @@
             "proxy": ""
         }
     ],
-    "last_profile": "paplive.me (00:1A:79:FB:10:7A)",
+    "last_profile": "pro.8k-strong.tv (00:1A:79:00:13:BE)",
     "vlc_path": "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
     "ffplay_path": "C:\\Users\\basti\\AppData\\Local\\Microsoft\\WinGet\\Links\\ffplay.exe",
     "selected_player": "Integrierter Player",
@@ -733,10 +733,19 @@
             "4461"
         ],
         "pro.8k-strong.tv (00:1A:79:00:1B:D9)": [
-            "1008543",
-            "779156"
+            "1537257",
+            "196164",
+            "196165",
+            "198556",
+            "196217",
+            "310562",
+            "302774"
         ],
         "pro.8k-strong.tv (00:1A:79:00:13:BE)": [
+            "340444",
+            "340492",
+            "340489",
+            "1537262",
             "1537254"
         ],
         "t-rex4k.top (00:1A:79:B5:91:85)": [
@@ -775,6 +784,8 @@
             "196150"
         ],
         "paplive.me (00:1A:79:FB:10:7A)": [
+            "198556",
+            "196217",
             "196164",
             "310562",
             "302774"
@@ -783,8 +794,8 @@
     "start_maximized": true,
     "hide_dead_channels": true,
     "validation_workers": 8,
-    "last_scan_host": "paplive.me",
-    "last_scan_mac": "00:1A:79:FB:10:7A",
+    "last_scan_host": "pro.8k-strong.tv",
+    "last_scan_mac": "00:1A:79:00:13:BE",
     "vpn_auto_switch": true,
     "burned_ips": {}
 }

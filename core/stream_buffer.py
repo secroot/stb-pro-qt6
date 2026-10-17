@@ -106,6 +106,14 @@ class _Session:
         self.thread = threading.Thread(target=self._produce, daemon=True)
         self.thread.start()
 
+    def _url_host(self) -> str:
+        try:
+            import urllib.parse
+            parsed = urllib.parse.urlparse(self.url)
+            return parsed.netloc or self.url
+        except Exception:
+            return self.url
+
     def _rate_est(self) -> float:
         el = time.time() - self._t_first if self._t_first else 0
         if el >= 2.0 and self._bytes_active > 0:
@@ -282,6 +290,8 @@ class _Session:
         max_b = self.st.max_mb * 1048576
         attempts = 0
         proxies = {"http": self.st.proxy, "https": self.st.proxy} if getattr(self.st, "proxy", "") else None
+        clean_host = self._url_host()
+
         while not self.stopped:
             try:
                 target_s = max(self.st.buffer_seconds, self.st.start_seconds + 2.0)
@@ -294,8 +304,25 @@ class _Session:
                 ) as r:
                     self._resp = r
                     if r.status_code not in (200, 206):
-                        from core.stream_probe import diagnose_iptv_status
-                        raise IOError(diagnose_iptv_status(r.status_code))
+                        from core.stream_probe import diagnose_iptv_status, is_ip_or_stream_ban
+                        diag = diagnose_iptv_status(r.status_code)
+                        self.connected = False
+                        self.error = diag
+                        try:
+                            from core.signals import event_bus
+                            event_bus.log_message.emit(
+                                f"[⚠️ Stream-Fehler] {diag} bei {clean_host} (HTTP {r.status_code})"
+                            )
+                            if is_ip_or_stream_ban(r.status_code, diag):
+                                event_bus.stream_ip_ban_detected.emit(self.url, diag)
+                        except Exception:
+                            pass
+
+                        # Bei definitiven Sperren (511, 456, 401, 403, 407, 458) sofort abbrechen
+                        if is_ip_or_stream_ban(r.status_code, diag):
+                            break
+                        raise IOError(diag)
+
                     self.connected = True
                     self.error = ""
                     attempts = 0
@@ -313,17 +340,21 @@ class _Session:
                             continue
                         if first_chunk:
                             first_chunk = False
-                            from core.stream_probe import detect_stream_error_payload
+                            from core.stream_probe import detect_stream_error_payload, is_ip_or_stream_ban
                             err_payload = detect_stream_error_payload(chunk, r.headers.get("Content-Type", ""))
                             if err_payload:
                                 self.connected = False
                                 self.error = err_payload
                                 try:
                                     from core.signals import event_bus
-                                    event_bus.stream_ip_ban_detected.emit(self.url, err_payload)
+                                    event_bus.log_message.emit(
+                                        f"[🚫 Stream-Payload Fehler] {err_payload} bei {clean_host}"
+                                    )
+                                    if is_ip_or_stream_ban(r.status_code, err_payload):
+                                        event_bus.stream_ip_ban_detected.emit(self.url, err_payload)
                                 except Exception:
                                     pass
-                                raise IOError(err_payload)
+                                break
 
                         self._last_rx = time.time()
                         if self.ts_ok:
@@ -362,13 +393,39 @@ class _Session:
                 self.error = str(e)[:140]
                 if self.stopped:
                     return
-                # Bei definitiver IP- oder ISP-Sperre keine sinnlosen Reconnects erzwingen
-                if any(k in self.error for k in ("IP-Sperre", "ISP-Sperre", "IP_BAN", "ISP_LOCK")):
+
+                from core.stream_probe import is_ip_or_stream_ban
+                # Bei definitiver IP-, ISP- oder Auth-Sperre keine sinnlosen Reconnects erzwingen
+                if is_ip_or_stream_ban(0, self.error):
+                    try:
+                        from core.signals import event_bus
+                        event_bus.log_message.emit(
+                            f"[🚫 Stream-Sperre] Reconnect abgebrochen: {self.error} bei {clean_host}"
+                        )
+                    except Exception:
+                        pass
                     break
+
                 if not self.st.reconnect or attempts >= self.st.max_retries:
+                    try:
+                        from core.signals import event_bus
+                        event_bus.log_message.emit(
+                            f"[⚠️ Stream-Abbruch] Max Retries ({self.st.max_retries}) erreicht bei {clean_host}: {self.error}"
+                        )
+                    except Exception:
+                        pass
                     break
+
                 attempts += 1
                 self.reconnects += 1
+                try:
+                    from core.signals import event_bus
+                    event_bus.log_message.emit(
+                        f"[⏳ Stream-Reconnect] Versuch {attempts}/{self.st.max_retries} für {clean_host} ({self.error})..."
+                    )
+                except Exception:
+                    pass
+
                 with self.cond:
                     if not self.stopped:
                         self.cond.wait(min(2.0, 0.3 * attempts))

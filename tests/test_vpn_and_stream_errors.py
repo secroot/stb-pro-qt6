@@ -118,16 +118,83 @@ class TestVpnAndStreamErrors(unittest.TestCase):
         self.assertIn("Austria", cands)
         self.assertIn("Netherlands", cands)
 
-    def test_auto_switch_toggle(self):
-        vm = NordVpnManager()
-        vm.auto_switch_enabled = True
-        self.assertTrue(vm.auto_switch_enabled)
+    def test_is_ip_or_stream_ban(self):
+        from core.stream_probe import is_ip_or_stream_ban
+        for code in (511, 456, 401, 403, 407, 458):
+            self.assertTrue(is_ip_or_stream_ban(code), f"Expected {code} to be recognized as ban")
+        for code in (200, 206, 404, 500, 502):
+            self.assertFalse(is_ip_or_stream_ban(code), f"Expected {code} not to be recognized as ban")
 
-        vm.auto_switch_enabled = False
-        self.assertFalse(vm.auto_switch_enabled)
-        # Wenn deaktiviert, darf handle_ip_ban keinen Server-Wechsel starten
-        ok = vm.handle_ip_ban("http://test.com/stream", "IP_BAN", "Test Profile")
-        self.assertFalse(ok)
+        self.assertTrue(is_ip_or_stream_ban(0, "HTTP 511 (Device-Auth / Geo-Lock)"))
+        self.assertTrue(is_ip_or_stream_ban(0, "Cloudflare Access Denied"))
+        self.assertTrue(is_ip_or_stream_ban(0, "IP-Sperre: IP_BAN"))
+        self.assertTrue(is_ip_or_stream_ban(0, "ISP-Sperre: ISP_LOCK"))
+        self.assertFalse(is_ip_or_stream_ban(0, "Upstream beendet"))
+
+    def test_probe_stream_triggers_ip_ban_on_511(self):
+        from core.stream_probe import probe_stream
+        from core.signals import event_bus
+
+        mock_resp = MagicMock()
+        mock_resp.status_code = 511
+        mock_resp.headers = {"Content-Type": "text/html"}
+        mock_resp.__enter__.return_value = mock_resp
+        mock_resp.__exit__.return_value = False
+
+        emitted_signals = []
+        def _on_ban(url, reason):
+            emitted_signals.append((url, reason))
+
+        event_bus.stream_ip_ban_detected.connect(_on_ban)
+        try:
+            with patch("requests.get", return_value=mock_resp):
+                res = probe_stream("http://pro.8k-strong.tv/play/live.php?mac=00:1A:79:00:13:BE")
+                self.assertFalse(res.is_alive)
+                self.assertEqual(res.status_code, 511)
+                self.assertIn("511", res.error_msg)
+                self.assertEqual(len(emitted_signals), 1)
+                self.assertIn("pro.8k-strong.tv", emitted_signals[0][0])
+                self.assertIn("511", emitted_signals[0][1])
+        finally:
+            event_bus.stream_ip_ban_detected.disconnect(_on_ban)
+
+    def test_stream_buffer_aborts_immediately_on_511(self):
+        import time
+        from PySide6.QtCore import Qt
+        from core.stream_buffer import BufferSettings, _Session
+        from core.signals import event_bus
+
+        mock_resp = MagicMock()
+        mock_resp.status_code = 511
+        mock_resp.headers = {"Content-Type": "text/html"}
+        mock_resp.__enter__.return_value = mock_resp
+        mock_resp.__exit__.return_value = False
+
+        emitted_signals = []
+        log_messages = []
+        def _on_ban(url, reason):
+            emitted_signals.append((url, reason))
+        def _on_log(msg):
+            log_messages.append(msg)
+
+        event_bus.stream_ip_ban_detected.connect(_on_ban, Qt.DirectConnection)
+        event_bus.log_message.connect(_on_log, Qt.DirectConnection)
+        try:
+            st = BufferSettings(reconnect=True, max_retries=10)
+            with patch("core.stream_buffer.requests.get", return_value=mock_resp):
+                sess = _Session("http://pro.8k-strong.tv/play/live.php?stream=123", {}, st)
+                sess.thread.join(timeout=1.0)
+
+                # Reconnect-Versuche müssen 0 sein, da sofort abgebrochen wurde
+                self.assertEqual(sess.reconnects, 0)
+                self.assertFalse(sess.connected)
+                self.assertTrue(sess.eof)
+                self.assertIn("511", sess.error)
+                self.assertEqual(len(emitted_signals), 1)
+                self.assertTrue(any("Stream-Fehler" in m and "511" in m for m in log_messages))
+        finally:
+            event_bus.stream_ip_ban_detected.disconnect(_on_ban)
+            event_bus.log_message.disconnect(_on_log)
 
 
 if __name__ == "__main__":

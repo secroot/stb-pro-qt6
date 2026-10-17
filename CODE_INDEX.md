@@ -28,14 +28,14 @@
 | `_BottomHudBar` | **Class / Widget** | [player/osd_overlay.py](player/osd_overlay.py#L84-L194) | `L84-L194` | Basis: QWidget |
 | `_ChannelDrawerOverlay` | **Class / Widget** | [player/osd_overlay.py](player/osd_overlay.py#L197-L275) | `L197-L275` | Basis: QWidget |
 | `_cmd` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L99-L113) | `L99-L113` | def _cmd(url, headers, width, tail) |
-| `_Handler` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L494-L525) | `L494-L525` | Basis: BaseHTTPRequestHandler |
+| `_Handler` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L551-L582) | `L551-L582` | Basis: BaseHTTPRequestHandler |
 | `_HLSDetected` | **Class / Widget** | [core/recorder.py](core/recorder.py#L23-L26) | `L23-L26` | Basis: Exception |
 | `_make_ts_packet` | **Function** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L34-L51) | `L34-L51` | Build a valid 188-byte MPEG-TS packet with optional PCR. |
 | `_MockTSHandler` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L54-L87) | `L54-L87` | Basis: BaseHTTPRequestHandler |
 | `_normalize_stb_model` | **Function** | [ui/dialogs/profile_dialog.py](ui/dialogs/profile_dialog.py#L34-L41) | `L34-L41` | def _normalize_stb_model(model_str) |
 | `_on_response` | **Function** | [clients/stb_client.py](clients/stb_client.py#L31-L56) | `L31-L56` | def _on_response(resp) |
-| `_parse_json` | **Function** | [core/stream_probe.py](core/stream_probe.py#L529-L550) | `L529-L550` | def _parse_json(parsed) |
-| `_Session` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L68-L491) | `L68-L491` | Basis:  |
+| `_parse_json` | **Function** | [core/stream_probe.py](core/stream_probe.py#L548-L569) | `L548-L569` | def _parse_json(parsed) |
+| `_Session` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L68-L548) | `L68-L548` | Basis:  |
 | `_TopHudBar` | **Class / Widget** | [player/osd_overlay.py](player/osd_overlay.py#L16-L81) | `L16-L81` | Basis: QWidget |
 | `_WorkerSignals` | **Class / Widget** | [core/signals.py](core/signals.py#L30-L32) | `L30-L32` | Basis: QObject |
 | `AppEventBus` | **Class / Widget** | [core/signals.py](core/signals.py#L10-L27) | `L10-L27` | Zentraler Signal-Bus für die gesamte Applikation. |
@@ -57,9 +57,9 @@
 | `detect_ffplay_path` | **Function** | [core/config_manager.py](core/config_manager.py#L48-L57) | `L48-L57` | def detect_ffplay_path() |
 | `detect_mpv_path` | **Function** | [core/config_manager.py](core/config_manager.py#L36-L45) | `L36-L45` | def detect_mpv_path() |
 | `detect_quality_tag` | **Function** | [core/models.py](core/models.py#L31-L58) | `L31-L58` | Erkennt den Qualitäts-Tag AUSSCHLIESSLICH anhand von echten Dimensionsdaten in den Metadat... |
-| `detect_stream_error_payload` | **Function** | [core/stream_probe.py](core/stream_probe.py#L313-L380) | `L313-L380` | Erkennt versteckte Fehler-Payloads (z. B. IP_BAN, ISP_LOCK_FAILED, Geo-Blocks), |
+| `detect_stream_error_payload` | **Function** | [core/stream_probe.py](core/stream_probe.py#L332-L399) | `L332-L399` | Erkennt versteckte Fehler-Payloads (z. B. IP_BAN, ISP_LOCK_FAILED, Geo-Blocks), |
 | `detect_vlc_path` | **Function** | [core/config_manager.py](core/config_manager.py#L19-L33) | `L19-L33` | def detect_vlc_path() |
-| `diagnose_iptv_status` | **Function** | [core/stream_probe.py](core/stream_probe.py#L292-L310) | `L292-L310` | Diagnostiziert proprietäre/spezifische HTTP-Statuscodes von IPTV- und Streaming-Clustern. |
+| `diagnose_iptv_status` | **Function** | [core/stream_probe.py](core/stream_probe.py#L311-L329) | `L311-L329` | Diagnostiziert proprietäre/spezifische HTTP-Statuscodes von IPTV- und Streaming-Clustern. |
 | `EPGGuideDialog` | **Class / Widget** | [ui/dialogs/epg_guide_dialog.py](ui/dialogs/epg_guide_dialog.py#L31-L245) | `L31-L245` | Basis: QDialog |
 | `EPGPanel` | **Class / Widget** | [ui/components/epg_panel.py](ui/components/epg_panel.py#L26-L192) | `L26-L192` | Basis: QFrame |
 | `EPGProgram` | **Class / Widget** | [core/models.py](core/models.py#L171-L329) | `L171-L329` | Basis:  |
@@ -83,6 +83,7 @@
 | `HttpLogEntry` | **Class / Widget** | [core/models.py](core/models.py#L492-L533) | `L492-L533` | Basis:  |
 | `InspectorView` | **Class / Widget** | [ui/views/inspector_view.py](ui/views/inspector_view.py#L32-L262) | `L32-L262` | Basis: QWidget |
 | `is_blank_or_black_jpeg` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L40-L61) | `L40-L61` | Erkennt korrupte, leere oder rein schwarze Dummy-Frames zuverlässig. |
+| `is_ip_or_stream_ban` | **Function** | [core/stream_probe.py](core/stream_probe.py#L295-L308) | `L295-L308` | Ermittelt zuverlässig, ob ein HTTP-Statuscode oder Fehlertext auf |
 | `Job` | **Class / Widget** | [core/recorder.py](core/recorder.py#L56-L118) | `L56-L118` | Basis:  |
 | `JobsDialog` | **Class / Widget** | [ui/dialogs/jobs_dialog.py](ui/dialogs/jobs_dialog.py#L25-L135) | `L25-L135` | Basis: QDialog |
 | `JsonViewerDialog` | **Class / Widget** | [ui/dialogs/json_viewer_dialog.py](ui/dialogs/json_viewer_dialog.py#L27-L119) | `L27-L119` | Basis: QDialog |
@@ -92,12 +93,12 @@
 | `MacDatabase` | **Class / Widget** | [core/mac_database.py](core/mac_database.py#L26-L238) | `L26-L238` | Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern. |
 | `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L31-L211) | `L31-L211` | Basis: QDialog |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
-| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L79-L2761) | `L79-L2761` | Basis: QMainWindow |
-| `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L21-L483) | `L21-L483` | Verwaltet die Integration mit NordVPN unter Windows. |
+| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L79-L2772) | `L79-L2772` | Basis: QMainWindow |
+| `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L21-L486) | `L21-L486` | Verwaltet die Integration mit NordVPN unter Windows. |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
 | `pcr_bitrate_kbps` | **Function** | [core/stream_probe.py](core/stream_probe.py#L38-L66) | `L38-L66` | Echte Mux-Bitrate aus MPEG-TS-PCR. |
 | `PreviewOverlayWidget` | **Class / Widget** | [ui/views/live_tv_view.py](ui/views/live_tv_view.py#L86-L152) | `L86-L152` | Standbild-Preview Thumbnail Overlay displayed inside the video viewport when |
-| `probe_stream` | **Function** | [core/stream_probe.py](core/stream_probe.py#L383-L594) | `L383-L594` | def probe_stream(url, user_agent, cookies, timeout, sample_duration, cancel, skip_ffprobe,... |
+| `probe_stream` | **Function** | [core/stream_probe.py](core/stream_probe.py#L402-L613) | `L402-L613` | def probe_stream(url, user_agent, cookies, timeout, sample_duration, cancel, skip_ffprobe,... |
 | `Profile` | **Class / Widget** | [core/models.py](core/models.py#L333-L452) | `L333-L452` | Basis:  |
 | `ProfileEditorDialog` | **Class / Widget** | [ui/dialogs/profile_dialog.py](ui/dialogs/profile_dialog.py#L44-L308) | `L44-L308` | Basis: QDialog |
 | `quality_from_dimensions` | **Function** | [core/models.py](core/models.py#L13-L28) | `L13-L28` | Ermittelt den Qualitäts-Tag (UHD/FHD/HD/SD) exakt anhand von Pixel-Dimensionen. |
@@ -117,11 +118,11 @@
 | `SeriesBrowserDialog` | **Class / Widget** | [ui/dialogs/series_dialog.py](ui/dialogs/series_dialog.py#L26-L163) | `L26-L163` | Basis: QDialog |
 | `SidebarWidget` | **Class / Widget** | [ui/components/sidebar.py](ui/components/sidebar.py#L32-L453) | `L32-L453` | Basis: QFrame |
 | `StbClient` | **Class / Widget** | [clients/stb_client.py](clients/stb_client.py#L61-L91) | `L61-L91` | Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging. |
-| `StreamBufferProxy` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L528-L572) | `L528-L572` | Basis:  |
+| `StreamBufferProxy` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L585-L629) | `L585-L629` | Basis:  |
 | `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L456-L474) | `L456-L474` | Basis:  |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
 | `TestUIAndEngine` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L90-L825) | `L90-L825` | Basis: unittest.TestCase |
-| `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L130) | `L15-L130` | Basis: unittest.TestCase |
+| `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L197) | `L15-L197` | Basis: unittest.TestCase |
 | `ThemeColors` | **Class / Widget** | [ui/theme.py](ui/theme.py#L11-L43) | `L11-L43` | Design tokens matching and refining the Obsidian Cyber-Cinema palette. |
 | `thumb_age_s` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L147-L151) | `L147-L151` | def thumb_age_s(key) |
 | `thumb_path` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L116-L117) | `L116-L117` | def thumb_path(key) |
@@ -510,7 +511,7 @@ Ersetzt das langsame Tkinter after()-Polling durch echte Qt Signals & Slots.
 
 ---
 
-### 📄 [`core/stream_buffer.py`](core/stream_buffer.py) (572 Zeilen)
+### 📄 [`core/stream_buffer.py`](core/stream_buffer.py) (629 Zeilen)
 > Lokaler Stream-Puffer-Proxy (127.0.0.1) für STB Pro Qt6.
 Liest den Upstream-Stream unabhängig vom Player in einen Ringpuffer (Sekunden/MB),
 liefert ihn PCR-getaktet an LibVLC und überbrückt kurze Aussetzer durch Auto-Reconnect.
@@ -521,41 +522,42 @@ liefert ihn PCR-getaktet an LibVLC und überbrückt kurze Aussetzer durch Auto-R
     - [`clamp()`](core/stream_buffer.py#L38) — `L38`
     - [`to_dict()`](core/stream_buffer.py#L52) — `L52`
     - [`from_dict(cls, d)`](core/stream_buffer.py#L56) — `L56`
-- **[`_Session`](core/stream_buffer.py#L68-L491)** — `L68-L491`
+- **[`_Session`](core/stream_buffer.py#L68-L548)** — `L68-L548`
   - **Wichtige Methoden:**
     - [`__init__(url, headers, st)`](core/stream_buffer.py#L69) — `L69`
-    - [`_rate_est()`](core/stream_buffer.py#L109) — `L109`
-    - [`_record_pcr(abs_offset, pcr_time)`](core/stream_buffer.py#L115) — `L115`
-    - [`_level_s(pos)`](core/stream_buffer.py#L137) — `L137`
-    - [`_scan(chunk)`](core/stream_buffer.py#L145) — `L145`
-    - [`_parse_ts_psi(p, o, pid, has_pusi, afc)`](core/stream_buffer.py#L210) — `L210`
-    - [`_produce()`](core/stream_buffer.py#L281) — `L281`
-    - [`_tick_rate(n)`](core/stream_buffer.py#L379) — `L379`
-    - [`_take(pos, n)`](core/stream_buffer.py#L387) — `L387`
-    - [`serve(wfile)`](core/stream_buffer.py#L397) — `L397`
-    - [`stop()`](core/stream_buffer.py#L452) — `L452`
-    - [`stats()`](core/stream_buffer.py#L466) — `L466`
-- **[`_Handler`](core/stream_buffer.py#L494-L525)** : *BaseHTTPRequestHandler* — `L494-L525`
+    - [`_url_host()`](core/stream_buffer.py#L109) — `L109`
+    - [`_rate_est()`](core/stream_buffer.py#L117) — `L117`
+    - [`_record_pcr(abs_offset, pcr_time)`](core/stream_buffer.py#L123) — `L123`
+    - [`_level_s(pos)`](core/stream_buffer.py#L145) — `L145`
+    - [`_scan(chunk)`](core/stream_buffer.py#L153) — `L153`
+    - [`_parse_ts_psi(p, o, pid, has_pusi, afc)`](core/stream_buffer.py#L218) — `L218`
+    - [`_produce()`](core/stream_buffer.py#L289) — `L289`
+    - [`_tick_rate(n)`](core/stream_buffer.py#L436) — `L436`
+    - [`_take(pos, n)`](core/stream_buffer.py#L444) — `L444`
+    - [`serve(wfile)`](core/stream_buffer.py#L454) — `L454`
+    - [`stop()`](core/stream_buffer.py#L509) — `L509`
+    - [`stats()`](core/stream_buffer.py#L523) — `L523`
+- **[`_Handler`](core/stream_buffer.py#L551-L582)** : *BaseHTTPRequestHandler* — `L551-L582`
   - **Wichtige Methoden:**
-    - [`log_message()`](core/stream_buffer.py#L497) — `L497`
-    - [`do_HEAD()`](core/stream_buffer.py#L500) — `L500`
-    - [`do_GET()`](core/stream_buffer.py#L511) — `L511`
-- **[`StreamBufferProxy`](core/stream_buffer.py#L528-L572)** — `L528-L572`
+    - [`log_message()`](core/stream_buffer.py#L554) — `L554`
+    - [`do_HEAD()`](core/stream_buffer.py#L557) — `L557`
+    - [`do_GET()`](core/stream_buffer.py#L568) — `L568`
+- **[`StreamBufferProxy`](core/stream_buffer.py#L585-L629)** — `L585-L629`
   - **Wichtige Methoden:**
-    - [`__init__()`](core/stream_buffer.py#L529) — `L529`
-    - [`_ensure_server()`](core/stream_buffer.py#L534) — `L534`
-    - [`open_session(url, headers, settings)`](core/stream_buffer.py#L542) — `L542`
-    - [`get_session(path)`](core/stream_buffer.py#L550) — `L550`
-    - [`stop_session()`](core/stream_buffer.py#L554) — `L554`
-    - [`stats()`](core/stream_buffer.py#L560) — `L560`
-    - [`shutdown()`](core/stream_buffer.py#L564) — `L564`
+    - [`__init__()`](core/stream_buffer.py#L586) — `L586`
+    - [`_ensure_server()`](core/stream_buffer.py#L591) — `L591`
+    - [`open_session(url, headers, settings)`](core/stream_buffer.py#L599) — `L599`
+    - [`get_session(path)`](core/stream_buffer.py#L607) — `L607`
+    - [`stop_session()`](core/stream_buffer.py#L611) — `L611`
+    - [`stats()`](core/stream_buffer.py#L617) — `L617`
+    - [`shutdown()`](core/stream_buffer.py#L621) — `L621`
 
 #### Wichtige Konstanten / Konfigurationen
 - `TS_PACKET` (L17), `_LEAD_S` (L18)
 
 ---
 
-### 📄 [`core/stream_probe.py`](core/stream_probe.py) (594 Zeilen)
+### 📄 [`core/stream_probe.py`](core/stream_probe.py) (613 Zeilen)
 > Stream-Probe Engine für STB Pro Qt6.
 Ermittelt HTTP-Latenz, MPEG-TS PCR-Mux-Bitrate sowie Video-/Audio-Codecs und Auflösung via FFprobe.
 
@@ -571,17 +573,18 @@ Ermittelt HTTP-Latenz, MPEG-TS PCR-Mux-Bitrate sowie Video-/Audio-Codecs und Auf
 - **[`read_se()`](core/stream_probe.py#L149-L151)** — `L149`
 - **[`extract_video_info_from_ts(data)`](core/stream_probe.py#L211-L271)** — `L211` — *Scannt MPEG-TS Pakete nach H.264/H.265 SPS in Millisekunden.*
 - **[`extract_resolution_from_hls_text(text)`](core/stream_probe.py#L274-L289)** — `L274` — *Extrahiert RESOLUTION=WxH direkt aus HLS-Playlists.*
-- **[`diagnose_iptv_status(status_code)`](core/stream_probe.py#L292-L310)** — `L292` — *Diagnostiziert proprietäre/spezifische HTTP-Statuscodes von IPTV- und Streaming-Clustern.*
-- **[`detect_stream_error_payload(data, content_type)`](core/stream_probe.py#L313-L380)** — `L313` — *Erkennt versteckte Fehler-Payloads (z. B. IP_BAN, ISP_LOCK_FAILED, Geo-Blocks),*
-- **[`probe_stream(url, user_agent, cookies, timeout, sample_duration, cancel, skip_ffprobe, proxy, extract_thumbnail)`](core/stream_probe.py#L383-L594)** — `L383`
-- **[`_parse_json(parsed)`](core/stream_probe.py#L529-L550)** — `L529`
+- **[`is_ip_or_stream_ban(status_code, error_text)`](core/stream_probe.py#L295-L308)** — `L295` — *Ermittelt zuverlässig, ob ein HTTP-Statuscode oder Fehlertext auf*
+- **[`diagnose_iptv_status(status_code)`](core/stream_probe.py#L311-L329)** — `L311` — *Diagnostiziert proprietäre/spezifische HTTP-Statuscodes von IPTV- und Streaming-Clustern.*
+- **[`detect_stream_error_payload(data, content_type)`](core/stream_probe.py#L332-L399)** — `L332` — *Erkennt versteckte Fehler-Payloads (z. B. IP_BAN, ISP_LOCK_FAILED, Geo-Blocks),*
+- **[`probe_stream(url, user_agent, cookies, timeout, sample_duration, cancel, skip_ffprobe, proxy, extract_thumbnail)`](core/stream_probe.py#L402-L613)** — `L402`
+- **[`_parse_json(parsed)`](core/stream_probe.py#L548-L569)** — `L548`
 
 #### Wichtige Konstanten / Konfigurationen
-- `FFPROBE_BIN` (L34), `_NOWIN` (L35)
+- `FFPROBE_BIN` (L34), `_NOWIN` (L35), `BAN_STATUS_CODES` (L292)
 
 ---
 
-### 📄 [`core/vpn_manager.py`](core/vpn_manager.py) (487 Zeilen)
+### 📄 [`core/vpn_manager.py`](core/vpn_manager.py) (490 Zeilen)
 > NordVPN Manager für STB Pro Qt6.
 Erkennt eine aktive NordVPN-Installation, überwacht den Verbindungsstatus und
 führt bei Erkennung von IP-/ISP-Sperren (IP_BAN / ISP_LOCK) vollautomatische,
@@ -589,7 +592,7 @@ mehrstufige Server- und Länder-Rotationen via NordVPN-CLI durch.
 Speichert verbrannte IPs pro Host und respektiert Benutzer-Präferenzen zur VPN-Steuerung.
 
 #### Klassen & Komponenten
-- **[`NordVpnManager`](core/vpn_manager.py#L21-L483)** — `L21-L483`
+- **[`NordVpnManager`](core/vpn_manager.py#L21-L486)** — `L21-L486`
   - *Verwaltet die Integration mit NordVPN unter Windows.*
   - **Wichtige Methoden:**
     - [`__init__()`](core/vpn_manager.py#L44) — `L44`
@@ -710,14 +713,14 @@ Nutzt Qt Signals für reaktive Status- und Puffer-Updates ohne UI-Blockade.
 
 ---
 
-### 📄 [`ui/main_window.py`](ui/main_window.py) (2763 Zeilen)
+### 📄 [`ui/main_window.py`](ui/main_window.py) (2774 Zeilen)
 > Main Application Window (Orchestrator) for STB Pro v6.0 Qt6 Edition.
 Coordinates Sidebar, TopNavigationBar, LiveTVView, VODView, ScannerView, InspectorView, ConsoleView,
 LibVLC Hardware Player, External Player Runner, Fullscreen HUD Overlay, PiP Mini-Player,
 Multi-Thread MAC Scanner, Parallel Category Validator, and all 7 Dialogs.
 
 #### Klassen & Komponenten
-- **[`MainWindow`](ui/main_window.py#L79-L2761)** : *QMainWindow* — `L79-L2761`
+- **[`MainWindow`](ui/main_window.py#L79-L2772)** : *QMainWindow* — `L79-L2772`
   - **Signals**: `_val_progress_sig`, `_val_finished_sig`, `_val_thumb_progress_sig`, `_val_thumb_finished_sig`, `_epg_loaded_sig`, `_probe_done_sig`, `_preview_ready_sig`
   - **Wichtige Methoden:**
     - [`__init__()`](ui/main_window.py#L89) — `L89`
@@ -1270,13 +1273,13 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
 
 ---
 
-### 📄 [`tests/test_vpn_and_stream_errors.py`](tests/test_vpn_and_stream_errors.py) (134 Zeilen)
+### 📄 [`tests/test_vpn_and_stream_errors.py`](tests/test_vpn_and_stream_errors.py) (201 Zeilen)
 > Unit Tests für IP- und ISP-Sperren-Erkennung sowie NordVPN-Manager.
 Testet JSON-Fehler-Payloads (auch gzipped), HTML-WAF-Sperren,
 Länder-Heuristiken und die StreamBuffer-Schutzlogik.
 
 #### Klassen & Komponenten
-- **[`TestVpnAndStreamErrors`](tests/test_vpn_and_stream_errors.py#L15-L130)** : *unittest.TestCase* — `L15-L130`
+- **[`TestVpnAndStreamErrors`](tests/test_vpn_and_stream_errors.py#L15-L197)** : *unittest.TestCase* — `L15-L197`
   - **Wichtige Methoden:**
     - [`test_detect_stream_error_valid_ts()`](tests/test_vpn_and_stream_errors.py#L17) — `L17`
     - [`test_detect_stream_error_valid_hls()`](tests/test_vpn_and_stream_errors.py#L22) — `L22`
@@ -1289,7 +1292,9 @@ Länder-Heuristiken und die StreamBuffer-Schutzlogik.
     - [`test_vpn_manager_cooldown()`](tests/test_vpn_and_stream_errors.py#L79) — `L79`
     - [`test_burned_ips_tracking()`](tests/test_vpn_and_stream_errors.py#L88) — `L88`
     - [`test_rotation_candidates()`](tests/test_vpn_and_stream_errors.py#L113) — `L113`
-    - [`test_auto_switch_toggle()`](tests/test_vpn_and_stream_errors.py#L121) — `L121`
+    - [`test_is_ip_or_stream_ban()`](tests/test_vpn_and_stream_errors.py#L121) — `L121`
+    - [`test_probe_stream_triggers_ip_ban_on_511()`](tests/test_vpn_and_stream_errors.py#L134) — `L134`
+    - [`test_stream_buffer_aborts_immediately_on_511()`](tests/test_vpn_and_stream_errors.py#L161) — `L161`
 
 ---
 

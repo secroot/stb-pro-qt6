@@ -289,14 +289,33 @@ def extract_resolution_from_hls_text(text: str) -> tuple[int, int]:
     return 0, 0
 
 
+BAN_STATUS_CODES = {401, 403, 407, 456, 458, 511}
+
+
+def is_ip_or_stream_ban(status_code: int = 0, error_text: str = "") -> bool:
+    """
+    Ermittelt zuverlässig, ob ein HTTP-Statuscode oder Fehlertext auf
+    eine IP-, ISP-, Geo-, WAF- oder Token/Auth-Sperre hinweist.
+    """
+    if status_code in BAN_STATUS_CODES:
+        return True
+    low = str(error_text or "").lower()
+    ban_keywords = (
+        "ip-sperre", "isp-sperre", "ip_ban", "isp_lock", "geo-ip",
+        "nicht autorisiert", "not authorized", "access denied",
+        "cloudflare", "waf-sperre", "device-auth", "456", "511", "407", "403", "401", "458"
+    )
+    return any(k in low for k in ban_keywords)
+
+
 def diagnose_iptv_status(status_code: int) -> str:
     """Diagnostiziert proprietäre/spezifische HTTP-Statuscodes von IPTV- und Streaming-Clustern."""
     mapping = {
         456: "HTTP 456 (Geo-IP / ISP-Sperre oder Multi-Connection Limit erreicht)",
         407: "HTTP 407 (Geo-IP Sperre / Proxy im Land des Anbieters erforderlich)",
         459: "HTTP 459 (Stream-Leitung belegt / Account wird parallel genutzt)",
-        458: "HTTP 458 (Account auf Stream-Server abgelaufen / deaktiviert)",
-        511: "HTTP 511 (Device-Auth ungültig / sn2 & device_id2 erforderlich)",
+        458: "HTTP 458 (Account auf Stream-Server abgelaufen / gesperrt)",
+        511: "HTTP 511 (Device-Auth / Geo-Lock: IP oder Token für Streamer nicht autorisiert)",
         512: "HTTP 512 (Streamer-Knoten antwortet nicht / Kanal offline)",
         401: "HTTP 401 (Nicht autorisiert / Token abgelaufen)",
         403: "HTTP 403 (Zugriff verweigert / WAF- oder Cloudflare-Block)",
@@ -459,7 +478,7 @@ def probe_stream(
 
                 err_payload = detect_stream_error_payload(sample_bytes, content_type)
                 if err_payload:
-                    if any(k in err_payload for k in ("IP-Sperre", "ISP-Sperre", "IP_BAN", "ISP_LOCK")):
+                    if is_ip_or_stream_ban(status_code, err_payload):
                         try:
                             from core.signals import event_bus
                             event_bus.stream_ip_ban_detected.emit(url, err_payload)
@@ -473,7 +492,7 @@ def probe_stream(
                     )
             else:
                 diag = diagnose_iptv_status(status_code)
-                if status_code in (456, 407):
+                if is_ip_or_stream_ban(status_code, diag):
                     try:
                         from core.signals import event_bus
                         event_bus.stream_ip_ban_detected.emit(url, diag)

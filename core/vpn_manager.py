@@ -459,7 +459,7 @@ class NordVpnManager:
         Markiert die aktuelle IP als verbrannt und startet bei aktiver Option die Rotation.
         """
         clean_host = self._normalize_host(url)
-        cur_ip = self._last_known_ip or self.get_public_ip(timeout=1.5)
+        cur_ip = self.get_public_ip(timeout=1.5) or self._last_known_ip
 
         # 1. Aktuelle IP als verbrannt für diesen Host markieren
         if cur_ip and cur_ip != "Unbekannt":
@@ -473,6 +473,9 @@ class NordVpnManager:
             return False
 
         if not self.is_installed() or not self.is_running():
+            event_bus.log_message.emit(
+                f"[⚠️ VPN] IP-Sperre auf '{clean_host}', aber NordVPN ist nicht gestartet oder nicht erreichbar."
+            )
             return False
 
         # 3. Intelligente Rotation durchführen

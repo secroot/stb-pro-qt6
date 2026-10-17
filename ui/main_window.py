@@ -1282,8 +1282,19 @@ class MainWindow(QMainWindow):
             def _retry_playback():
                 if cur_ch and self.state.playing_channel and str(cur_ch.id) == str(self.state.playing_channel.id):
                     event_bus.log_message.emit(
-                        f"[🛡️ VPN] Frische IP aktiv! Starte Kanal '{cur_ch.name}' neu..."
+                        f"[🛡️ VPN] Frische IP aktiv! Bereinige Link-Cache & starte Kanal '{cur_ch.name}' neu..."
                     )
+                    if self.active_client:
+                        if hasattr(self.active_client, "invalidate_link_cache"):
+                            try:
+                                self.active_client.invalidate_link_cache()
+                            except Exception:
+                                pass
+                        if hasattr(self.active_client, "session") and hasattr(self.active_client.session, "cookies"):
+                            try:
+                                self.active_client.session.cookies.clear()
+                            except Exception:
+                                pass
                     self.play_channel(cur_ch)
 
             vpn_manager.handle_ip_ban(
