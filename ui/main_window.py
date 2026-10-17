@@ -1374,9 +1374,22 @@ class MainWindow(QMainWindow):
 
         menu.addSeparator()
 
+        cur_host = vpn_manager._normalize_host(
+            getattr(self.active_client, "portal_url", "") or self.state.current_profile_name
+        )
+
+        # Action: Dynamische Rotation (zyklisch zu neuem Land/Server)
+        act_rotate = menu.addAction("🔄 Server jetzt rotieren (Nächstes Land / Frische IP)")
+        act_rotate.triggered.connect(
+            lambda: vpn_manager.rotate_server_for_host(
+                host=cur_host,
+                profile_name=self.state.current_profile_name,
+            )
+        )
+
         # Action: Quick Connect
-        act_rotate = menu.addAction("🔄 Server jetzt rotieren (Quick Connect)")
-        act_rotate.triggered.connect(lambda: vpn_manager.switch_server())
+        act_quick = menu.addAction("⚡ Quick Connect (Deutschland / Frankfurt)")
+        act_quick.triggered.connect(lambda: vpn_manager.switch_server(target_country="Germany"))
 
         # Action: Disconnect
         act_disconnect = menu.addAction("🛑 VPN trennen (Disconnect / Limit freigeben)")
@@ -1385,11 +1398,12 @@ class MainWindow(QMainWindow):
         # Submenu: Länder
         menu_countries = menu.addMenu("📍 Land gezielt wählen")
         for country, label in [
-            ("Germany", "🇩🇪 Deutschland"),
-            ("Switzerland", "🇨🇭 Schweiz"),
-            ("Austria", "🇦🇹 Österreich"),
-            ("Netherlands", "🇳🇱 Niederlande"),
-            ("United Kingdom", "🇬🇧 Großbritannien"),
+            ("Germany", "🇩🇪 Deutschland (Frankfurt)"),
+            ("Berlin", "🇩🇪 Deutschland (Berlin)"),
+            ("Switzerland", "🇨🇭 Schweiz (Zürich)"),
+            ("Austria", "🇦🇹 Österreich (Wien)"),
+            ("Netherlands", "🇳🇱 Niederlande (Amsterdam)"),
+            ("United Kingdom", "🇬🇧 Großbritannien (London)"),
             ("United States", "🇺🇸 USA"),
             ("Turkey", "🇹🇷 Türkei"),
             ("France", "🇫🇷 Frankreich"),
@@ -1400,9 +1414,6 @@ class MainWindow(QMainWindow):
         menu.addSeparator()
 
         # Verbrannte IPs Info & Reset
-        cur_host = vpn_manager._normalize_host(
-            getattr(self.active_client, "portal_url", "") or self.state.current_profile_name
-        )
         burned_list = vpn_manager.get_burned_ips(cur_host)
         menu.addAction(f"🔥 Verbrannte IPs ({cur_host}): {len(burned_list)}").setEnabled(False)
 

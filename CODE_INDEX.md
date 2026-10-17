@@ -93,8 +93,8 @@
 | `MacDatabase` | **Class / Widget** | [core/mac_database.py](core/mac_database.py#L26-L238) | `L26-L238` | Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern. |
 | `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L31-L211) | `L31-L211` | Basis: QDialog |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
-| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L87-L2789) | `L87-L2789` | Basis: QMainWindow |
-| `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L21-L519) | `L21-L519` | Verwaltet die Integration mit NordVPN unter Windows. |
+| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L87-L2800) | `L87-L2800` | Basis: QMainWindow |
+| `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L21-L547) | `L21-L547` | Verwaltet die Integration mit NordVPN unter Windows. |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
 | `pcr_bitrate_kbps` | **Function** | [core/stream_probe.py](core/stream_probe.py#L38-L66) | `L38-L66` | Echte Mux-Bitrate aus MPEG-TS-PCR. |
 | `PreviewOverlayWidget` | **Class / Widget** | [ui/views/live_tv_view.py](ui/views/live_tv_view.py#L86-L152) | `L86-L152` | Standbild-Preview Thumbnail Overlay displayed inside the video viewport when |
@@ -122,7 +122,7 @@
 | `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L456-L474) | `L456-L474` | Basis:  |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
 | `TestUIAndEngine` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L90-L840) | `L90-L840` | Basis: unittest.TestCase |
-| `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L257) | `L15-L257` | Basis: unittest.TestCase |
+| `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L281) | `L15-L281` | Basis: unittest.TestCase |
 | `ThemeColors` | **Class / Widget** | [ui/theme.py](ui/theme.py#L11-L43) | `L11-L43` | Design tokens matching and refining the Obsidian Cyber-Cinema palette. |
 | `thumb_age_s` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L147-L151) | `L147-L151` | def thumb_age_s(key) |
 | `thumb_path` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L116-L117) | `L116-L117` | def thumb_path(key) |
@@ -584,7 +584,7 @@ Ermittelt HTTP-Latenz, MPEG-TS PCR-Mux-Bitrate sowie Video-/Audio-Codecs und Auf
 
 ---
 
-### 📄 [`core/vpn_manager.py`](core/vpn_manager.py) (523 Zeilen)
+### 📄 [`core/vpn_manager.py`](core/vpn_manager.py) (551 Zeilen)
 > NordVPN Manager für STB Pro Qt6.
 Erkennt eine aktive NordVPN-Installation, überwacht den Verbindungsstatus und
 führt bei Erkennung von IP-/ISP-Sperren (IP_BAN / ISP_LOCK) vollautomatische,
@@ -592,24 +592,24 @@ mehrstufige Server- und Länder-Rotationen via NordVPN-CLI durch.
 Speichert verbrannte IPs pro Host und respektiert Benutzer-Präferenzen zur VPN-Steuerung.
 
 #### Klassen & Komponenten
-- **[`NordVpnManager`](core/vpn_manager.py#L21-L519)** — `L21-L519`
+- **[`NordVpnManager`](core/vpn_manager.py#L21-L547)** — `L21-L547`
   - *Verwaltet die Integration mit NordVPN unter Windows.*
   - **Wichtige Methoden:**
     - [`__init__()`](core/vpn_manager.py#L44) — `L44`
-    - [`set_config_manager(mgr)`](core/vpn_manager.py#L56) — `L56` *(Bindet den Konfigurations-Manager ein und synchronisiert gespeicherte Einstellungen.)*
-    - [`auto_switch_enabled()`](core/vpn_manager.py#L68) — `L68`
-    - [`auto_switch_enabled(val)`](core/vpn_manager.py#L74) — `L74`
-    - [`_detect_cli()`](core/vpn_manager.py#L79) — `L79`
-    - [`is_installed()`](core/vpn_manager.py#L97) — `L97` *(Prüft, ob NordVPN auf dem System installiert ist.)*
-    - [`is_running()`](core/vpn_manager.py#L101) — `L101` *(Prüft, ob der NordVPN-Dienst oder die App im Hintergrund aktiv ist.)*
-    - [`is_connected()`](core/vpn_manager.py#L118) — `L118` *(Prüft über die Routing-Tabelle, ob der NordLynx-Tunnel aktiv Datenverkehr leitet.)*
-    - [`get_public_ip(timeout)`](core/vpn_manager.py#L135) — `L135` *(Ermittelt die aktuelle öffentliche IP-Adresse.)*
-    - [`_normalize_host(host_or_url)`](core/vpn_manager.py#L156) — `L156`
-    - [`mark_ip_burned(host, ip, reason)`](core/vpn_manager.py#L172) — `L172` *(Markiert eine IP für einen bestimmten Host als gesperrt/verbrannt.)*
-    - [`is_ip_burned(host, ip)`](core/vpn_manager.py#L189) — `L189` *(Prüft, ob eine IP für den angegebenen Host bereits als gesperrt markiert wurde.)*
-    - [`get_burned_ips(host)`](core/vpn_manager.py#L203) — `L203` *(Gibt die Liste aller verbrannten IPs für einen Host zurück.)*
-    - [`clear_burned_ips(host)`](core/vpn_manager.py#L212) — `L212` *(Setzt verbrannte IPs zurück (für einen Host oder global).)*
-    - [`guess_country_for_profile(cls, profile_name, portal_url)`](core/vpn_manager.py#L232) — `L232` *(Leitet aus dem Profilnamen oder der Portal-Domain das optimale Zielland ab.)*
+    - [`set_config_manager(mgr)`](core/vpn_manager.py#L58) — `L58` *(Bindet den Konfigurations-Manager ein und synchronisiert gespeicherte Einstellungen.)*
+    - [`auto_switch_enabled()`](core/vpn_manager.py#L70) — `L70`
+    - [`auto_switch_enabled(val)`](core/vpn_manager.py#L76) — `L76`
+    - [`_detect_cli()`](core/vpn_manager.py#L81) — `L81`
+    - [`is_installed()`](core/vpn_manager.py#L99) — `L99` *(Prüft, ob NordVPN auf dem System installiert ist.)*
+    - [`is_running()`](core/vpn_manager.py#L103) — `L103` *(Prüft, ob der NordVPN-Dienst oder die App im Hintergrund aktiv ist.)*
+    - [`is_connected()`](core/vpn_manager.py#L120) — `L120` *(Prüft über die Routing-Tabelle, ob der NordLynx-Tunnel aktiv Datenverkehr leitet.)*
+    - [`get_public_ip(timeout)`](core/vpn_manager.py#L137) — `L137` *(Ermittelt die aktuelle öffentliche IP-Adresse.)*
+    - [`_normalize_host(host_or_url)`](core/vpn_manager.py#L158) — `L158`
+    - [`mark_ip_burned(host, ip, reason)`](core/vpn_manager.py#L174) — `L174` *(Markiert eine IP für einen bestimmten Host als gesperrt/verbrannt.)*
+    - [`is_ip_burned(host, ip)`](core/vpn_manager.py#L191) — `L191` *(Prüft, ob eine IP für den angegebenen Host bereits als gesperrt markiert wurde.)*
+    - [`get_burned_ips(host)`](core/vpn_manager.py#L205) — `L205` *(Gibt die Liste aller verbrannten IPs für einen Host zurück.)*
+    - [`clear_burned_ips(host)`](core/vpn_manager.py#L214) — `L214` *(Setzt verbrannte IPs zurück (für einen Host oder global).)*
+    - [`guess_country_for_profile(cls, profile_name, portal_url)`](core/vpn_manager.py#L234) — `L234` *(Leitet aus dem Profilnamen oder der Portal-Domain das optimale Zielland ab.)*
     - *... und 5 weitere Hilfsmethoden.*
 
 ---
@@ -713,14 +713,14 @@ Nutzt Qt Signals für reaktive Status- und Puffer-Updates ohne UI-Blockade.
 
 ---
 
-### 📄 [`ui/main_window.py`](ui/main_window.py) (2791 Zeilen)
+### 📄 [`ui/main_window.py`](ui/main_window.py) (2802 Zeilen)
 > Main Application Window (Orchestrator) for STB Pro v6.0 Qt6 Edition.
 Coordinates Sidebar, TopNavigationBar, LiveTVView, VODView, ScannerView, InspectorView, ConsoleView,
 LibVLC Hardware Player, External Player Runner, Fullscreen HUD Overlay, PiP Mini-Player,
 Multi-Thread MAC Scanner, Parallel Category Validator, and all 7 Dialogs.
 
 #### Klassen & Komponenten
-- **[`MainWindow`](ui/main_window.py#L87-L2789)** : *QMainWindow* — `L87-L2789`
+- **[`MainWindow`](ui/main_window.py#L87-L2800)** : *QMainWindow* — `L87-L2800`
   - **Signals**: `_val_progress_sig`, `_val_finished_sig`, `_val_thumb_progress_sig`, `_val_thumb_finished_sig`, `_epg_loaded_sig`, `_probe_done_sig`, `_preview_ready_sig`
   - **Wichtige Methoden:**
     - [`__init__()`](ui/main_window.py#L97) — `L97`
@@ -1274,13 +1274,13 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
 
 ---
 
-### 📄 [`tests/test_vpn_and_stream_errors.py`](tests/test_vpn_and_stream_errors.py) (261 Zeilen)
+### 📄 [`tests/test_vpn_and_stream_errors.py`](tests/test_vpn_and_stream_errors.py) (285 Zeilen)
 > Unit Tests für IP- und ISP-Sperren-Erkennung sowie NordVPN-Manager.
 Testet JSON-Fehler-Payloads (auch gzipped), HTML-WAF-Sperren,
 Länder-Heuristiken und die StreamBuffer-Schutzlogik.
 
 #### Klassen & Komponenten
-- **[`TestVpnAndStreamErrors`](tests/test_vpn_and_stream_errors.py#L15-L257)** : *unittest.TestCase* — `L15-L257`
+- **[`TestVpnAndStreamErrors`](tests/test_vpn_and_stream_errors.py#L15-L281)** : *unittest.TestCase* — `L15-L281`
   - **Wichtige Methoden:**
     - [`test_detect_stream_error_valid_ts()`](tests/test_vpn_and_stream_errors.py#L17) — `L17`
     - [`test_detect_stream_error_valid_hls()`](tests/test_vpn_and_stream_errors.py#L22) — `L22`
@@ -1296,7 +1296,7 @@ Länder-Heuristiken und die StreamBuffer-Schutzlogik.
     - [`test_is_ip_or_stream_ban()`](tests/test_vpn_and_stream_errors.py#L121) — `L121`
     - [`test_probe_stream_triggers_ip_ban_on_511()`](tests/test_vpn_and_stream_errors.py#L134) — `L134`
     - [`test_vpn_manager_clean_disconnect_and_sequence()`](tests/test_vpn_and_stream_errors.py#L167) — `L167`
-    - [`test_stream_buffer_aborts_immediately_on_511()`](tests/test_vpn_and_stream_errors.py#L221) — `L221`
+    - [`test_stream_buffer_aborts_immediately_on_511()`](tests/test_vpn_and_stream_errors.py#L245) — `L245`
 
 ---
 

@@ -32,13 +32,13 @@ class NordVpnManager:
     ]
 
     ROTATION_POOLS: Dict[str, List[str]] = {
-        "Germany": ["Germany", "Switzerland", "Austria", "Netherlands", "France", "United Kingdom"],
+        "Germany": ["Switzerland", "Austria", "Netherlands", "Berlin", "Germany", "France", "United Kingdom"],
         "Turkey": ["Turkey", "Germany", "Netherlands", "Bulgaria", "Greece"],
-        "Austria": ["Austria", "Germany", "Switzerland"],
-        "Switzerland": ["Switzerland", "Germany", "Austria"],
-        "Netherlands": ["Netherlands", "Germany", "Belgium", "France"],
+        "Austria": ["Austria", "Switzerland", "Germany", "Netherlands"],
+        "Switzerland": ["Switzerland", "Austria", "Germany", "Netherlands"],
+        "Netherlands": ["Netherlands", "Germany", "Belgium", "France", "Switzerland"],
         "United Kingdom": ["United Kingdom", "Ireland", "Netherlands", "Germany"],
-        "United States": ["United States", "Canada"],
+        "United States": ["United States", "Canada", "United Kingdom"],
     }
 
     def __init__(self):
@@ -50,6 +50,8 @@ class NordVpnManager:
         self._last_known_ip: str = ""
         self._last_known_country: str = ""
         self._burned_ips: Dict[str, Set[str]] = {}
+        self._host_rotation_index: Dict[str, int] = {}
+        self._global_rotation_idx: int = -1
         self._config_mgr = None
         self._detect_cli()
 
@@ -279,6 +281,8 @@ class NordVpnManager:
         event_bus.log_message.emit("[🛡️ VPN] Trenne aktive NordVPN-Verbindung (-d)...")
         event_bus.vpn_status_changed.emit("switching", "Trenne VPN...")
 
+        cli_dir = os.path.dirname(cli) if os.path.dirname(cli) else None
+
         def _worker():
             try:
                 subprocess.run(
@@ -286,6 +290,7 @@ class NordVpnManager:
                     capture_output=True,
                     text=True,
                     timeout=6,
+                    cwd=cli_dir,
                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
                 )
                 time.sleep(1.2)
@@ -311,6 +316,7 @@ class NordVpnManager:
         """
         Wechselt asynchron zu einem neuen NordVPN-Server (optional mit Länderangabe).
         Verbindet direkt via (-c), um störende Auto-Connect-Bestätigungsdialoge zu vermeiden.
+        Rotiert bei leerer Länderangabe dynamisch durch verfügbare Länder statt statisch auf Frankfurt.
         """
         cli = self._detect_cli()
         if not cli:
@@ -328,24 +334,38 @@ class NordVpnManager:
             self._is_switching = True
             self._last_switch_time = now
 
-        country = (target_country or "").strip()
-        msg_target = f"zu {country}" if country else "neuer Server (Quick Connect)"
+            country = (target_country or "").strip()
+            if not country:
+                fallback_candidates = [
+                    "Switzerland",
+                    "Austria",
+                    "Netherlands",
+                    "Berlin",
+                    "Germany",
+                    "France",
+                    "United Kingdom",
+                ]
+                self._global_rotation_idx = (self._global_rotation_idx + 1) % len(fallback_candidates)
+                country = fallback_candidates[self._global_rotation_idx]
+
+        msg_target = f"nach {country}"
         event_bus.log_message.emit(f"[🛡️ VPN] Wechsle NordVPN Server {msg_target}...")
         event_bus.vpn_status_changed.emit("switching", f"Wechsle Server {msg_target}...")
+
+        cli_dir = os.path.dirname(cli) if os.path.dirname(cli) else None
 
         def _worker():
             success = False
             new_ip = ""
             try:
-                cmd = [cli, "-c"]
-                if country:
-                    cmd.extend(["-g", country])
+                cmd = [cli, "-c", "-g", country]
 
                 subprocess.run(
                     cmd,
                     capture_output=True,
                     text=True,
                     timeout=8,
+                    cwd=cli_dir,
                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
                 )
 
@@ -365,7 +385,7 @@ class NordVpnManager:
                     self._is_switching = False
 
                 if success:
-                    info = f"NordVPN verbunden ({country or 'Quick'}): {new_ip}"
+                    info = f"NordVPN verbunden ({country}): {new_ip}"
                     event_bus.log_message.emit(f"[🛡️ VPN] {info}")
                     event_bus.vpn_status_changed.emit("connected", info)
                 else:
@@ -390,8 +410,9 @@ class NordVpnManager:
         on_success: Optional[Callable[[], None]] = None,
     ) -> bool:
         """
-        Rotiert intelligent zu einem sauberen Ziel-Server/Land.
+        Rotiert intelligent und sequenziell zu einem frischen Ziel-Server/Land.
         Verbindet direkt via (-c), um störende Auto-Connect-Bestätigungsdialoge zu vermeiden.
+        Zyklischer Durchlauf aller Kandidaten pro Host, damit niemals auf derselben Location verharrt wird.
         """
         if not self.auto_switch_enabled or not self.is_installed():
             return False
@@ -401,6 +422,11 @@ class NordVpnManager:
             return False
 
         clean_host = self._normalize_host(host)
+        base_country = self.guess_country_for_profile(profile_name, clean_host)
+        candidates = self.get_rotation_candidates(base_country)
+        if not candidates:
+            candidates = ["Switzerland", "Austria", "Netherlands", "Berlin", "Germany"]
+
         now = time.time()
         with self._lock:
             # 15 Sekunden Cooldown gegen Verbindungsfluten
@@ -412,16 +438,17 @@ class NordVpnManager:
             self._is_switching = True
             self._last_switch_time = now
 
-        base_country = self.guess_country_for_profile(profile_name, clean_host)
-        candidates = self.get_rotation_candidates(base_country)
-
-        # Wähle den besten Zielkandidaten
-        target_country = candidates[0] if candidates else "Germany"
+            prev_idx = self._host_rotation_index.get(clean_host, -1)
+            next_idx = (prev_idx + 1) % len(candidates)
+            self._host_rotation_index[clean_host] = next_idx
+            target_country = candidates[next_idx]
 
         event_bus.log_message.emit(
             f"[🛡️ VPN] Starte Server-Rotation für '{clean_host}' nach {target_country} (Cooldown 15s geschützt)..."
         )
         event_bus.vpn_status_changed.emit("switching", f"Rotiere nach {target_country}...")
+
+        cli_dir = os.path.dirname(cli) if os.path.dirname(cli) else None
 
         def _rotation_worker():
             final_ip = ""
@@ -435,6 +462,7 @@ class NordVpnManager:
                     capture_output=True,
                     text=True,
                     timeout=8,
+                    cwd=cli_dir,
                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
                 )
 

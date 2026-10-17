@@ -166,17 +166,19 @@ class TestVpnAndStreamErrors(unittest.TestCase):
 
     def test_vpn_manager_clean_disconnect_and_sequence(self):
         vm = NordVpnManager()
-        vm._cli_path = r"C:\fake\NordVPN.exe"
+        vm._cli_path = r"C:\Program Files\NordVPN\NordVPN.exe"
 
         called_cmds = []
+        called_cwds = []
         def _fake_run(cmd, *args, **kwargs):
             called_cmds.append(list(cmd))
+            called_cwds.append(kwargs.get("cwd"))
             m = MagicMock()
             m.returncode = 0
             return m
 
         with patch("subprocess.run", side_effect=_fake_run):
-            # Test expliziter Disconnect: ruft weiterhin -d auf
+            # Test expliziter Disconnect: ruft weiterhin -d auf und setzt cwd
             ok = vm.disconnect()
             self.assertTrue(ok)
             import time
@@ -185,10 +187,12 @@ class TestVpnAndStreamErrors(unittest.TestCase):
                     break
                 time.sleep(0.05)
             self.assertTrue(any("-d" in cmd for cmd in called_cmds))
+            self.assertEqual(called_cwds[0], r"C:\Program Files\NordVPN")
 
             # Test Serverwechsel: Darf KEIN -d vorab aufrufen (verhindert Auto-Connect-Dialog),
             # sondern verbindet direkt via -c -g Switzerland
             called_cmds.clear()
+            called_cwds.clear()
             vm._is_switching = False
             vm._last_switch_time = 0.0
             with patch.object(vm, "get_public_ip", return_value="1.2.3.4"):
@@ -201,9 +205,12 @@ class TestVpnAndStreamErrors(unittest.TestCase):
                 self.assertNotIn("-d", called_cmds[0])
                 self.assertIn("-c", called_cmds[0])
                 self.assertIn("Switzerland", called_cmds[0])
+                self.assertEqual(called_cwds[0], r"C:\Program Files\NordVPN")
 
-            # Test Rotation fuer Host: ebenfalls direkt via -c ohne -d
+            # Test Sequenzielle Rotation fuer Host:
+            # 1. Rotation -> erster Kandidat (z.B. Switzerland)
             called_cmds.clear()
+            called_cwds.clear()
             vm._is_switching = False
             vm._last_switch_time = 0.0
             vm.auto_switch_enabled = True
@@ -216,7 +223,24 @@ class TestVpnAndStreamErrors(unittest.TestCase):
                 self.assertEqual(len(called_cmds), 1)
                 self.assertNotIn("-d", called_cmds[0])
                 self.assertIn("-c", called_cmds[0])
-                self.assertIn("Germany", called_cmds[0])
+                first_target = called_cmds[0][-1]
+                self.assertEqual(first_target, "Switzerland")
+
+            # 2. Zweite Rotation fuer denselben Host -> naechster Kandidat (z.B. Austria)
+            called_cmds.clear()
+            called_cwds.clear()
+            vm._is_switching = False
+            vm._last_switch_time = 0.0
+            with patch.object(vm, "is_installed", return_value=True), patch.object(vm, "get_public_ip", return_value="1.2.3.5"):
+                vm.rotate_server_for_host("http://paplive.me:8080/c/", profile_name="DE | HD")
+                for _ in range(40):
+                    if len(called_cmds) >= 1:
+                        break
+                    time.sleep(0.05)
+                self.assertEqual(len(called_cmds), 1)
+                second_target = called_cmds[0][-1]
+                self.assertNotEqual(first_target, second_target)
+                self.assertEqual(second_target, "Austria")
 
     def test_stream_buffer_aborts_immediately_on_511(self):
         import time
