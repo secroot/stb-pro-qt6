@@ -310,7 +310,7 @@ class NordVpnManager:
     ) -> bool:
         """
         Wechselt asynchron zu einem neuen NordVPN-Server (optional mit Länderangabe).
-        Führt vorab immer einen sauberen Disconnect (-d) durch, um Ghost-Sessions zu verhindern.
+        Verbindet direkt via (-c), um störende Auto-Connect-Bestätigungsdialoge zu vermeiden.
         """
         cli = self._detect_cli()
         if not cli:
@@ -337,16 +337,6 @@ class NordVpnManager:
             success = False
             new_ip = ""
             try:
-                # 1. Zwingend sauber trennen, damit die bisherige Session in der NordVPN-Cloud sofort deregistriert wird
-                subprocess.run(
-                    [cli, "-d"],
-                    capture_output=True,
-                    text=True,
-                    timeout=5,
-                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
-                )
-                time.sleep(1.2)
-
                 cmd = [cli, "-c"]
                 if country:
                     cmd.extend(["-g", country])
@@ -401,7 +391,7 @@ class NordVpnManager:
     ) -> bool:
         """
         Rotiert intelligent zu einem sauberen Ziel-Server/Land.
-        Trennt die alte Verbindung sauber (-d) vor dem Neuaufbau (-c), um das 10-Geräte-Limit zu schützen.
+        Verbindet direkt via (-c), um störende Auto-Connect-Bestätigungsdialoge zu vermeiden.
         """
         if not self.auto_switch_enabled or not self.is_installed():
             return False
@@ -438,17 +428,7 @@ class NordVpnManager:
             success = False
 
             try:
-                # 1. Zwingend sauber trennen, damit die vorherige Session sofort aus NordVPNs Geräte-Zähler entfernt wird
-                subprocess.run(
-                    [cli, "-d"],
-                    capture_output=True,
-                    text=True,
-                    timeout=5,
-                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
-                )
-                time.sleep(1.2)
-
-                # 2. Saubere Verbindung zum Zielland aufbauen
+                # Verbindung zum Zielland aufbauen (NordVPN wechselt den Server nahtlos ohne Auto-Connect-Modal)
                 cmd = [cli, "-c", "-g", target_country]
                 subprocess.run(
                     cmd,

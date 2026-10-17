@@ -176,7 +176,7 @@ class TestVpnAndStreamErrors(unittest.TestCase):
             return m
 
         with patch("subprocess.run", side_effect=_fake_run):
-            # Test expliziter Disconnect
+            # Test expliziter Disconnect: ruft weiterhin -d auf
             ok = vm.disconnect()
             self.assertTrue(ok)
             import time
@@ -186,20 +186,37 @@ class TestVpnAndStreamErrors(unittest.TestCase):
                 time.sleep(0.05)
             self.assertTrue(any("-d" in cmd for cmd in called_cmds))
 
-            # Test Serverwechsel: Muss -d vor -c aufrufen
+            # Test Serverwechsel: Darf KEIN -d vorab aufrufen (verhindert Auto-Connect-Dialog),
+            # sondern verbindet direkt via -c -g Switzerland
             called_cmds.clear()
             vm._is_switching = False
             vm._last_switch_time = 0.0
             with patch.object(vm, "get_public_ip", return_value="1.2.3.4"):
                 vm.switch_server("Switzerland")
                 for _ in range(40):
-                    if len(called_cmds) >= 2:
+                    if len(called_cmds) >= 1:
                         break
                     time.sleep(0.05)
-                self.assertTrue(len(called_cmds) >= 2)
-                self.assertIn("-d", called_cmds[0])
-                self.assertIn("-c", called_cmds[1])
-                self.assertIn("Switzerland", called_cmds[1])
+                self.assertEqual(len(called_cmds), 1)
+                self.assertNotIn("-d", called_cmds[0])
+                self.assertIn("-c", called_cmds[0])
+                self.assertIn("Switzerland", called_cmds[0])
+
+            # Test Rotation fuer Host: ebenfalls direkt via -c ohne -d
+            called_cmds.clear()
+            vm._is_switching = False
+            vm._last_switch_time = 0.0
+            vm.auto_switch_enabled = True
+            with patch.object(vm, "is_installed", return_value=True), patch.object(vm, "get_public_ip", return_value="1.2.3.4"):
+                vm.rotate_server_for_host("http://paplive.me:8080/c/", profile_name="DE | HD")
+                for _ in range(40):
+                    if len(called_cmds) >= 1:
+                        break
+                    time.sleep(0.05)
+                self.assertEqual(len(called_cmds), 1)
+                self.assertNotIn("-d", called_cmds[0])
+                self.assertIn("-c", called_cmds[0])
+                self.assertIn("Germany", called_cmds[0])
 
     def test_stream_buffer_aborts_immediately_on_511(self):
         import time

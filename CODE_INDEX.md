@@ -94,7 +94,7 @@
 | `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L31-L211) | `L31-L211` | Basis: QDialog |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
 | `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L87-L2789) | `L87-L2789` | Basis: QMainWindow |
-| `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L21-L539) | `L21-L539` | Verwaltet die Integration mit NordVPN unter Windows. |
+| `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L21-L519) | `L21-L519` | Verwaltet die Integration mit NordVPN unter Windows. |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
 | `pcr_bitrate_kbps` | **Function** | [core/stream_probe.py](core/stream_probe.py#L38-L66) | `L38-L66` | Echte Mux-Bitrate aus MPEG-TS-PCR. |
 | `PreviewOverlayWidget` | **Class / Widget** | [ui/views/live_tv_view.py](ui/views/live_tv_view.py#L86-L152) | `L86-L152` | Standbild-Preview Thumbnail Overlay displayed inside the video viewport when |
@@ -122,7 +122,7 @@
 | `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L456-L474) | `L456-L474` | Basis:  |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
 | `TestUIAndEngine` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L90-L840) | `L90-L840` | Basis: unittest.TestCase |
-| `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L240) | `L15-L240` | Basis: unittest.TestCase |
+| `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L257) | `L15-L257` | Basis: unittest.TestCase |
 | `ThemeColors` | **Class / Widget** | [ui/theme.py](ui/theme.py#L11-L43) | `L11-L43` | Design tokens matching and refining the Obsidian Cyber-Cinema palette. |
 | `thumb_age_s` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L147-L151) | `L147-L151` | def thumb_age_s(key) |
 | `thumb_path` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L116-L117) | `L116-L117` | def thumb_path(key) |
@@ -584,7 +584,7 @@ Ermittelt HTTP-Latenz, MPEG-TS PCR-Mux-Bitrate sowie Video-/Audio-Codecs und Auf
 
 ---
 
-### 📄 [`core/vpn_manager.py`](core/vpn_manager.py) (543 Zeilen)
+### 📄 [`core/vpn_manager.py`](core/vpn_manager.py) (523 Zeilen)
 > NordVPN Manager für STB Pro Qt6.
 Erkennt eine aktive NordVPN-Installation, überwacht den Verbindungsstatus und
 führt bei Erkennung von IP-/ISP-Sperren (IP_BAN / ISP_LOCK) vollautomatische,
@@ -592,7 +592,7 @@ mehrstufige Server- und Länder-Rotationen via NordVPN-CLI durch.
 Speichert verbrannte IPs pro Host und respektiert Benutzer-Präferenzen zur VPN-Steuerung.
 
 #### Klassen & Komponenten
-- **[`NordVpnManager`](core/vpn_manager.py#L21-L539)** — `L21-L539`
+- **[`NordVpnManager`](core/vpn_manager.py#L21-L519)** — `L21-L519`
   - *Verwaltet die Integration mit NordVPN unter Windows.*
   - **Wichtige Methoden:**
     - [`__init__()`](core/vpn_manager.py#L44) — `L44`
@@ -1274,13 +1274,13 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
 
 ---
 
-### 📄 [`tests/test_vpn_and_stream_errors.py`](tests/test_vpn_and_stream_errors.py) (244 Zeilen)
+### 📄 [`tests/test_vpn_and_stream_errors.py`](tests/test_vpn_and_stream_errors.py) (261 Zeilen)
 > Unit Tests für IP- und ISP-Sperren-Erkennung sowie NordVPN-Manager.
 Testet JSON-Fehler-Payloads (auch gzipped), HTML-WAF-Sperren,
 Länder-Heuristiken und die StreamBuffer-Schutzlogik.
 
 #### Klassen & Komponenten
-- **[`TestVpnAndStreamErrors`](tests/test_vpn_and_stream_errors.py#L15-L240)** : *unittest.TestCase* — `L15-L240`
+- **[`TestVpnAndStreamErrors`](tests/test_vpn_and_stream_errors.py#L15-L257)** : *unittest.TestCase* — `L15-L257`
   - **Wichtige Methoden:**
     - [`test_detect_stream_error_valid_ts()`](tests/test_vpn_and_stream_errors.py#L17) — `L17`
     - [`test_detect_stream_error_valid_hls()`](tests/test_vpn_and_stream_errors.py#L22) — `L22`
@@ -1296,7 +1296,7 @@ Länder-Heuristiken und die StreamBuffer-Schutzlogik.
     - [`test_is_ip_or_stream_ban()`](tests/test_vpn_and_stream_errors.py#L121) — `L121`
     - [`test_probe_stream_triggers_ip_ban_on_511()`](tests/test_vpn_and_stream_errors.py#L134) — `L134`
     - [`test_vpn_manager_clean_disconnect_and_sequence()`](tests/test_vpn_and_stream_errors.py#L167) — `L167`
-    - [`test_stream_buffer_aborts_immediately_on_511()`](tests/test_vpn_and_stream_errors.py#L204) — `L204`
+    - [`test_stream_buffer_aborts_immediately_on_511()`](tests/test_vpn_and_stream_errors.py#L221) — `L221`
 
 ---
 
