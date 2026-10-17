@@ -55,8 +55,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/InfoHazard-H7CFoX/stb-pro-qt6"
-Repository = "https://github.com/InfoHazard-H7CFoX/stb-pro-qt6"
+Homepage = "https://github.com/secroot/stb-pro-qt6"
+Repository = "https://github.com/secroot/stb-pro-qt6"
 
 [project.scripts]
 stb-pro-qt6 = "main:main"
