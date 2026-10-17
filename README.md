@@ -202,7 +202,7 @@ flowchart TD
 
 ### 1. Repository klonen & Verzeichnis wechseln
 ```bash
-git clone https://github.com/InfoHazard-H7CFoX/stb-pro-qt6.git
+git clone https://github.com/secroot/stb-pro-qt6.git
 cd stb-pro-qt6
 ```
 
