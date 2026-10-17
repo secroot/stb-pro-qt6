@@ -207,5 +207,25 @@ Vor der Überführung nach Python + Qt6 (PySide6/QML) wurden alle Module der bes
   - Senderkarten-Thumbnails werden in `set_thumbnail()` einmalig mit Smooth-Transformation auf 56x32 vor-skaliert.
   - Kein dynamisches Bild-Skalieren im `paint()`-Event mehr; Cache-Misses werden gespeichert, um wiederholte Disk-I/O während der GPU-Darstellung zu eliminieren.
 
+---
 
-
+### [x] Checkpoint 14: Code Index Register, Agent-Regel & GitHub Release Repository Setup
+- [x] **Automatisierter Code-Index & Symbol-Register (`CODE_INDEX.md`)**:
+  - Generator `tools/generate_code_index.py` via Python `ast` (Abstract Syntax Tree) implementiert.
+  - Erfasst alle Module, Klassen, Methoden, Funktionen, Signals, Konstanten und Unittests mit exakten Start- und Endzeilennummern sowie Docstrings.
+  - Universell tragfähige, relative Markdown-Links (`[file.py](file.py#L10-L50)`) für direkte Navigation auf GitHub, in IDEs und für AI-Agents.
+  - Integrierter CLI-Prüfmodus `python tools/generate_code_index.py --check` für CI/CD-Pipelines.
+- [x] **Dauerhafte Agent-Richtlinie (`.agents/rules/code_index_maintenance.md`)**:
+  - Obligatorische Konsultation von `CODE_INDEX.md` vor allen Breitband-Recherchen und Dateidurchsuchungen zum Schutz von Kontext- und Token-Budget.
+  - Verbindliche Vorgabe zur automatischen Ausführung des Index-Generators nach Code-Änderungen.
+- [x] **Ordner-Bereinigung & Release-Standardisierung**:
+  - Lose Ad-hoc-Skripte und manuelle Testläufe sauber nach `tests/manual/` überführt.
+  - Werkzeuge zur Codegenerierung nach `tools/` modularisiert.
+  - Bild-Assets bereinigt (temporäre Multi-Resolution Build-PNGs entfernt, `assets/app_icon.png` in `README.md` verknüpft).
+- [x] **Release-Dateien & GitHub Setup**:
+  - `.gitignore`: Ausschluss von virtuellen Umgebungen (`.venv/`), Runtime-Caches (` record/`, `thumbs/`, `logos/`), persönlichen MAC-Hitlisten (`ALL MACS.txt`, `mac_scans/`), lokalen Datenbanken (`mac_database.json`) und Passwörtern (`config.json`).
+  - `LICENSE`: Vollständige MIT-Lizenz (Copyright 2026 InfoHazard & H7CFoX).
+  - `pyproject.toml`: Modernes PEP 517/621 Build- & Metadaten-Manifest inklusive CLI-Entrypoint `stb-pro-qt6 = "main:main"`.
+  - `config.example.json`: Bereinigte Vorlage ohne sensible Zugangsdaten für Open-Source-Distribution.
+  - `.github/workflows/ci.yml`: GitHub Actions Matrix-CI (Windows/Ubuntu, Python 3.11/3.12) mit Code-Index-Validierung und headless Qt-Unittests.
+  - Initialer Release-Commit (`feat: initial release of STB-Emulator Pro Qt6 (v1.0.0)`) mit 76 Dateien und 18.178 Zeilen im Master-Branch erstellt.
