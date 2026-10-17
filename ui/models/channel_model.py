@@ -316,7 +316,7 @@ class ChannelCardDelegate(QStyledItemDelegate):
 
         if pix:
             scaled = pix.scaled(
-                56, 32,
+                106, 60,
                 Qt.AspectRatioMode.KeepAspectRatioByExpanding,
                 Qt.TransformationMode.SmoothTransformation,
             )
@@ -325,7 +325,7 @@ class ChannelCardDelegate(QStyledItemDelegate):
             self._thumb_cache[cid] = None
 
     def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex) -> QSize:
-        return QSize(option.rect.width(), 60)
+        return QSize(option.rect.width(), 80)
 
     def editorEvent(self, event, model, option: QStyleOptionViewItem, index: QModelIndex) -> bool:
         from PySide6.QtCore import QEvent
@@ -356,14 +356,14 @@ class ChannelCardDelegate(QStyledItemDelegate):
 
         # Gray out dead / non-responsive channels
         if is_dead:
-            painter.setOpacity(0.50)
+            painter.setOpacity(0.55)
 
         # Background card
         bg_path = QPainterPath()
         bg_path.addRoundedRect(QRectF(rect), 8.0, 8.0)
 
         if is_playing:
-            bg_color = QColor("#172542")
+            bg_color = QColor("#14223E")
             border_color = QColor("#10B981")
         elif is_selected:
             bg_color = QColor("#161E30" if is_dead else "#1E2B48")
@@ -376,7 +376,7 @@ class ChannelCardDelegate(QStyledItemDelegate):
             border_color = QColor("#151C2B" if is_dead else "#1A2438")
 
         painter.fillPath(bg_path, bg_color)
-        painter.setPen(QPen(border_color, 1.2 if (is_playing or is_selected) else 1.0))
+        painter.setPen(QPen(border_color, 1.4 if is_playing else (1.2 if is_selected else 1.0)))
         painter.drawPath(bg_path)
 
         # Left accent bar if playing or selected
@@ -386,15 +386,15 @@ class ChannelCardDelegate(QStyledItemDelegate):
             bar_path.addRoundedRect(bar_rect, 2, 2)
             painter.fillPath(bar_path, QColor("#10B981" if is_playing else ("#475569" if is_dead else "#6366F1")))
 
-        # Avatar / Logo Box (38x38)
-        logo_rect = QRect(rect.left() + 12, rect.top() + (rect.height() - 38) // 2, 38, 38)
+        # Avatar / Logo Box (42x42)
+        logo_rect = QRect(rect.left() + 10, rect.top() + (rect.height() - 42) // 2, 42, 42)
         logo_url = index.data(ChannelRoles.LogoUrlRole) or ""
         pixmap: Optional[QPixmap] = None
         if self._logo_cache and logo_url:
-            pixmap = self._logo_cache.get_pixmap(logo_url, 34, 34)
+            pixmap = self._logo_cache.get_pixmap(logo_url, 38, 38)
 
         avatar_path = QPainterPath()
-        avatar_path.addRoundedRect(QRectF(logo_rect), 7.0, 7.0)
+        avatar_path.addRoundedRect(QRectF(logo_rect), 8.0, 8.0)
         painter.fillPath(avatar_path, QColor("#090D15" if is_dead else "#0B101B"))
         painter.setPen(QPen(QColor("#1A2335" if is_dead else "#23304A"), 1))
         painter.drawPath(avatar_path)
@@ -413,15 +413,17 @@ class ChannelCardDelegate(QStyledItemDelegate):
             painter.drawText(logo_rect, Qt.AlignmentFlag.AlignCenter, monogram[:3])
 
         # Favorite star hitbox on right
-        star_rect = QRect(rect.right() - 32, rect.top() + (rect.height() - 28) // 2, 28, 28)
+        star_rect = QRect(rect.right() - 28, rect.top() + (rect.height() - 26) // 2, 26, 26)
         font_star = QFont("Segoe UI Symbol", 13)
         painter.setFont(font_star)
         painter.setPen(QColor("#334155" if is_dead else ("#F59E0B" if is_fav else "#475569")))
         painter.drawText(star_rect, Qt.AlignmentFlag.AlignCenter, "★" if is_fav else "☆")
 
-        right_edge = star_rect.left() - 6
+        # ─── Large 16:9 Preview Thumbnail (106x60) on right of channel row ───
+        thumb_w = 106
+        thumb_h = 60
+        thumb_rect = QRectF(star_rect.left() - 8 - thumb_w, rect.top() + (rect.height() - thumb_h) / 2, thumb_w, thumb_h)
 
-        # ─── Live / Cached 16:9 Preview Thumbnail on right of channel row ───
         cid = str(index.data(ChannelRoles.ChannelIdRole) or "")
         thumb_pix = None
         if cid:
@@ -436,13 +438,10 @@ class ChannelCardDelegate(QStyledItemDelegate):
                 else:
                     self._thumb_cache[cid] = None
 
-        if thumb_pix and not thumb_pix.isNull():
-            thumb_h = 32
-            thumb_w = 56
-            thumb_rect = QRectF(right_edge - thumb_w, rect.top() + (rect.height() - thumb_h) / 2, thumb_w, thumb_h)
+        thumb_path = QPainterPath()
+        thumb_path.addRoundedRect(thumb_rect, 6.0, 6.0)
 
-            thumb_path = QPainterPath()
-            thumb_path.addRoundedRect(thumb_rect, 4.0, 4.0)
+        if thumb_pix and not thumb_pix.isNull():
             painter.fillPath(thumb_path, QColor("#090D15"))
             painter.setPen(QPen(QColor("#10B981" if is_playing else "#2A3854"), 1.2 if is_playing else 1.0))
             painter.drawPath(thumb_path)
@@ -451,78 +450,34 @@ class ChannelCardDelegate(QStyledItemDelegate):
             painter.setClipPath(thumb_path)
             painter.drawPixmap(int(thumb_rect.left()), int(thumb_rect.top()), thumb_pix)
             if is_playing:
-                badge_r = QRectF(thumb_rect.left() + 2, thumb_rect.top() + 2, 22, 10)
+                badge_r = QRectF(thumb_rect.left() + 4, thumb_rect.top() + 4, 30, 13)
                 badge_p = QPainterPath()
-                badge_p.addRoundedRect(badge_r, 2.0, 2.0)
+                badge_p.addRoundedRect(badge_r, 3.0, 3.0)
                 painter.fillPath(badge_p, QColor("#10B981"))
                 painter.setFont(QFont("Segoe UI", 6, QFont.Weight.Bold))
                 painter.setPen(QColor("#FFFFFF"))
                 painter.drawText(badge_r, Qt.AlignmentFlag.AlignCenter, "LIVE")
             painter.restore()
-
-            right_edge -= (thumb_w + 6)
-        elif is_playing and not is_dead:
-            # Clean live badge for actively playing channel until frame is captured
-            thumb_h = 32
-            thumb_w = 56
-            thumb_rect = QRectF(right_edge - thumb_w, rect.top() + (rect.height() - thumb_h) / 2, thumb_w, thumb_h)
-            thumb_path = QPainterPath()
-            thumb_path.addRoundedRect(thumb_rect, 4.0, 4.0)
+        else:
+            # Elegant preview placeholder frame
             painter.fillPath(thumb_path, QColor("#090D15"))
-            painter.setPen(QPen(QColor("#10B981"), 1.2))
+            painter.setPen(QPen(QColor("#10B981" if is_playing else "#1A2438"), 1.2 if is_playing else 1.0))
             painter.drawPath(thumb_path)
-            painter.setFont(QFont("Segoe UI", 7, QFont.Weight.Bold))
-            painter.setPen(QColor("#10B981"))
-            painter.drawText(thumb_rect, Qt.AlignmentFlag.AlignCenter, "▶ LIVE")
-            right_edge -= (thumb_w + 6)
+            if is_playing and not is_dead:
+                painter.setFont(QFont("Segoe UI", 8, QFont.Weight.Bold))
+                painter.setPen(QColor("#10B981"))
+                painter.drawText(thumb_rect, Qt.AlignmentFlag.AlignCenter, "▶ LIVE")
+            else:
+                painter.setFont(QFont("Segoe UI Symbol", 13))
+                painter.setPen(QColor("#25334D"))
+                painter.drawText(thumb_rect, Qt.AlignmentFlag.AlignCenter, "📷")
 
-        # Quality Pill & Status Badges on right-middle
-        quality = index.data(ChannelRoles.QualityTagRole) or ""
-        if quality and not is_dead:
-            q_colors = {
-                "UHD": ("#4C1D95", "#C4B5FD"),
-                "FHD": ("#064E3B", "#6EE7B7"),
-                "HD": ("#0E7490", "#67E8F9"),
-                "SD": ("#334155", "#CBD5E1"),
-                "HEVC": ("#312E81", "#A5B4FC"),
-            }
-            bg_c, fg_c = q_colors.get(quality, ("#1E293B", "#94A3B8"))
-            pill_w = 36
-            pill_rect = QRectF(right_edge - pill_w, rect.top() + 9, pill_w, 17)
-            pill_path = QPainterPath()
-            pill_path.addRoundedRect(pill_rect, 4.0, 4.0)
-            painter.fillPath(pill_path, QColor(bg_c))
-            font_pill = QFont("Segoe UI", 8, QFont.Weight.Bold)
-            painter.setFont(font_pill)
-            painter.setPen(QColor(fg_c))
-            painter.drawText(pill_rect, Qt.AlignmentFlag.AlignCenter, quality)
-            right_edge -= (pill_w + 5)
-
-        if is_dead:
-            dead_w = 54
-            dead_rect = QRectF(right_edge - dead_w, rect.top() + 9, dead_w, 17)
-            dead_path = QPainterPath()
-            dead_path.addRoundedRect(dead_rect, 4.0, 4.0)
-            painter.fillPath(dead_path, QColor("#7F1D1D"))
-            painter.setFont(QFont("Segoe UI", 8, QFont.Weight.Bold))
-            painter.setPen(QColor("#FCA5A5"))
-            painter.drawText(dead_rect, Qt.AlignmentFlag.AlignCenter, "OFFLINE")
-            right_edge -= (dead_w + 5)
-        elif latency_ms > 0:
-            lat_text = f"{latency_ms}ms"
-            lat_w = 46
-            lat_rect = QRectF(right_edge - lat_w, rect.top() + 9, lat_w, 17)
-            lat_path = QPainterPath()
-            lat_path.addRoundedRect(lat_rect, 4.0, 4.0)
-            painter.fillPath(lat_path, QColor("#064E3B" if latency_ms < 600 else "#78350F"))
-            painter.setFont(QFont("Consolas", 8, QFont.Weight.Bold))
-            painter.setPen(QColor("#6EE7B7" if latency_ms < 600 else "#FCD34D"))
-            painter.drawText(lat_rect, Qt.AlignmentFlag.AlignCenter, lat_text)
-            right_edge -= (lat_w + 5)
-
-        # Title Row: Number + Channel Name
+        # ─── Center Multi-Tier Content: Title / EPG / Badges ───
         text_left = logo_rect.right() + 10
-        avail_w = max(40, int(right_edge - text_left))
+        text_right = int(thumb_rect.left()) - 8
+        avail_w = max(40, text_right - text_left)
+
+        # Row 1: Number + Channel Name
         num = index.data(ChannelRoles.NumberRole) or 0
         prefix = f"▶ " if is_playing else (f"{num}. " if num else "")
         title_str = f"{prefix}{name}"
@@ -538,10 +493,9 @@ class ChannelCardDelegate(QStyledItemDelegate):
             elided_title,
         )
 
-        # Subtitle Row: EPG Now Playing or Genre + Flags
+        # Row 2: Subtitle: Live EPG Program or Genre
         epg_now = index.data(ChannelRoles.EpgNowTitleRole) or ""
         genre_name = index.data(ChannelRoles.GenreNameRole) or "Live TV"
-        flags = index.data(ChannelRoles.FlagsSummaryRole) or ""
         if is_dead:
             sub_str = "Offline / Nicht erreichbar (> 3s Timeout)"
             sub_color = QColor("#EF4444")
@@ -549,19 +503,78 @@ class ChannelCardDelegate(QStyledItemDelegate):
             sub_str = f"📺 {epg_now}"
             sub_color = QColor("#38BDF8")
         else:
-            sub_str = f"{genre_name}  {flags}".strip()
+            sub_str = f"{genre_name}"
             sub_color = QColor("#64748B")
 
         font_sub = QFont("Segoe UI", 9)
         painter.setFont(font_sub)
         painter.setPen(sub_color)
         fm_sub = QFontMetrics(font_sub)
-        sub_avail_w = max(40, star_rect.left() - text_left - 8)
-        elided_sub = fm_sub.elidedText(sub_str, Qt.TextElideMode.ElideRight, sub_avail_w)
+        elided_sub = fm_sub.elidedText(sub_str, Qt.TextElideMode.ElideRight, avail_w)
         painter.drawText(
-            QRect(text_left, rect.top() + 29, sub_avail_w, 18),
+            QRect(text_left, rect.top() + 29, avail_w, 18),
             Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
             elided_sub,
         )
+
+        # Row 3: Quality & Latency Badges (clean horizontal layout)
+        badge_x = float(text_left)
+        badge_y = float(rect.top() + 49)
+        badge_h = 16.0
+
+        quality = index.data(ChannelRoles.QualityTagRole) or ""
+        if quality and not is_dead:
+            q_colors = {
+                "UHD": ("#4C1D95", "#C4B5FD"),
+                "FHD": ("#064E3B", "#6EE7B7"),
+                "HD": ("#0E7490", "#67E8F9"),
+                "SD": ("#334155", "#CBD5E1"),
+                "HEVC": ("#312E81", "#A5B4FC"),
+            }
+            bg_c, fg_c = q_colors.get(quality, ("#1E293B", "#94A3B8"))
+            pill_w = 34.0
+            pill_rect = QRectF(badge_x, badge_y, pill_w, badge_h)
+            pill_path = QPainterPath()
+            pill_path.addRoundedRect(pill_rect, 3.5, 3.5)
+            painter.fillPath(pill_path, QColor(bg_c))
+            painter.setFont(QFont("Segoe UI", 7, QFont.Weight.Bold))
+            painter.setPen(QColor(fg_c))
+            painter.drawText(pill_rect, Qt.AlignmentFlag.AlignCenter, quality)
+            badge_x += pill_w + 5.0
+
+        if is_dead:
+            dead_w = 52.0
+            dead_rect = QRectF(badge_x, badge_y, dead_w, badge_h)
+            dead_path = QPainterPath()
+            dead_path.addRoundedRect(dead_rect, 3.5, 3.5)
+            painter.fillPath(dead_path, QColor("#7F1D1D"))
+            painter.setFont(QFont("Segoe UI", 7, QFont.Weight.Bold))
+            painter.setPen(QColor("#FCA5A5"))
+            painter.drawText(dead_rect, Qt.AlignmentFlag.AlignCenter, "OFFLINE")
+            badge_x += dead_w + 5.0
+        elif latency_ms > 0:
+            lat_text = f"{latency_ms}ms"
+            lat_w = 44.0
+            lat_rect = QRectF(badge_x, badge_y, lat_w, badge_h)
+            lat_path = QPainterPath()
+            lat_path.addRoundedRect(lat_rect, 3.5, 3.5)
+            painter.fillPath(lat_path, QColor("#064E3B" if latency_ms < 600 else "#78350F"))
+            painter.setFont(QFont("Consolas", 7, QFont.Weight.Bold))
+            painter.setPen(QColor("#6EE7B7" if latency_ms < 600 else "#FCD34D"))
+            painter.drawText(lat_rect, Qt.AlignmentFlag.AlignCenter, lat_text)
+            badge_x += lat_w + 5.0
+
+        flags = index.data(ChannelRoles.FlagsSummaryRole) or ""
+        if flags and ("Archiv" in flags or "PVR" in flags) and not is_dead:
+            flag_txt = "PVR" if "PVR" in flags else "Archiv"
+            flag_w = 36.0
+            if badge_x + flag_w <= text_right:
+                flag_rect = QRectF(badge_x, badge_y, flag_w, badge_h)
+                flag_path = QPainterPath()
+                flag_path.addRoundedRect(flag_rect, 3.5, 3.5)
+                painter.fillPath(flag_path, QColor("#1E293B"))
+                painter.setFont(QFont("Segoe UI", 7, QFont.Weight.Bold))
+                painter.setPen(QColor("#94A3B8"))
+                painter.drawText(flag_rect, Qt.AlignmentFlag.AlignCenter, flag_txt)
 
         painter.restore()

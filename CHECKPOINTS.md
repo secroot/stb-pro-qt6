@@ -229,3 +229,27 @@ Vor der Überführung nach Python + Qt6 (PySide6/QML) wurden alle Module der bes
   - `config.example.json`: Bereinigte Vorlage ohne sensible Zugangsdaten für Open-Source-Distribution.
   - `.github/workflows/ci.yml`: GitHub Actions Matrix-CI (Windows/Ubuntu, Python 3.11/3.12) mit Code-Index-Validierung und headless Qt-Unittests.
   - Initialer Release-Commit (`feat: initial release of STB-Emulator Pro Qt6 (v1.0.0)`) mit 76 Dateien und 18.178 Zeilen im Master-Branch erstellt.
+
+---
+
+### [x] Checkpoint 15: Senderkarten-Redesign, 80px Block-Höhe & 106x60 Widescreen-Vorschaubilder
+- [x] **Vergrößerung der Senderkarten-Höhe (`80px`)**:
+  - `ChannelCardDelegate.sizeHint()` von 60px auf **80px** angehoben (+33% Höhengewinn).
+  - Bietet großzügigen vertikalen Raum für ein sauberes 3-Zeilen-Informationslayout ohne Textüberlappungen.
+  - `LiveTVView.left_panel` Minimalbreite von 330px auf 360px und Splitter-Standardgröße auf `[380, 920]` angepasst.
+- [x] **Widescreen 16:9 Thumbnail-Expansion (106 x 60)**:
+  - Ingest-Skalierung in `set_thumbnail()` von `56x32` auf **`106x60`** angehoben.
+  - Die visuelle Bildfläche vergrößert sich von 1.792 px² auf **6.360 px² (+255% / 3,5-fache Fläche)**!
+  - Wichtige Bilddetails (Gesichter, Sendungstitel, Sportergebnisse) sind nun sofort auf einen Blick erfassbar.
+  - Widescreen-Vorschaubild rechts mit 6px abgerundeten Ecken, dezentem Rahmen (`#2A3854`) und Live-Badge (`● LIVE`).
+  - Wenn noch kein Thumbnail geladen ist, zeigt ein dezenter Cyber-Rahmen (`#090D15`) mit Kamera-Glyph (`📷`) den Slot sauber an, ohne das Layout zu verschieben.
+- [x] **Dreistufige Informationshierarchie (Zero-Truncation)**:
+  - **Zeile 1 (Kanal-Titel)**: Sendernummer und vollständiger Kanalname erhalten die gesamte Zeilenbreite ohne störende Badges. Kein unschönes Abschneiden (`...`) mehr.
+  - **Zeile 2 (Live-EPG & Genre)**: Aktuelle Sendung in leuchtendem Himmelsblau (`#38BDF8`), z. B. `📺 Deep Time History`.
+  - **Zeile 3 (Technische Badges)**: Horizontale Pill-Reihe für Auflösung (`UHD`, `FHD`, `HD`, `SD`), Latenz (`762ms`), `OFFLINE` und `PVR`/`Archiv`.
+- [x] **Sender-Logo & Favoriten-Star**:
+  - Sender-Logo-Box links auf 42x42 mit 8px Border-Radius vergrößert.
+  - Interaktiver Favoriten-Star (`★` / `☆`) bündig am rechten Rand mit zuverlässiger Touch-/Klick-Erkennung.
+- [x] **Automatisierte Verifikation**:
+  - Alle 9 Testsuiten in `tests/test_ui_and_engine.py` zu 100% bestanden (17.5s).
+

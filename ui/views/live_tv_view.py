@@ -218,7 +218,7 @@ class LiveTVView(QWidget):
         # ══════════════════════════════════════════════════════════════════
         self.left_panel = QFrame()
         self.left_panel.setObjectName("CardFrame")
-        self.left_panel.setMinimumWidth(330)
+        self.left_panel.setMinimumWidth(360)
         left_lay = QVBoxLayout(self.left_panel)
         left_lay.setContentsMargins(10, 10, 10, 10)
         left_lay.setSpacing(7)
@@ -624,7 +624,7 @@ class LiveTVView(QWidget):
         self.splitter.addWidget(self.right_panel)
         self.splitter.setStretchFactor(0, 0)
         self.splitter.setStretchFactor(1, 1)
-        self.splitter.setSizes([340, 960])
+        self.splitter.setSizes([380, 920])
         root_layout.addWidget(self.splitter, 1)
 
     # ──────────────────────────────────────────────────────────────────────

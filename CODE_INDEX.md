@@ -46,7 +46,7 @@
 | `BufferSettings` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L22-L65) | `L22-L65` | Basis:  |
 | `build_m3u_playlist` | **Function** | [core/m3u_exporter.py](core/m3u_exporter.py#L10-L44) | `L10-L44` | def build_m3u_playlist(channels, user_agent, resolve_url_fn) |
 | `Channel` | **Class / Widget** | [core/models.py](core/models.py#L62-L167) | `L62-L167` | Basis:  |
-| `ChannelCardDelegate` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L284-L567) | `L284-L567` | Custom QPainter delegate rendering sleek, GPU-accelerated channel cards: |
+| `ChannelCardDelegate` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L284-L580) | `L284-L580` | Custom QPainter delegate rendering sleek, GPU-accelerated channel cards: |
 | `ChannelFilterProxyModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L213-L281) | `L213-L281` | Zero-allocation filter proxy supporting Category, Search, Favorites, Recent, HD/4K, and De... |
 | `ChannelListModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L51-L210) | `L51-L210` | High-performance backing model for 50,000+ Live TV channels. |
 | `ChannelRoles` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L33-L48) | `L33-L48` | Basis:  |
@@ -1103,7 +1103,7 @@ with episode search, 1-click playback, direct episode download, and link copy.
 
 ---
 
-### 📄 [`ui/models/channel_model.py`](ui/models/channel_model.py) (567 Zeilen)
+### 📄 [`ui/models/channel_model.py`](ui/models/channel_model.py) (580 Zeilen)
 > Virtualized Channel List Model, Filter Proxy Model, and 120-FPS Custom QPainter Delegate.
 Eliminates CustomTkinter's 120-widget creation bottleneck by rendering only visible rows on the GPU.
 
@@ -1135,7 +1135,7 @@ Eliminates CustomTkinter's 120-widget creation bottleneck by rendering only visi
     - [`set_mode_filter(mode)`](ui/models/channel_model.py#L232) — `L232`
     - [`set_hide_dead(hide_dead)`](ui/models/channel_model.py#L236) — `L236`
     - [`filterAcceptsRow(source_row, source_parent)`](ui/models/channel_model.py#L240) — `L240`
-- **[`ChannelCardDelegate`](ui/models/channel_model.py#L284-L567)** : *QStyledItemDelegate* — `L284-L567`
+- **[`ChannelCardDelegate`](ui/models/channel_model.py#L284-L580)** : *QStyledItemDelegate* — `L284-L580`
   - *Custom QPainter delegate rendering sleek, GPU-accelerated channel cards:*
   - **Signals**: `favorite_clicked`
   - **Wichtige Methoden:**
