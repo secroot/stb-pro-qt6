@@ -15,198 +15,109 @@
   <img src="https://img.shields.io/badge/Engine-LibVLC%20x64-FF8800?style=for-the-badge&logo=vlcmediaplayer&logoColor=white" alt="LibVLC">
   <img src="https://img.shields.io/badge/Proxy-Zero--Drop%20Ringbuffer-00D2FF?style=for-the-badge" alt="Zero-Drop Ringbuffer">
   <img src="https://img.shields.io/badge/Scanner-Uncapped%20250%20Threads-FF0055?style=for-the-badge" alt="Uncapped 250 Threads">
-  <img src="https://img.shields.io/badge/License-Educational%20%2F%20Research-999999?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/Status-Production%20Ready-00FF66?style=for-the-badge" alt="Production Ready">
 </p>
 
 ---
 
-## 📑 Inhaltsverzeichnis
+## 🌟 Schnellübersicht
 
-- [Überblick](#-überblick)
-- [Architektur-Highlights](#-architektur-highlights)
-- [Kernfeatures im Detail](#-kernfeatures-im-detail)
-  - [1. Live TV View & Virtualisierte Senderliste](#1-live-tv-view--virtualisierte-senderliste)
-  - [2. High-Throughput MAC Scanner & Pentest Engine](#2-high-throughput-mac-scanner--pentest-engine)
-  - [3. Dynamische Scan-Repository & Profilverwaltung (`mac_scans/`)](#3-dynamische-scan-repository--profilverwaltung-mac_scans)
-  - [4. Stalker & Xtream Protocol Engine mit Auto-Resolution](#4-stalker--xtream-protocol-engine-mit-auto-resolution)
-  - [5. Flow-Control Stream Buffer & Zero-Drop Ringbuffer Proxy](#5-flow-control-stream-buffer--zero-drop-ringbuffer-proxy)
-  - [6. Interaktiver HTTP & Telemetrie Inspector](#6-interaktiver-http--telemetrie-inspector)
-  - [7. VOD & Serien-Cinema](#7-vod--serien-cinema)
-  - [8. Background Jobs & Stream Recorder](#8-background-jobs--stream-recorder)
-  - [9. Picture-in-Picture (PiP), Kino- & Vollbild-OSD](#9-picture-in-picture-pip-kino---vollbild-osd)
-- [Installation & Schnellstart](#-installation--schnellstart)
-- [Tastaturkürzel (Hotkeys)](#-tastaturkürzel-hotkeys)
-- [Stalker Scanner Leitfaden & Best Practices](#-stalker-scanner-leitfaden--best-practices)
-- [Dateistruktur](#-dateistruktur)
-- [Ethical Pentesting & Grayhat Disclaimer](#-ethical-pentesting--grayhat-disclaimer)
+**STB-Emulator Pro** ist eine modulare High-End IPTV- und STB-Emulationssoftware auf Basis von **Python 3.12** und **Qt6 (`PySide6`)**. Die Suite vereint ein hardwarebeschleunigtes **Cyber-Cinema** (mit lokalem Flow-Control-Proxy) mit einer professionellen **Multi-Thread Pentesting- & Probing-Engine** für Stalker/Ministra-Portale, Xtream Codes v2 APIs und M3U8-Playlists.
+
+Dank reaktiver **EventBus-Architektur** und virtueller GPU-Listen rendert die Anwendung selbst Kataloge mit über **100.000 Sendern** bei stabilen **120 FPS** mit Latenzen unter 1 ms und **0 % CPU-Last im Leerlauf**.
+
+| 🎯 Multi-Thread Pentest Scanner | 🌲 Host-Gruppierter HOT-Baum | 🏷️ Intelligente Bouquet-Tags |
+| :--- | :--- | :--- |
+| Bis zu **250 parallele Worker**, adaptive Delays, Session-Isolation & automatische Rekursion. | Treffer übersichtlich nach Servern gruppiert mit **Live-Ablauf-Countdown** in Tagen. | Automatische Unterscheidung von **`[DE]`**, **`[18+ TV]`** und **`[18+ VOD]`** pro Account. |
+
+| 🎬 120 FPS 4K Cyber-Cinema | 🔍 Live Protokoll-Inspector | 📂 Integrierte MAC-Datenbank |
+| :--- | :--- | :--- |
+| LibVLC mit D3D11/VAAPI, **Zero-Drop Ringbuffer** und lokalem Flow-Control HTTP-Proxy. | Echtzeit-Erfassung aller API-Requests, Fehler-Sampling und **1-Click cURL Generator**. | Persistente SQLite/JSON-Datenbank mit Duplikatschutz, Tags und **1-Click Connect**. |
 
 ---
 
-## 🌟 Überblick
+## 🚀 Die Kernfeatures im Detail
 
-**STB-Emulator Pro** ist eine vollständige, modulare Neuentwicklung von IPTV- und STB-Emulationssoftware auf Basis von **Python 3.12** und **Qt6 (`PySide6`)**. Die Anwendung kombiniert ein hardwarebeschleunigtes High-End Cyber-Cinema mit einer professionellen Pentesting- und Protocol-Reverse-Engineering-Suite für Stalker/Ministra-Portale, Xtream Codes v2 APIs und M3U8-Playlists.
+### 1. 🎯 High-Throughput MAC Scanner & Pentest Engine
 
-Die App ersetzt ältere, auf Polling basierende Benutzeroberflächen durch eine reaktive **EventBus-Architektur** (`QThreadPool` + `QObject`-Signals) und rendert selbst Kataloge mit über **100.000 Kanälen** bei stabilen **120 FPS** mit weniger als **1 ms Such- und Filterlatenz** bei **0 % CPU-Last im Leerlauf**.
+Die integrierte Scanner-Engine wurde speziell für ressourcenschonendes und maximal schnelles Stalker/Ministra-Probing entwickelt:
 
----
-
-## ⚡ Architektur-Highlights
-
-```mermaid
-flowchart TD
-    subgraph UI_Layer ["Qt6 / PySide6 GPU UI Layer (120 FPS)"]
-        MainWindow["MainWindow (Obsidian Cyber Theme)"]
-        LiveView["LiveTVView (Virtual QListView + CardDelegate)"]
-        ScannerView["ScannerView (Uncapped Multi-Thread Engine)"]
-        InspectorView["InspectorView (HTTP Telemetry & cURL)"]
-        VODView["VODView (Movies / Series Cinema)"]
-        OSD["Fullscreen OSD Overlay + Quick Channel Drawer"]
-    end
-
-    subgraph Core_Bus ["Reaktiver EventBus & State Management"]
-        AppEventBus["AppEventBus (Qt Signals & Slots)"]
-        ConfigMgr["ConfigManager (JSON Profiles & History)"]
-        MacDB["MacDatabase (Deduplication & Search)"]
-    end
-
-    subgraph Network_Engine ["Protocol & Streaming Core"]
-        StbClient["Stalker / Ministra Client (14 Hardware Presets)"]
-        XtreamClient["Xtream Codes API Client"]
-        M3UClient["M3U / M3U8 Parser"]
-        RingProxy["Local MPEG-TS Ringbuffer Proxy (127.0.0.1)"]
-        ThrottleCtrl["Adaptive Throttle & Auto-Requeue"]
-    end
-
-    subgraph Player_Engine ["Hardware Decoding Engine"]
-        LibVLC["LibVLC (D3D11 / VAAPI HW Video Surface)"]
-        MpegParser["PAT / PMT Demux & Rolling PCR Bitrate Analyzer"]
-    end
-
-    MainWindow --> AppEventBus
-    LiveView --> AppEventBus
-    ScannerView --> AppEventBus
-    ScannerView --> ThrottleCtrl
-    ScannerView --> StbClient
-    LiveView --> StbClient
-    LiveView --> XtreamClient
-    LiveView --> M3UClient
-    StbClient --> RingProxy
-    XtreamClient --> RingProxy
-    RingProxy --> MpegParser
-    RingProxy --> LibVLC
-```
+* **Uncapped Multi-Threading**: Frei skalierbar von **1 bis 250 Threads** mit Micro-Delays (`0 ms` bis `2500 ms`) für lokale Audits oder WAF-geschützte Edge-Server.
+* **🌲 Einklappbarer HOT-Treffer-Baum (`QTreeWidget`)**:
+  * **Host-Header**: Gruppiert Treffer übersichtlich unter `[hostname] | [X Hot Hits]`. Ein Klick klappt den gesamten Server auf oder zu.
+  * **Account-Zeilen**: Zeigt MAC-Adresse, Ablaufdatum mit **Live-Countdown** (`noch X Tage`, `heute`, `abgelaufen vor X Tagen`, `Unbegrenzt`), Senderanzahl und Tags.
+  * **Direktverbindung**: Doppelklick auf einen Account verbindet sofort und startet die Wiedergabe.
+* **🏷️ Präzise Bouquet- & Content-Erkennung**:
+  * **`[DE]`**: Erkennt deutsche Regionalbouquets (`DE:`, `DE -`, `DE ⭐`, `DE|`, `[DE]`, `AT`, `CH`) mit strikter Symbol-Prüfung – verhindert False Positives auf spanische/französische Wörter wie *de peliculas* oder *de cinema*.
+  * **`[18+ TV]`**: Erkennt Live-TV-Sender mit Altersbeschränkung.
+  * **`[18+ VOD]`**: Erkennt Erwachsenen-Kategorien im Video-on-Demand (Filme / Serien).
+  * **Strikte Account-Isolation**: Genres und VOD-Kategorien werden für jeden validen Treffer isoliert auf dessen aktiver Session geprüft – kein Cache-Leak zwischen verschiedenen Accounts auf demselben Portal.
+* **Resilientes Auto-Requeue (`[⏳ Requeue]`)**:
+  * Accounts mit aktivem Ablaufdatum, deren Kanalabfrage unter hoher Last in einen transienten Timeout, HTTP 503 oder 429 läuft, werden **nicht** vorzeitig mit 0 Kanälen verworfen.
+  * Sie werden automatisch mit Retry-Zähler hinten angestellt, bis ein definitives Ergebnis vorliegt.
+* **Session Cookie Isolation**: Zwingendes `session.cookies.clear()` vor jedem Handshake verhindert Token- und Session-Leaks (`PHPSESSID`) zwischen Accounts.
+* **Geglättete Telemetrie**: Live-Anzeige von **Hit-Rate in %** (`🎯 Hit-Rate: X.X%`), exponentiell geglätteter **CPS-Rate** (Checks per Second) und realistischer Restzeit (**ETA**).
+* **Standardisierter Hit-Export**: Exportiert ausschließlich echte Treffer (`channels > 0`) im sauberen Block-Format (`<hostname>_<hits>hits_<YYYY-MM-DD>.txt`).
 
 ---
 
-## 🚀 Kernfeatures im Detail
+### 2. 🎬 Hardware-Accelerated Cyber-Cinema (Player)
 
-### 1. Live TV View & Virtualisierte Senderliste
-* **120 FPS GPU-Virtualisierung**: Nutzung von `QAbstractListModel` + `QSortFilterProxyModel` + eigenem `ChannelCardDelegate`. Nur sichtbare Zeilen werden per `QPainter` gerendert – kein Ruckeln oder Speicherleck bei gigantischen Senderlisten.
-* **Smart Filter-Pills**: Schnellumschaltung zwischen `Alle`, `⭐ Favoriten`, `🕘 Zuletzt gespielt` und `HD / 4K`.
-* **Kategorie-Schnellsuche & Group-Preview**: Beim Wechsel einer Kategorie werden EPG-Daten und Senderlogos automatisch im Hintergrund geladen und gecacht.
-* **Zwei-Phasen Kategorie-Validator & Auto-Thumbnails**:
-  * **Phase 1 (Paralleler Health-Check)**: Überprüft alle Sender einer Gruppe blitzschnell mit bis zu 8 Threads auf Erreichbarkeit, Ping/Latenz und echte Decodier-Qualität (`FHD`, `HD`, `UHD`).
-  * **Phase 2 (Automatischer Thumbnail-Grabber)**: Startet im Anschluss **vollautomatisch** für alle Online-Sender der Gruppe, die noch kein Bild im Disk-Cache haben. Ein schonender 2-Worker-Pool (4,5s FFmpeg-Timeout) schützt vor Provider-Sperren (HTTP 459 / 429).
-  * **Echtzeit-Aktualisierung**: Jedes geladene Thumbnail poppt sofort in der Senderkarte auf und wird dauerhaft in `.cache/thumbs/` gecacht.
-  * **Schnittiger 18px Fortschrittsbalken**: Dynamischer Farbverlauf (Indigo-Cyan-Emerald) und klar lesbarer Text ohne vertikales Abschneiden (`🩺 Prüfe Sender: X/Y (Z%)` / `📸 Lade Vorschaubilder: X/Y (Z%)`).
-  * **Sofortiger Abbruch**: Der `⏹ Stopp`-Button beendet Prüfung und Thumbnail-Abruf verzögerungsfrei.
-  * **Manuelle On-Demand Abfrage**: Rechtsklick auf die Senderliste -> `📸 Vorschaubilder für sichtbare Sender laden`.
-* **1-Click M3U8-Export**: Exportiert die aktuelle Auswahl, Kategorie oder Favoritenliste direkt als normgerechte `.m3u8` inklusive Provider-spezifischem User-Agent.
+* **LibVLC 64-Bit Integration**: Volle Hardwarebeschleunigung via **Direct3D11** (Windows) und **VAAPI** für butterweiches 4K UHD Streaming bei 120 FPS.
+* **Zero-Drop Ringbuffer HTTP-Proxy (`127.0.0.1`)**:
+  * Lokaler Loopback-Proxy verhindert Verbindungsabbrüche durch Player-Jitter.
+  * **Upstream Flow-Control Pacing**: Liest Upstream-Daten exakt bis zum konfigurierten Pufferziel (z. B. 15 s) und stoppt dann – schützt zuverlässig vor Provider-Sperren durch unkontrolliertes Vorsaugen.
+  * **PCR Bitrate Smoothing**: Ermittelt die exakte Bitrate direkt aus den MPEG-TS Program Clock References.
+* **Vollbild & Kinomodus**:
+  * **Vollbild (`F11`)**: Mit transparentem OSD-HUD (aktuelle Sendung, EPG-Restzeit, Bitrate, Codec-Pills) und einblendbarem **Quick-Channel-Drawer (`[C]`)**.
+  * **Kinomodus (`[T]`)**: Blendet Bedienelemente komplett aus für ungestörten Filmgenuss.
+  * **Picture-in-Picture (`[P]`)**: Rahmenloser Always-on-Top Mini-Player am Bildschirmrand.
+* **Live-Recording**: Sofortaufnahme laufender Live-Sendungen auf Knopfdruck (`[R]`).
 
-### 2. High-Throughput MAC Scanner & Pentest Engine
-* **Uncapped Multi-Thread Engine**: Frei konfigurierbar bis zu **250 parallele Worker-Threads** mit Micro-Delays (`0 ms`, `20 ms`, `50 ms`, `100 ms` bis `2500 ms`).
-* **Session Cookie Isolation**: Zwingendes `session.cookies.clear()` vor jedem einzelnen MAC-Handshake verhindert Session-Cross-Contamination (`PHPSESSID`) zwischen Accounts.
-* **1-Time Preflight Endpoint Discovery**: Ermittelt und cacht den korrekten Stalker-Endpunkt (`load_url` vs. `portal.php`) einmalig vor dem Start – spart bis zu 6 spekulative Fallback-Requests pro MAC-Check.
-* **Lightweight Channel Probing**: Kein schwerer Vollkatalog-Download mehr. Fragt ausschließlich `get_ordered_list(genre='*', p='1')` ab und liest das `total_items`-Feld aus (~2 KB Payload, ~100 ms Abfragezeit).
-* **Resilientes Auto-Requeue**: Aktive Accounts mit Ablaufdatum in der Zukunft, deren Kanalzählung unter hoher Last in einen transienten Timeout, HTTP 503 oder 429 läuft, werden **nicht** als 0-Kanal-Fehlschlag gewertet, sondern automatisch mit `[⏳ Requeue]` hinten angestellt.
-* **Dynamische Live-Steuerung bei Pause & Resume**: Threads und Delays können während des Scans oder im Pausenmodus geändert werden. Die Engine skaliert Worker dynamisch nach oben oder unten.
-* **OUI-Presets & Masken-Generator**: Schnellauswahl gängiger MAC-Präfixe (MAG 250, 254, 322, 420, Formuler, Infomir) und flexible Wildcard-Generierung (`00:1A:79:XX:XX:XX`).
-* **Ordner-Import & Auto-Deduplizierung**: Rekursiver Import beliebiger Textdateien mit automatischer Normalisierung und Duplikat-Filterung.
-* **Strukturierter Block-Hit-Export**: Exportiert ausschließlich verifizierte `HOT`-Treffer (`tag == 'hot'` und `channels > 0`) im standardisierten Format:
-  * **Dateiname**: `<hostname>_<hits>hits_<YYYY-MM-DD>.txt`
-  * **Format**:
-    ```text
-    ---------------------------------------------
-    Portal: http://iptvgarden.streamtv.to:8080/c/
-    Status: Aktiv
-    Mac: 00:1A:79:BB:43:5D
-    Scandate: 2026-10-17 13:45:00
-    Expire: October 20, 2027, 6:46 pm
-    Channels: 904
-    ---------------------------------------------
-    ```
+---
 
-### 3. Dynamische Scan-Repository & Profilverwaltung (`mac_scans/`)
-* **Automatisches Einlesen aus `mac_scans/`**: Die App liest alle strukturierten Trefferdateien (`*.txt`) automatisch ein und gruppiert sie nach Portalen und Hosts.
-* **2-stufige Profilauswahl**:
-  * **Host-Auswahl**: Wähle das gewünschte Portal / den gescannten Host (zeigt Live-Hits und maximale Kanalanzahl).
-  * **Login-Auswahl**: Alle Accounts des Portals direkt im Dropdown (`MAC • Kanäle • Ablaufdatum`), sortiert nach Kanalanzahl (beste Accounts mit den meisten Sendern ganz oben).
-* **Live Account-Details**: Kompakte Anzeige von Status (`🟢 Aktiv`), Kanalzahl, Ablaufdatum und Scandatum.
-* **Automatische Synchronisation**: Bei Auswahl eines Accounts werden Portal-URL und MAC-Adresse sofort in die Schnellverbindungs-Felder übernommen.
-* **QoL-Werkzeuge**: Schnellbutton `🔄 Neu laden` (rescannt den Ordner zur Laufzeit) und `📂 Ordner` (öffnet den Scans-Ordner direkt im Explorer).
+### 3. 📺 Live TV & GPU-Virtualisierte Senderliste
 
-### 4. Stalker & Xtream Protocol Engine mit Auto-Resolution
-* **14 STB-Hardware Presets**: MAG 250, MAG 254, MAG 322, MAG 420, MAG 520, AuraHD, Formuler Z8, BuzzTV XRS4500, Android TV STB, uvm.
-* **Standard-MAC-Hashing & Hardware-Signatur**:
-  * Vollständig reverse-engineered aus bewährten Pentest-Tools (`Zenith_Nexus`, `API_MAC_SCANNER`, `MacScan`).
-  * Mathematisch exakte Ableitung: `sn = MD5(mac)[:13]`, `dev1 = SHA256(mac)`, `dev2 = SHA256(sn + '+' + mac)`, `sig = dev2`.
-* **Intelligente Stream-Link Resolution**:
-  * Erkennt vorformatierte URLs in `cmd` (z. B. `ffmpeg http://pro.8k-strong.tv:80/play/live.php?mac=...&stream=1537489...`).
-  * Löst das Problem leerer `&stream=&`-Parameter und `id: null`, indem native MAG-Kandidaten (`ffmpeg http://localhost/ch/{ch_id}_`) priorisiert angefragt werden.
-  * **Auto-Patching für `&sn2=`**: Erkennt leere Seriennummer-Felder und injiziert automatisch die passende `device_id2`, um HTTP 511 (*Network Authentication Required*) auf Restreamer-Servern zu verhindern.
-* **IPTV Edge Status-Code Diagnostik**:
-  * Erkennung und transparente Meldung in der UI (`HeroCard` & Status-Badges) statt unverständlicher Abstürze:
-    * `HTTP 456`: Geo-Lock / ISP-Datacenter-ASN-Sperre oder Multi-Connection-Limit.
-    * `HTTP 407`: Proxy erforderlich / Provider verlangt IP im Ursprungsland.
-    * `HTTP 459`: Stream-Leitung belegt (Concurrent Limit).
-    * `HTTP 511`: Cloudflare WAF Edge Challenge / Device Auth erforderlich.
-    * `HTTP 429`: Server-Rate-Limit (5s Cooldown).
-  * Automatischer Ausschluss von unbilled Dummy-Accounts (`Expire: 0000-00-00 00:00:00`).
-* **Stalker v5 Handshake Flow**: Automatische Aushandlung von Token, Random-Salt, Bearer-Authentifizierung und Endpoint-Discovery (`/c/`, `/portal.php`, `/server/load.php`).
+* **120 FPS GPU-Virtualisierung**: Nutzung von `QAbstractListModel` + `QSortFilterProxyModel` + `ChannelCardDelegate`. Nur sichtbare Zeilen werden gerendert – absolut kein Lag selbst bei Katalogen mit über **100.000 Kanälen**.
+* **Zwei-Phasen Kategorie-Validator**:
+  * **Phase 1 (Health-Check)**: Prüft alle Sender einer Gruppe parallel mit bis zu 8 Threads auf Erreichbarkeit, Ping und echte Auflösung (`UHD`, `FHD`, `HD`).
+  * **Phase 2 (Auto-Thumbnail Grabber)**: Extrahiert vollautomatisch Vorschaubilder aus dem Live-Stream (0,12s TS-Probe) und speichert sie im lokalen Disk-Cache (`.cache/thumbs/`).
+* **Smart Filter-Pills**: Blitzschneller Wechsel zwischen `Alle`, `⭐ Favoriten`, `🕘 Zuletzt gespielt` und `HD / 4K`.
+* **M3U8-Export**: Exportiert Senderlisten und Favoriten mit einem Klick als standardkonforme `.m3u8`-Playlist.
 
-### 5. Flow-Control Stream Buffer & Zero-Drop Ringbuffer Proxy
-* **Lokaler Loopback HTTP Proxy**: Einbindung von LibVLC über `http://127.0.0.1:<port>/stream`.
-* **Upstream Flow-Control Pacing**: Verhindert unkontrolliertes Vorsaugen in die Live-Kante des Providers. Stoppt das Upstream-Lesen exakt am eingestellten Pufferziel (z. B. 15 s) und verhindert Anti-Scrape-Server-Trennungen.
-* **Zero-Drop Chunk Eviction**: Chunks im Ringpuffer werden erst freigegeben, wenn der Player sie physisch gelesen hat. Kein Paketverlust, kein Bildruckeln und keine NAL-Artefakte.
-* **Rolling PCR Mux-Bitrate**: Kontinuierliche Berechnung der Bitrate direkt aus den MPEG-TS Program Clock References (PCR) für absolut stabile Pufferberechnungen ohne Jitter.
-* **Single-Writer Sequence Guard**: Atomarer Sequenz-Schutz verhindert, dass parallele Socket-Probes von VLC den Datenstrom korrumpieren.
+---
 
-### 6. Interaktiver HTTP & Telemetrie Inspector
-* **Live Request & Response Logging**: Protokolliert jeden API-Aufruf, Handshake-Request und Token-Refresh.
-* **JSON Syntax Highlighting**: Strukturierte und formatierte Darstellung aller Serverantworten.
-* **1-Click cURL Generator**: Generiert mit einem Klick das exakte Terminal-Kommando (inkl. Headers, Cookies, User-Agent und Hardware-Tokens) zur Reproduktion in Postman, Terminal oder Bash-Skripten.
-* **Handshake Tester**: Einzelne MACs oder Zugangsdaten direkt gegen das Portal testen, ohne die Senderliste laden zu müssen.
+### 4. 🍿 VOD (Filme) & Serien-Browser
 
-### 7. VOD & Serien-Cinema
-* **Modernes Poster-Grid & List-View**: Schnelle Suche und Sortierung nach IMDb-Rating, Titel, Genre und Veröffentlichungsjahr.
-* **Persistente Favoriten**: VOD-Favoriten werden dauerhaft in `config.json` gespeichert.
-* **Serien- & Staffelauswahl**: Komfortabler Episoden-Browser mit Inhaltsangabe und Stream-Informationen.
+* **Moderne Cinema-Ansicht**: Schnelle Suche und Sortierung nach IMDb-Bewertung, Titel, Genre, Auflösung und Erscheinungsjahr.
+* **Serien- & Staffelauswahl**: Strukturierter Episoden-Browser mit Inhaltsangabe und Stream-Details.
+* **Hintergrund-Downloader**: Paralleler Download von Filmen und Episoden im Hintergrund mit automatischer Wiederaufnahme bei Netzwerkunterbrechung.
 
-### 8. Background Jobs & Stream Recorder
-* **Live HLS/TS-Recording**: Sofortige Aufnahme des laufenden Live-Programms mit einem Klick (`[R]`).
-* **VOD Downloader**: Paralleler Download von Filmen und Serienfolgen im Hintergrund mit Fortschrittsanzeige und automatischer Wiederaufnahme bei Netzwerkunterbrechung.
+---
 
-### 9. Picture-in-Picture (PiP), Kino- & Vollbild-OSD
-* **PiP Mode (`[P]`)**: Schaltet die App in einen rahmenlosen, immer im Vordergrund schwebenden Mini-Player am Bildschirmrand.
-* **Kinomodus (`[T]`)**: Blendet die gesamte Navigation aus und fokussiert zu 100 % auf das Video.
-* **Fullscreen OSD (`F11`)**: Vollbildanzeige mit elegantem, nach Inaktivität transparent ausblendendem OSD-HUD (aktuelle Sendung, EPG-Restzeit, Codec-Pills, Auflösung) und einblendbarem Quick-Channel-Drawer (`[C]`).
+### 5. 🔍 Interaktiver HTTP & Protokoll-Inspector
+
+* **Live Traffic-Capture**: Protokolliert jeden API-Aufruf, Handshake, Token-Refresh und Kanalwechsel mit Header-Details und Statuscodes.
+* **Fehler-Sampling**: Sporadische Verbindungsabbrüche, Timeouts und WAF-Responses (429/504) werden automatisch erfasst und übersichtlich aufbereitet.
+* **1-Click cURL Generator**: Generiert mit einem Klick den exakten cURL-Befehl inklusive aller MAG-Tokens, Cookies und Hardware-Headers für Tests im Terminal oder Postman.
+* **14 Hardware-Profile**: Emulation von MAG 250, 254, 322, 420, 520, AuraHD, Formuler Z8 u.v.m. inklusive exakter Seriennummern- und Geräte-Signaturen (`dev1`, `dev2`, `sig`).
 
 ---
 
 ## 🛠 Installation & Schnellstart
 
 ### Voraussetzungen
-1. **Windows 10 / 11 (64-Bit)**
-2. **Python 3.12+** (64-Bit)
-3. **VLC Media Player (64-Bit)** installiert (für die Bereitstellung von `libvlc.dll` und den Codec-Plugins unter `C:\Program Files\VideoLAN\VLC`).
+* **Windows 10 / 11 (64-Bit)**
+* **Python 3.12+ (64-Bit)**
+* **VLC Media Player (64-Bit)** installiert (für `libvlc.dll` unter `C:\Program Files\VideoLAN\VLC`)
 
-### 1. Repository klonen & Verzeichnis wechseln
-```bash
+### 1. Repository klonen
+```powershell
 git clone https://github.com/secroot/stb-pro-qt6.git
 cd stb-pro-qt6
 ```
 
-### 2. Virtuelle Umgebung einrichten & Abhängigkeiten installieren
+### 2. Virtuelle Umgebung einrichten & installieren
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\activate
@@ -214,7 +125,7 @@ pip install -r requirements.txt
 ```
 
 ### 3. Starten
-Entweder per Doppelklick auf die beiliegende **`start_qt6.bat`** oder direkt im Terminal:
+Starte die Suite entweder per Doppelklick auf die **`start_qt6.bat`** oder direkt im Terminal:
 ```powershell
 .\.venv\Scripts\python.exe main.py
 ```
@@ -224,86 +135,33 @@ Entweder per Doppelklick auf die beiliegende **`start_qt6.bat`** oder direkt im 
 ## ⌨️ Tastaturkürzel (Hotkeys)
 
 | Taste | Kontext | Funktion |
-|---|---|---|
+| :--- | :--- | :--- |
 | `F11` / Doppelklick | Video | Vollbildmodus mit transparentem OSD-HUD umschalten |
 | `C` | Vollbild | Schnell-Senderliste (Quick-Channel-Drawer) rechts ein-/ausblenden |
-| `P` | Global | Picture-in-Picture (PiP) Always-on-Top Mini-Player umschalten |
-| `T` | Global | Kinomodus (Seitenleiste & Banner ausblenden) umschalten |
+| `P` | Global | Picture-in-Picture (PiP) Always-on-Top Player umschalten |
+| `T` | Global | Kinomodus (Seitenleiste & Toolbars ausblenden) umschalten |
 | `Esc` | Player | Vollbild-, PiP- oder Kinomodus verlassen |
-| `Leertaste` | Video | Wiedergabe / Pause |
-| `M` | Video | Audio stummschalten (Mute) |
+| `Leertaste` | Video | Wiedergabe pausieren / fortsetzen |
+| `M` | Video | Ton stummschalten (Mute) |
 | `PgUp` / `PgDn` | Live TV | Vorheriger / Nächster Sender (Direct Zapping) |
 | `R` | Live TV | Sofortaufnahme starten / stoppen (`REC`) |
-| `F2` | Senderliste | Ausgewählten Sender als Favorit markieren / entfernen |
-| `Ctrl+F` | Global | Suchfeld der Senderliste fokussieren |
+| `F2` | Senderliste | Sender als Favorit markieren / entfernen |
+| `Ctrl+F` | Global | Schnellsuche in der Senderliste fokussieren |
 
 ---
 
-## 🎯 Stalker Scanner Leitfaden & Best Practices
+## 📁 Projektstruktur & Architektur-Dokumentation
 
-Folgende Richtlinien garantieren maximale Scan-Geschwindigkeit bei minimalem Risiko von WAF/Cloudflare-Bans:
+Eine vollständige Dokumentation der internen Modul-Zusammenhänge und des Symbol-Registers findest du in den separaten Dokumenten:
 
-1. **Endpoint-Caching nutzen**: Vor dem Start eines Massenscans ermittelt die Suite automatisch, ob das Portal `/c/`, `/portal.php` oder `/server/load.php` erwartet. Dieser Endpunkt bleibt während des gesamten Scans gecacht.
-2. **Thread- & Delay-Pacing**:
-   * *Lokale / Ungeschützte Portale*: 50–100 Threads mit `0 ms` oder `20 ms` Delay erreichen bis zu **15–25 Checks/s**.
-   * *Cloudflare / WAF-geschützte Portale*: 20–30 Threads mit `250 ms` oder `500 ms` Delay verwenden.
-   * *Dynamische Anpassung*: Wenn die Trefferrate sinkt oder Timeouts steigen, einfach `[⏸ PAUSIEREN]`, Delay erhöhen und `[▶ FORTSETZEN]` klicken.
-3. **Session-Isolation beachten**: Jeder Worker arbeitet in einer isolierten Session. Cookies werden automatisch vor jedem Handshake gelöscht, sodass keine ungültigen Tokens verschleppt werden.
-4. **Hit-Export**: Nutzen Sie die Filter-Pill `HOT (N)` und klicken Sie auf `💾 EXPORT`. Es werden nur echte Treffer mit gebuchten Kanälen exportiert.
+* 📐 **[ARCHITECTURE.md](file:///c:/Users/basti/Desktop/iptv/stb_pro_qt6/ARCHITECTURE.md)**: Detaillierte Architektur, EventBus-Design, Thread-Modelle & Sequenzdiagramme.
+* 📖 **[CODE_INDEX.md](file:///c:/Users/basti/Desktop/iptv/stb_pro_qt6/CODE_INDEX.md)**: Zeilen-exaktes Symbol- und Klassenregister aller Funktionen und Widgets.
+* 📌 **[CHECKPOINTS.md](file:///c:/Users/basti/Desktop/iptv/stb_pro_qt6/CHECKPOINTS.md)**: Release-Meilensteine, Audit-Historie und Optimierungs-Logs.
 
 ---
 
-## 📂 Dateistruktur
-
-```text
-stb_pro_qt6/
-├── .github/workflows/      # GitHub Actions CI/CD Pipeline
-│   └── ci.yml              # Automatisierte Matrix-Tests (Windows/Ubuntu, Py3.11/3.12)
-├── clients/                # Protokoll-Clients & Network Stacks
-│   ├── stb_client.py       # Stalker/Ministra MAG Client (v5 Handshake, SN2 Auto-Patching)
-│   ├── xtream_client.py    # Xtream Codes API v2 Client
-│   ├── m3u_client.py       # M3U/M3U8 Parser & Header Extractor
-│   └── throttle.py         # Adaptiver Scan-Rate-Limiter & Requeue-Controller
-├── core/                   # Kernarchitektur, Modelle & Hintergrunddienste
-│   ├── config_manager.py   # Persistenz für Profile, VOD-Favoriten & History
-│   ├── logo_cache.py       # Asynchroner Disk- & RAM-Logo-Cache
-│   ├── mac_database.py     # MAC-Datenbank mit Duplikatprüfung & Tagging
-│   ├── models.py           # Dataclasses (Channel, Profile, ScanResult, HttpLog)
-│   ├── preview_grabber.py  # Hintergrund-Thumbnail-Grabber für Vorschauen (0.12s TS-Extraction)
-│   ├── recorder.py         # Live-Stream & VOD Recorder-Engine
-│   ├── signals.py          # Reaktiver AppEventBus (Qt Signals & Slots)
-│   ├── stream_buffer.py    # Zero-Drop Ringbuffer HTTP Proxy mit Flow-Control
-│   └── stream_probe.py     # Multi-Thread Stream- & Codec-Analyzer
-├── player/                 # Wiedergabe-Engine
-│   ├── external_player.py  # Anbindung von externem VLC, MPV & FFplay
-│   ├── osd_overlay.py      # Transparentes Vollbild-OSD & Channel-Drawer
-│   └── vlc_controller.py   # LibVLC Controller (HW-Surface, Tracks, Speed)
-├── tools/                  # Entwickler- & Wartungs-Werkzeuge
-│   └── generate_code_index.py # Deterministischer AST Code-Index & Symbol-Register Generator
-├── ui/                     # Qt6 Benutzeroberfläche
-│   ├── components/         # Wiederverwendbare UI-Elemente (TopBar, HeroCard, EPG)
-│   ├── dialogs/            # Modale Dialoge (Profile, Puffer, Jobs, MAC-DB, Guide)
-│   ├── models/             # QAbstractListModel / QAbstractTableModel Implementierungen
-│   ├── views/              # Hauptansichten (LiveTV, VOD, Scanner, Inspector, Konsole)
-│   └── theme.py            # "Obsidian Cyber-Cinema" Theme (QSS Stylesheet & Colors)
-├── tests/                  # Automatisierte Unit- & Integrations-Tests
-│   ├── test_ui_and_engine.py  # Haupt-Testsuite (100% Pass)
-│   └── manual/             # Manuelle Verifikations- & Probe-Skripte
-├── ARCHITECTURE.md         # Detaillierte Architekturdokumentation
-├── CHECKPOINTS.md          # Entwicklungs-Checkpoints & Audit-Historie
-├── CODE_INDEX.md           # Vollständiges Code- & Symbol-Register (Zeilen-exakt)
-├── LICENSE                 # Offizielle MIT-Lizenz
-├── pyproject.toml          # PEP 517/621 Build-Konfiguration & Metadaten
-├── config.example.json     # Sanitized Beispiel-Konfiguration
-├── main.py                 # Anwendungs-Einstiegspunkt
-├── requirements.txt        # Python-Abhängigkeiten
-└── start_qt6.bat           # 1-Click Windows-Starter
-```
-
----
-
-## ⚖️ Ethical Pentesting & Grayhat Disclaimer
+## ⚖️ Ethical Pentesting & Disclaimer
 
 > [!CAUTION]
 > **Wichtiger rechtlicher Hinweis**:
-> Dieses Tool wurde ausschließlich zu Forschungs-, Bildungs- und autorisierten Red-Team-Auditzwecken entwickelt. Das Scannen und Zugreifen auf Portale und Netzwerke ohne vorherige ausdrückliche Genehmigung des jeweiligen Betreibers ist illegal. Die Entwickler übernehmen keinerlei Haftung für Missbrauch oder Schäden, die durch den Einsatz dieser Software entstehen. Bitte halten Sie sich an die geltenden Gesetze Ihrer jeweiligen Jurisdiktion.
+> Dieses Tool wurde ausschließlich zu Forschungs-, Bildungs- und autorisierten Red-Team-Auditzwecken entwickelt. Das Scannen und Zugreifen auf Portale und Netzwerke ohne vorherige ausdrückliche Genehmigung des jeweiligen Betreibers ist illegal. Die Entwickler übernehmen keinerlei Haftung für Missbrauch oder Schäden, die durch den Einsatz dieser Software entstehen. Bitte beachten Sie stets die Gesetze Ihrer jeweiligen Jurisdiktion.
