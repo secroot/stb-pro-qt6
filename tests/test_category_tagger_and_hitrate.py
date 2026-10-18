@@ -20,6 +20,8 @@ from core.category_parser import (
     parse_expire_date,
     GERMAN_TAG,
     RESTRICTED_TAG,
+    RESTRICTED_TV_TAG,
+    RESTRICTED_VOD_TAG,
 )
 from ui.views.scanner_view import ScannerView
 
@@ -485,7 +487,7 @@ class TestScannerViewHitRateAndHotTree(unittest.TestCase):
                 portal_genres_cache=local_cache,
             )
             self.assertIn(GERMAN_TAG, res.get("tags", []))
-            self.assertIn(RESTRICTED_TAG, res.get("tags", []))
+            self.assertIn(RESTRICTED_TV_TAG, res.get("tags", []))
 
     def test_19_unlimited_expiration_display(self):
         """Verifiziert, dass unbegrenzte Accounts sauber als 'Unbegrenzt' im Baum dargestellt werden."""
@@ -505,6 +507,55 @@ class TestScannerViewHitRateAndHotTree(unittest.TestCase):
         child = parent.child(0)
         self.assertEqual(child.text(1), "Unbegrenzt")
         self.assertEqual(child.text(2), "1 Kanal")
+
+    def test_20_distinct_tv_and_vod_tags(self):
+        """Verifiziert die getrennte Erkennung von [18+ TV] und [18+ VOD]."""
+        # Nur TV
+        tags_tv = detect_category_tags(categories=["18+ Penthouse"], vod_categories=[{"id": 1, "title": "Action"}])
+        self.assertEqual(tags_tv, [RESTRICTED_TV_TAG])
+
+        # Nur VOD
+        tags_vod = detect_category_tags(categories=["DE: Sky Sport"], vod_categories=[{"id": 1, "title": "Mature Lounge"}])
+        self.assertEqual(tags_vod, [GERMAN_TAG, RESTRICTED_VOD_TAG])
+
+        # Beide
+        tags_both = detect_category_tags(categories=["DE: Das Erste", "18+ Adult TV"], vod_categories=[{"id": 2, "title": "Erotic Movies"}])
+        self.assertEqual(tags_both, [GERMAN_TAG, RESTRICTED_TV_TAG, RESTRICTED_VOD_TAG])
+
+    def test_21_vod_portal_caching_in_check_mac_account(self):
+        """Verifiziert, dass VOD-Kategorien im Scanner genau einmalig pro Portal abgefragt und gecacht werden."""
+        from clients.stb_client import check_mac_account
+        mock_client = MagicMock()
+        mock_client.format_mac = lambda m: m
+        mock_client.auth_handshake.return_value = True
+        mock_client.get_token.return_value = "token123"
+        mock_client.get_profile.return_value = {"blocked": "0", "expire_billing_date": "2027-01-01"}
+        mock_client.get_account_info.return_value = {}
+        mock_client.get_genres.return_value = [{"id": 1, "title": "DE: Regional"}]
+        mock_client.get_vod_categories.return_value = [{"id": 99, "title": "Mature Lounge"}]
+        mock_client._request.return_value = {"total_items": 10, "data": []}
+
+        local_cache = {}
+        with patch("clients.stb_client.StbClient", return_value=mock_client):
+            # 1. Check
+            res1 = check_mac_account(
+                portal_url="http://vodtest.tv/c",
+                mac="00:1A:79:AA:BB:01",
+                portal_genres_cache=local_cache,
+            )
+            # 2. Check (selbes Portal, andere MAC)
+            res2 = check_mac_account(
+                portal_url="http://vodtest.tv/c",
+                mac="00:1A:79:AA:BB:02",
+                portal_genres_cache=local_cache,
+            )
+
+            self.assertEqual(mock_client.get_vod_categories.call_count, 1)
+            self.assertEqual(mock_client.get_genres.call_count, 1)
+            self.assertIn(GERMAN_TAG, res1.get("tags", []))
+            self.assertIn(RESTRICTED_VOD_TAG, res1.get("tags", []))
+            self.assertNotIn(RESTRICTED_TV_TAG, res1.get("tags", []))
+            self.assertEqual(res1.get("tags"), res2.get("tags"))
 
 
 if __name__ == "__main__":

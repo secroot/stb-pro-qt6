@@ -2736,7 +2736,12 @@ class MainWindow(QMainWindow):
                                     res["vpn_location"] = loc
                                     res["proxy_location"] = loc
                                 if not res.get("tags"):
-                                    res["tags"] = detect_category_tags(portal_genres_cache.get(cur_portal.strip().rstrip("/"), []))
+                                    p_norm = cur_portal.strip().rstrip("/")
+                                    res["tags"] = detect_category_tags(
+                                        categories=portal_genres_cache.get(p_norm, []),
+                                        vod_categories=portal_genres_cache.get(f"{p_norm}#vod", []),
+                                        distinguish_media=True,
+                                    )
                                 self.mac_db.save_found_mac(cur_portal, res)
                                 loc_txt = f" | VPN: {loc}" if loc else ""
                                 tags_txt = f" | {' '.join(res['tags'])}" if res.get("tags") else ""
@@ -2797,11 +2802,14 @@ class MainWindow(QMainWindow):
                 time.sleep(0.15)
 
             final_done, final_total = scheduler.get_progress()
-            event_bus.scan_state_changed.emit(False)
             hit_rate = calculate_hit_rate(hot_hits_count, final_done)
-            event_bus.log_message.emit(
-                f"[+] MAC-Scan beendet ({final_done}/{final_total} Checks abgeschlossen | Hit-Rate: {hit_rate:.1f}%)."
-            )
+            try:
+                event_bus.scan_state_changed.emit(False)
+                event_bus.log_message.emit(
+                    f"[+] MAC-Scan beendet ({final_done}/{final_total} Checks abgeschlossen | Hit-Rate: {hit_rate:.1f}%)."
+                )
+            except Exception:
+                pass
 
         threading.Thread(target=_coordinator, daemon=True).start()
 

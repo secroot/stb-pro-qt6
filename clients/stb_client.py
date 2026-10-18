@@ -465,6 +465,9 @@ def check_mac_account(
         if fetch_genres and res.get("valid") and res.get("channels", 0) > 0:
             target_cache = portal_genres_cache if portal_genres_cache is not None else _SCAN_GENRES_CACHE
             norm_p_key = portal_url.strip().rstrip("/")
+            vod_p_key = f"{norm_p_key}#vod"
+
+            # 1. Live-TV Genres (einmalig pro Portal)
             with _SCAN_GENRES_LOCK:
                 cached_genres = target_cache.get(norm_p_key)
             if cached_genres is None:
@@ -498,11 +501,36 @@ def check_mac_account(
                         with _SCAN_GENRES_LOCK:
                             target_cache[norm_p_key] = []
 
+            # 2. VOD-Kategorien (einmalig pro Portal für [18+ VOD] Erkennung)
+            with _SCAN_GENRES_LOCK:
+                cached_vod = target_cache.get(vod_p_key)
+            if cached_vod is None:
+                with _SCAN_GENRES_LOCK:
+                    cached_vod = target_cache.get(vod_p_key)
+                    if cached_vod is None:
+                        target_cache[vod_p_key] = []
+                        need_query_vod = True
+                    else:
+                        need_query_vod = False
+                if need_query_vod:
+                    try:
+                        fetched_vod = client.get_vod_categories()
+                        with _SCAN_GENRES_LOCK:
+                            target_cache[vod_p_key] = fetched_vod or []
+                    except Exception:
+                        with _SCAN_GENRES_LOCK:
+                            target_cache[vod_p_key] = []
+
             with _SCAN_GENRES_LOCK:
                 genres_for_tags = list(target_cache.get(norm_p_key, []))
+                vod_genres_for_tags = list(target_cache.get(vod_p_key, []))
 
             from core.category_parser import detect_category_tags
-            res["tags"] = detect_category_tags(genres_for_tags)
+            res["tags"] = detect_category_tags(
+                categories=genres_for_tags,
+                vod_categories=vod_genres_for_tags,
+                distinguish_media=True,
+            )
 
     except PermissionError as pe:
         res["status"] = "Ungültig / Nicht autorisiert"

@@ -17,6 +17,8 @@ _KW_HARDCORE = bytes.fromhex("48617264636f7265").decode("ascii")  # H...
 
 GERMAN_TAG = "[DE]"
 RESTRICTED_TAG = "[18+]"
+RESTRICTED_TV_TAG = "[18+ TV]"
+RESTRICTED_VOD_TAG = "[18+ VOD]"
 
 # Delimiter: Jedes Trennzeichen (Doppelpunkt, Bindestrich/Gedankenstrich, Pipe, Slash,
 # Unterstrich, Tilde, Hash, Sternchen/Sterne, Emojis, Bullet-Points, Symbole)
@@ -219,30 +221,64 @@ def _extract_category_strings(categories: Any) -> List[str]:
     return res
 
 
-def detect_category_tags(categories: Any) -> List[str]:
+def is_restricted_content(categories: Any) -> bool:
+    """Prüft, ob in den Kategorien oder Genredaten 18+/Erwachseneninhalte vorhanden sind."""
+    if _has_censored_flag(categories):
+        return True
+    cat_strings = _extract_category_strings(categories)
+    for s in cat_strings:
+        s_norm = s.replace("_", " ")
+        if _RESTRICTED_REGEX.search(s) or _RESTRICTED_REGEX.search(s_norm):
+            return True
+    return False
+
+
+def is_german_content(categories: Any) -> bool:
+    """Prüft, ob in den Kategorien deutsche/österreichische/Schweizer Regionalbouquets vorhanden sind."""
+    cat_strings = _extract_category_strings(categories)
+    for s in cat_strings:
+        s_norm = s.replace("_", " ")
+        if _GERMAN_REGEX.search(s) or _GERMAN_REGEX.search(s_norm):
+            return True
+    return False
+
+
+def detect_category_tags(
+    categories: Any = None,
+    vod_categories: Any = None,
+    distinguish_media: bool = False,
+) -> List[str]:
     """
     Erkennt Region- und Themen-Bouquets aus einer Kategorien- oder Genrelenkung.
     - German: DE | *, DE|*, Germany, German *HD *UHD, DE:*, [DE], etc. -> '[DE]'
-    - Restricted / 18+: 18+, Erotik, Mature, Redlight, Adult, XXX, Hardcore, censored=1 -> '[18+]'
+    - Restricted / 18+:
+      - Wenn vod_categories übergeben wird oder distinguish_media=True:
+        * 18+ im Live-TV -> '[18+ TV]'
+        * 18+ im Video-on-Demand (Filme/Serien) -> '[18+ VOD]'
+      - Andernfalls (generischer Modus für einfache Aufrufe):
+        * 18+ vorhanden -> '[18+]'
     """
-    cat_strings = _extract_category_strings(categories)
-    has_de = False
-    has_18 = _has_censored_flag(categories)
+    has_de = is_german_content(categories)
+    if not has_de and vod_categories:
+        has_de = is_german_content(vod_categories)
 
-    for s in cat_strings:
-        s_norm = s.replace("_", " ")
-        if not has_de and (_GERMAN_REGEX.search(s) or _GERMAN_REGEX.search(s_norm)):
-            has_de = True
-        if not has_18 and (_RESTRICTED_REGEX.search(s) or _RESTRICTED_REGEX.search(s_norm)):
-            has_18 = True
-        if has_de and has_18:
-            break
+    should_distinguish = distinguish_media or (vod_categories is not None)
 
     tags: List[str] = []
     if has_de:
         tags.append(GERMAN_TAG)
-    if has_18:
-        tags.append(RESTRICTED_TAG)
+
+    if should_distinguish:
+        has_tv_18 = is_restricted_content(categories)
+        has_vod_18 = is_restricted_content(vod_categories)
+        if has_tv_18:
+            tags.append(RESTRICTED_TV_TAG)
+        if has_vod_18:
+            tags.append(RESTRICTED_VOD_TAG)
+    else:
+        if is_restricted_content(categories):
+            tags.append(RESTRICTED_TAG)
+
     return tags
 
 
