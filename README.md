@@ -22,9 +22,7 @@
 
 ## 🌟 Schnellübersicht
 
-**STB-Emulator Pro** ist eine modulare High-End IPTV- und STB-Emulationssoftware auf Basis von **Python 3.12** und **Qt6 (`PySide6`)**. Die Suite vereint ein hardwarebeschleunigtes **Cyber-Cinema** (mit lokalem Flow-Control-Proxy) mit einer professionellen **Multi-Thread Pentesting- & Probing-Engine** für Stalker/Ministra-Portale, Xtream Codes v2 APIs und M3U8-Playlists.
-
-Dank reaktiver **EventBus-Architektur** und virtueller GPU-Listen rendert die Anwendung selbst Kataloge mit über **100.000 Sendern** bei stabilen **120 FPS** mit Latenzen unter 1 ms und **0 % CPU-Last im Leerlauf**.
+**Dank reaktiver **EventBus-Architektur** und virtueller GPU-Listen rendert die Anwendung selbst Kataloge mit über **100.000 Sendern** bei stabilen **120 FPS** mit Latenzen unter 1 ms und **0 % CPU-Last im Leerlauf**.
 
 | 🎯 Multi-Thread Pentest Scanner | 🌲 Host-Gruppierter HOT-Baum | 🏷️ Intelligente Bouquet-Tags |
 | :--- | :--- | :--- |
