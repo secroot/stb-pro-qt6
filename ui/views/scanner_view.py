@@ -933,10 +933,21 @@ class ScannerView(QWidget):
         self._filter_btns["DEAD"].setText("ERR")
 
     def _rebuild_table(self):
-        self.table.setRowCount(0)
-        for r in self._results:
-            if self._matches_filter(r):
-                self._append_row(r)
+        filtered = [r for r in self._results if self._matches_filter(r)]
+        was_sort = self.table.isSortingEnabled()
+        if was_sort:
+            self.table.setSortingEnabled(False)
+        self.table.setUpdatesEnabled(False)
+        self.table.blockSignals(True)
+        try:
+            self.table.setRowCount(len(filtered))
+            for row, r in enumerate(filtered):
+                self._populate_row(row, r)
+        finally:
+            self.table.blockSignals(False)
+            self.table.setUpdatesEnabled(True)
+            if was_sort:
+                self.table.setSortingEnabled(True)
 
     def _append_row(self, res: Dict[str, Any]):
         was_sort = self.table.isSortingEnabled()
@@ -945,58 +956,60 @@ class ScannerView(QWidget):
         try:
             row = self.table.rowCount()
             self.table.insertRow(row)
-
-            mac = str(res.get("mac", ""))
-            raw_p_url = str(res.get("portal_url", "")).strip()
-            parsed_p = urlparse(raw_p_url if "://" in raw_p_url else f"http://{raw_p_url}")
-            portal_disp = parsed_p.netloc or raw_p_url or "—"
-            status = str(res.get("status", ""))
-            expire = str(res.get("expire", "-"))
-            channels = int(res.get("channels") or 0)
-            token = str(res.get("token", ""))
-            tag = res.get("tag", "invalid")
-
-            it_mac = QTableWidgetItem(mac)
-            it_mac.setData(Qt.ItemDataRole.UserRole, res)
-            it_portal = QTableWidgetItem(portal_disp)
-            it_portal.setToolTip(raw_p_url)
-            it_stat = QTableWidgetItem(status)
-            it_exp = QTableWidgetItem(expire)
-
-            it_ch = QTableWidgetItem()
-            if channels > 0:
-                it_ch.setData(Qt.ItemDataRole.DisplayRole, channels)
-            elif res.get("valid"):
-                it_ch.setData(Qt.ItemDataRole.DisplayRole, 0)
-            else:
-                it_ch.setText("—")
-            it_ch.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-
-            it_tok = QTableWidgetItem(token)
-
-            if tag == "hot":
-                color = QColor("#10B981")
-            elif tag == "valid":
-                color = QColor("#38BDF8")
-            elif res.get("rate_limited"):
-                color = QColor("#F59E0B")
-            else:
-                color = QColor("#64748B")
-
-            it_mac.setForeground(color)
-            it_portal.setForeground(QColor("#94A3B8"))
-            it_stat.setForeground(color)
-            it_ch.setForeground(color)
-
-            self.table.setItem(row, 0, it_mac)
-            self.table.setItem(row, 1, it_portal)
-            self.table.setItem(row, 2, it_stat)
-            self.table.setItem(row, 3, it_exp)
-            self.table.setItem(row, 4, it_ch)
-            self.table.setItem(row, 5, it_tok)
+            self._populate_row(row, res)
         finally:
             if was_sort:
                 self.table.setSortingEnabled(True)
+
+    def _populate_row(self, row: int, res: Dict[str, Any]):
+        mac = str(res.get("mac", ""))
+        raw_p_url = str(res.get("portal_url", "")).strip()
+        parsed_p = urlparse(raw_p_url if "://" in raw_p_url else f"http://{raw_p_url}")
+        portal_disp = parsed_p.netloc or raw_p_url or "—"
+        status = str(res.get("status", ""))
+        expire = str(res.get("expire", "-"))
+        channels = int(res.get("channels") or 0)
+        token = str(res.get("token", ""))
+        tag = res.get("tag", "invalid")
+
+        it_mac = QTableWidgetItem(mac)
+        it_mac.setData(Qt.ItemDataRole.UserRole, res)
+        it_portal = QTableWidgetItem(portal_disp)
+        it_portal.setToolTip(raw_p_url)
+        it_stat = QTableWidgetItem(status)
+        it_exp = QTableWidgetItem(expire)
+
+        it_ch = QTableWidgetItem()
+        if channels > 0:
+            it_ch.setData(Qt.ItemDataRole.DisplayRole, channels)
+        elif res.get("valid"):
+            it_ch.setData(Qt.ItemDataRole.DisplayRole, 0)
+        else:
+            it_ch.setText("—")
+        it_ch.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        it_tok = QTableWidgetItem(token)
+
+        if tag == "hot":
+            color = QColor("#10B981")
+        elif tag == "valid":
+            color = QColor("#38BDF8")
+        elif res.get("rate_limited"):
+            color = QColor("#F59E0B")
+        else:
+            color = QColor("#64748B")
+
+        it_mac.setForeground(color)
+        it_portal.setForeground(QColor("#94A3B8"))
+        it_stat.setForeground(color)
+        it_ch.setForeground(color)
+
+        self.table.setItem(row, 0, it_mac)
+        self.table.setItem(row, 1, it_portal)
+        self.table.setItem(row, 2, it_stat)
+        self.table.setItem(row, 3, it_exp)
+        self.table.setItem(row, 4, it_ch)
+        self.table.setItem(row, 5, it_tok)
 
     def _on_row_double_clicked(self, row: int, _col: int):
         it = self.table.item(row, 0)
@@ -1268,10 +1281,21 @@ class ScannerView(QWidget):
         self._portal_filter_btns["OFFLINE"].setText(f"🔴 OFFLINE ({offline})")
 
     def _rebuild_portal_table(self):
-        self.table_portals.setRowCount(0)
-        for r in self._portal_results:
-            if self._matches_portal_filter(r):
-                self._append_portal_row(r)
+        filtered = [r for r in self._portal_results if self._matches_portal_filter(r)]
+        was_sort = self.table_portals.isSortingEnabled()
+        if was_sort:
+            self.table_portals.setSortingEnabled(False)
+        self.table_portals.setUpdatesEnabled(False)
+        self.table_portals.blockSignals(True)
+        try:
+            self.table_portals.setRowCount(len(filtered))
+            for row, r in enumerate(filtered):
+                self._populate_portal_row(row, r)
+        finally:
+            self.table_portals.blockSignals(False)
+            self.table_portals.setUpdatesEnabled(True)
+            if was_sort:
+                self.table_portals.setSortingEnabled(True)
 
     def _append_portal_row(self, res: PortalCheckResult):
         was_sort = self.table_portals.isSortingEnabled()
@@ -1280,53 +1304,55 @@ class ScannerView(QWidget):
         try:
             row = self.table_portals.rowCount()
             self.table_portals.insertRow(row)
-
-            it_stat = QTableWidgetItem(res.display_status())
-            it_url = QTableWidgetItem(res.url)
-            it_url.setData(Qt.ItemDataRole.UserRole, res.url)
-
-            it_code = QTableWidgetItem()
-            if res.status_code is not None:
-                it_code.setData(Qt.ItemDataRole.DisplayRole, int(res.status_code))
-            else:
-                it_code.setText("—")
-            it_code.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-
-            it_ping = QTableWidgetItem()
-            if res.latency_ms > 0:
-                it_ping.setData(Qt.ItemDataRole.DisplayRole, int(round(res.latency_ms)))
-            else:
-                it_ping.setText("—")
-            it_ping.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-
-            info_parts = []
-            if res.server:
-                info_parts.append(res.server)
-            if res.stalker_detected:
-                info_parts.append("Ministra/Stalker erkannt")
-            if res.error:
-                info_parts.append(res.error)
-            it_info = QTableWidgetItem(" | ".join(info_parts) if info_parts else "—")
-
-            if res.is_online and res.stalker_detected:
-                color = QColor("#10B981")
-            elif res.status_code is not None and not res.stalker_detected:
-                color = QColor("#F59E0B")
-            else:
-                color = QColor("#EF4444")
-
-            it_stat.setForeground(color)
-            it_code.setForeground(color)
-            it_ping.setForeground(QColor("#94A3B8"))
-
-            self.table_portals.setItem(row, 0, it_stat)
-            self.table_portals.setItem(row, 1, it_url)
-            self.table_portals.setItem(row, 2, it_code)
-            self.table_portals.setItem(row, 3, it_ping)
-            self.table_portals.setItem(row, 4, it_info)
+            self._populate_portal_row(row, res)
         finally:
             if was_sort:
                 self.table_portals.setSortingEnabled(True)
+
+    def _populate_portal_row(self, row: int, res: PortalCheckResult):
+        it_stat = QTableWidgetItem(res.display_status())
+        it_url = QTableWidgetItem(res.url)
+        it_url.setData(Qt.ItemDataRole.UserRole, res.url)
+
+        it_code = QTableWidgetItem()
+        if res.status_code is not None:
+            it_code.setData(Qt.ItemDataRole.DisplayRole, int(res.status_code))
+        else:
+            it_code.setText("—")
+        it_code.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        it_ping = QTableWidgetItem()
+        if res.latency_ms > 0:
+            it_ping.setData(Qt.ItemDataRole.DisplayRole, int(round(res.latency_ms)))
+        else:
+            it_ping.setText("—")
+        it_ping.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        info_parts = []
+        if res.server:
+            info_parts.append(res.server)
+        if res.stalker_detected:
+            info_parts.append("Ministra/Stalker erkannt")
+        if res.error:
+            info_parts.append(res.error)
+        it_info = QTableWidgetItem(" | ".join(info_parts) if info_parts else "—")
+
+        if res.is_online and res.stalker_detected:
+            color = QColor("#10B981")
+        elif res.status_code is not None and not res.stalker_detected:
+            color = QColor("#F59E0B")
+        else:
+            color = QColor("#EF4444")
+
+        it_stat.setForeground(color)
+        it_code.setForeground(color)
+        it_ping.setForeground(QColor("#94A3B8"))
+
+        self.table_portals.setItem(row, 0, it_stat)
+        self.table_portals.setItem(row, 1, it_url)
+        self.table_portals.setItem(row, 2, it_code)
+        self.table_portals.setItem(row, 3, it_ping)
+        self.table_portals.setItem(row, 4, it_info)
 
     def _clear_portal_results(self):
         self._portal_results.clear()

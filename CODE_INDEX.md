@@ -132,7 +132,7 @@
 | `save_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L136-L144) | `L136-L144` | def save_thumb(key, data) |
 | `ScanAccount` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L24-L58) | `L24-L58` | Repräsentiert einen einzelnen gescannten MAC-Account eines Portals. |
 | `ScanHost` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L62-L85) | `L62-L85` | Repräsentiert einen Host / ein Portal mit allen zugehörigen Logins. |
-| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L87-L1440) | `L87-L1440` | Basis: QWidget |
+| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L87-L1466) | `L87-L1466` | Basis: QWidget |
 | `ScanRepository` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L88-L264) | `L88-L264` | Verwaltet das Einlesen, Filtern und Cachen aller Scan-Dateien aus 'mac_scans/'. |
 | `ScanResult` | **Class / Widget** | [core/models.py](core/models.py#L600-L610) | `L600-L610` | Basis:  |
 | `ScanRotationMode` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L21-L55) | `L21-L55` | Konstanten für Multi-Portal Rotations- und Scan-Modi. |
@@ -149,7 +149,7 @@
 | `TestMacDatabaseExpireFilter` | **Class / Widget** | [tests/test_expire_validation.py](tests/test_expire_validation.py#L121-L229) | `L121-L229` | Tests für MacDatabase Filterung ungültiger Ablaufdaten. |
 | `TestMacDatabaseVpnLocation` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L113-L138) | `L113-L138` | Tests für Speicherung und Auslesen von VPN-Standorten in MacDatabase. |
 | `TestMacPatternPredictor` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L21-L110) | `L21-L110` | Tests für MacPatternPredictor Analyse und Permutationen. |
-| `TestPatternPredictorUiIntegration` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L199-L240) | `L199-L240` | Tests für UI-Integration und Signalübergabe des Pattern-Prädiktors. |
+| `TestPatternPredictorUiIntegration` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L199-L281) | `L199-L281` | Tests für UI-Integration und Signalübergabe des Pattern-Prädiktors. |
 | `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L26-L532) | `L26-L532` | Basis: unittest.TestCase |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
 | `TestScanScheduler` | **Class / Widget** | [tests/test_scan_scheduler.py](tests/test_scan_scheduler.py#L13-L474) | `L13-L474` | Basis: unittest.TestCase |
@@ -996,7 +996,7 @@ VOD/Catchup Seekbar, Audio/Subtitle/Aspect/Speed Controls, Multi-Thread Category
 
 ---
 
-### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (1440 Zeilen)
+### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (1466 Zeilen)
 > Multi-MAC Scanner & Pentest Generator View.
 Features 22 OUI Vendor Presets, custom wildcard masks (XX:XX:XX), sequential & random generation,
 adaptive WAF/429 Throttle Controller integration, live CPS (Checks/sec) & ETA telemetry,
@@ -1006,7 +1006,7 @@ filterable hit table, and 1-click profile adoption.
 - **[`_PortalCheckerSignals`](ui/views/scanner_view.py#L80-L84)** : *QObject* — `L80-L84`
   - *Thread-sichere Qt-Signals für Hintergrund-Prüfungen der Stalker-Portale.*
   - **Signals**: `result_received`, `progress_updated`, `finished`
-- **[`ScannerView`](ui/views/scanner_view.py#L87-L1440)** : *QWidget* — `L87-L1440`
+- **[`ScannerView`](ui/views/scanner_view.py#L87-L1466)** : *QWidget* — `L87-L1466`
   - **Signals**: `start_scan_requested`, `stop_scan_requested`, `pause_scan_requested`, `resume_scan_requested`, `scan_settings_updated`, `apply_mac_requested`, `prepend_db_macs_requested`, `pattern_analysis_requested`, `scan_exported`
   - **Wichtige Methoden:**
     - [`__init__(parent)`](ui/views/scanner_view.py#L98) — `L98`
@@ -1024,7 +1024,7 @@ filterable hit table, and 1-click profile adoption.
     - [`_on_start_clicked()`](ui/views/scanner_view.py#L737) — `L737`
     - [`get_scan_threads()`](ui/views/scanner_view.py#L779) — `L779`
     - [`get_scan_delay()`](ui/views/scanner_view.py#L782) — `L782`
-    - *... und 37 weitere Hilfsmethoden.*
+    - *... und 39 weitere Hilfsmethoden.*
 
 #### Wichtige Konstanten / Konfigurationen
 - `OUI_VENDOR_PRESETS` (L52), `MAC_REGEX` (L77)
@@ -1453,7 +1453,7 @@ die Verhinderung von False-Positive Hot-Hits bei 0000000 / None / Unbekannt / ab
 
 ---
 
-### 📄 [`tests/test_pattern_predictor_and_antiban.py`](tests/test_pattern_predictor_and_antiban.py) (244 Zeilen)
+### 📄 [`tests/test_pattern_predictor_and_antiban.py`](tests/test_pattern_predictor_and_antiban.py) (285 Zeilen)
 > Unit-Tests für den MAC-Muster-Prädiktor, Permutations-Generator,
 Anti-Ban VPN-Shield und erweiterte Delays.
 
@@ -1475,12 +1475,13 @@ Anti-Ban VPN-Shield und erweiterte Delays.
   - *Tests für die Anti-Ban Erkennung und den 45s-Cooldown.*
   - **Wichtige Methoden:**
     - [`test_antiban_trigger_and_cooldown()`](tests/test_pattern_predictor_and_antiban.py#L144) — `L144` *(Prüft, dass >30 Fehler in 5s nur bei Hosts mit Treffern feuern und 45s Cooldown greift.)*
-- **[`TestPatternPredictorUiIntegration`](tests/test_pattern_predictor_and_antiban.py#L199-L240)** : *unittest.TestCase* — `L199-L240`
+- **[`TestPatternPredictorUiIntegration`](tests/test_pattern_predictor_and_antiban.py#L199-L281)** : *unittest.TestCase* — `L199-L281`
   - *Tests für UI-Integration und Signalübergabe des Pattern-Prädiktors.*
   - **Wichtige Methoden:**
     - [`setUpClass(cls)`](tests/test_pattern_predictor_and_antiban.py#L203) — `L203`
     - [`test_pattern_dialog_send_to_scanner_accepts_cleanly()`](tests/test_pattern_predictor_and_antiban.py#L208) — `L208` *(Testet, dass _on_send_to_scanner den Dialog schließt und MACs emittiert ohne modales Hängen.)*
     - [`test_scanner_view_pattern_analysis_button_and_signal()`](tests/test_pattern_predictor_and_antiban.py#L233) — `L233` *(Testet, dass ScannerView den Analyse-Button besitzt und das Signal feuert.)*
+    - [`test_scanner_view_filter_switching_no_freeze()`](tests/test_pattern_predictor_and_antiban.py#L242) — `L242` *(Testet, dass das Umschalten zwischen ALL, HOT, OK, ERR auch bei vielen Einträgen blitzschnell und ohne Freeze läuft.)*
 
 ---
 

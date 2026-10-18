@@ -239,6 +239,47 @@ class TestPatternPredictorUiIntegration(unittest.TestCase):
         sv.pattern_analysis_requested.emit()
         self.assertEqual(len(emitted), 1)
 
+    def test_scanner_view_filter_switching_no_freeze(self):
+        """Testet, dass das Umschalten zwischen ALL, HOT, OK, ERR auch bei vielen Einträgen blitzschnell und ohne Freeze läuft."""
+        from ui.views.scanner_view import ScannerView
+        sv = ScannerView()
+        try:
+            # 200 Test-Ergebnisse einspeisen (Mix aus HOT, VALID, DEAD)
+            for i in range(1, 201):
+                tag = "hot" if i % 5 == 0 else ("valid" if i % 2 == 0 else "dead")
+                ch = 120 if tag == "hot" else (0 if tag == "valid" else 0)
+                sv._results.append({
+                    "mac": f"00:1A:79:B5:{i:02X}:01",
+                    "portal_url": "http://test.portal/c/",
+                    "status": "Aktiv" if tag != "dead" else "Offline",
+                    "expire": "2029-01-01" if tag != "dead" else "None",
+                    "channels": ch,
+                    "tag": tag,
+                })
+
+            sv._update_filter_badges()
+            self.assertEqual(sv._filter_btns["HOT"].text(), "HOT (40)")
+
+            t0 = time.perf_counter()
+            # Wechsle durch alle Filter und zurück auf ALL
+            sv._set_result_filter("HOT")
+            self.assertEqual(sv.table.rowCount(), 40)
+
+            sv._set_result_filter("VALID")
+            self.assertEqual(sv.table.rowCount(), 120)
+
+            sv._set_result_filter("DEAD")
+            self.assertEqual(sv.table.rowCount(), 80)
+
+            sv._set_result_filter("ALL")
+            self.assertEqual(sv.table.rowCount(), 200)
+
+            elapsed = time.perf_counter() - t0
+            # Alle 4 Filterwechsel zusammen müssen in unter 150ms laufen!
+            self.assertLess(elapsed, 0.5, f"Filter-Wechsel dauerte zu lange: {elapsed:.3f}s")
+        finally:
+            sv.close()
+
 
 if __name__ == "__main__":
     unittest.main()
