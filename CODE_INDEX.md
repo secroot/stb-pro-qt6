@@ -103,7 +103,7 @@
 | `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L31-L211) | `L31-L211` | Basis: QDialog |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
 | `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L96-L2993) | `L96-L2993` | Basis: QMainWindow |
-| `MultiPortalScanScheduler` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L56-L382) | `L56-L382` | Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans. |
+| `MultiPortalScanScheduler` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L56-L558) | `L56-L558` | Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans mit intelligenter |
 | `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L29-L653) | `L29-L653` | Verwaltet die Integration mit NordVPN unter Windows. |
 | `normalize_portal_url` | **Function** | [core/portal_checker.py](core/portal_checker.py#L202-L219) | `L202-L219` | Normalisiert eine Portal-URL sauber (Protokoll, Leerzeichen, Format). |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
@@ -138,7 +138,7 @@
 | `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L456-L474) | `L456-L474` | Basis:  |
 | `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L26-L486) | `L26-L486` | Basis: unittest.TestCase |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
-| `TestScanScheduler` | **Class / Widget** | [tests/test_scan_scheduler.py](tests/test_scan_scheduler.py#L13-L367) | `L13-L367` | Basis: unittest.TestCase |
+| `TestScanScheduler` | **Class / Widget** | [tests/test_scan_scheduler.py](tests/test_scan_scheduler.py#L13-L426) | `L13-L426` | Basis: unittest.TestCase |
 | `TestSettingsAndSidebar` | **Class / Widget** | [tests/test_settings_and_sidebar.py](tests/test_settings_and_sidebar.py#L25-L301) | `L25-L301` | Basis: unittest.TestCase |
 | `TestUIAndEngine` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L90-L840) | `L90-L840` | Basis: unittest.TestCase |
 | `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L330) | `L15-L330` | Basis: unittest.TestCase |
@@ -544,12 +544,12 @@ und generiert dynamisch Host- und Login-Auswahlen für Stalker-Portale.
 
 ---
 
-### 📄 [`core/scan_scheduler.py`](core/scan_scheduler.py) (382 Zeilen)
+### 📄 [`core/scan_scheduler.py`](core/scan_scheduler.py) (558 Zeilen)
 > Multi-Portal Scan Scheduler für STB Pro Qt6.
 Bietet intelligente Verteilungsmodi für Multi-Portal MAC-Scans:
-- HOT_SPOT: Hot-Spot Affinity (Fokus bei Hit: bei einem Treffer nachfolgende MACs auf diesem Portal prüfen)
+- HOT_SPOT: Hot-Spot Affinity mit Backfill (bei einem Treffer werden auch zuvor auf anderen Portalen abgewiesene MACs auf dem Hot-Portal nachgetestet)
 - ROUND_ROBIN: Klassische zyklische Verteilung aller MACs über alle erreichbaren Portale
-- ADAPTIVE: Dynamische Hit-Rate-Gewichtung (Multi-Armed Bandit / epsilon-greedy)
+- ADAPTIVE: Dynamische Hit-Rate-Gewichtung mit Backfill (Multi-Armed Bandit / epsilon-greedy)
 - FAILOVER: Primäres Portal aktiv; automatischer Wechsel zum nächsten Portal bei 3 aufeinanderfolgenden Fehlern
 - SWEEP: Jede MAC gegen alle Portale prüfen (vollständige Matrix)
 - SWEEP_EARLY_EXIT: Sweep mit Abbruch sobald eine MAC auf einem Portal erfolgreich verifiziert wurde
@@ -560,21 +560,25 @@ Bietet intelligente Verteilungsmodi für Multi-Portal MAC-Scans:
   - **Wichtige Methoden:**
     - [`describe(cls, mode)`](core/scan_scheduler.py#L29) — `L29`
     - [`from_ui_label(cls, label)`](core/scan_scheduler.py#L41) — `L41`
-- **[`MultiPortalScanScheduler`](core/scan_scheduler.py#L56-L382)** — `L56-L382`
-  - *Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans.*
+- **[`MultiPortalScanScheduler`](core/scan_scheduler.py#L56-L558)** — `L56-L558`
+  - *Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans mit intelligenter*
   - **Wichtige Methoden:**
     - [`__init__(portals, macs, mode, hot_spot_burst, failover_threshold, on_log)`](core/scan_scheduler.py#L62) — `L62`
-    - [`_log(msg)`](core/scan_scheduler.py#L133) — `L133`
-    - [`get_next_work_item()`](core/scan_scheduler.py#L140) — `L140` *(Gibt das nächste (MAC, Portal)-Tupel thread-sicher zurück.)*
-    - [`_select_portal_for_mac(mac)`](core/scan_scheduler.py#L171) — `L171`
-    - [`_weighted_portal_choice()`](core/scan_scheduler.py#L208) — `L208`
-    - [`report_result(portal_url, mac, result)`](core/scan_scheduler.py#L221) — `L221` *(Aktualisiert Metriken, Treffer, Burst-Quotas und Failover-Zustände thread-sicher.)*
-    - [`requeue_item(portal_url, mac, reason)`](core/scan_scheduler.py#L334) — `L334` *(Stellt ein Work-Item bei transientem Fehler thread-sicher erneut an.)*
-    - [`release_in_flight()`](core/scan_scheduler.py#L350) — `L350` *(Reduziert in_flight falls ein Worker unerwartet abbricht.)*
-    - [`is_exhausted()`](core/scan_scheduler.py#L355) — `L355` *(Prüft, ob alle Items verarbeitet wurden und keine mehr in Bearbeitung sind.)*
-    - [`get_progress()`](core/scan_scheduler.py#L362) — `L362` *(Gibt (effektive_fertige_checks, gesamt_checks) zurück.)*
-    - [`get_queue_size()`](core/scan_scheduler.py#L368) — `L368` *(Gibt die Anzahl der noch wartenden Items zurück.)*
-    - [`get_active_portal()`](core/scan_scheduler.py#L375) — `L375` *(Gibt das aktuell bevorzugte Portal zurück (für Status-Anzeigen).)*
+    - [`_log(msg)`](core/scan_scheduler.py#L153) — `L153`
+    - [`get_next_work_item()`](core/scan_scheduler.py#L160) — `L160` *(Gibt das nächste (MAC, Portal)-Tupel thread-sicher zurück.)*
+    - [`_get_hot_spot_item()`](core/scan_scheduler.py#L201) — `L201`
+    - [`_get_adaptive_item()`](core/scan_scheduler.py#L251) — `L251`
+    - [`_get_failover_item()`](core/scan_scheduler.py#L292) — `L292`
+    - [`_get_round_robin_item()`](core/scan_scheduler.py#L314) — `L314`
+    - [`_weighted_portal_choice()`](core/scan_scheduler.py#L326) — `L326`
+    - [`_activate_hot_spot(portal, ch_cnt)`](core/scan_scheduler.py#L339) — `L339` *(Aktiviert Hot-Spot Modus und sammelt alle bisher auf anderen Portalen abgewiesenen MACs.)*
+    - [`report_result(portal_url, mac, result)`](core/scan_scheduler.py#L369) — `L369` *(Aktualisiert Metriken, Treffer, Burst-Quotas und Failover-Zustände thread-sicher.)*
+    - [`requeue_item(portal_url, mac, reason)`](core/scan_scheduler.py#L505) — `L505` *(Stellt ein Work-Item bei transientem Fehler thread-sicher erneut an.)*
+    - [`release_in_flight()`](core/scan_scheduler.py#L522) — `L522` *(Reduziert in_flight falls ein Worker unerwartet abbricht.)*
+    - [`is_exhausted()`](core/scan_scheduler.py#L527) — `L527` *(Prüft, ob alle Items verarbeitet wurden und keine mehr in Bearbeitung sind.)*
+    - [`get_progress()`](core/scan_scheduler.py#L537) — `L537` *(Gibt (effektive_fertige_checks, gesamt_checks) zurück.)*
+    - [`get_queue_size()`](core/scan_scheduler.py#L543) — `L543` *(Gibt die Anzahl der noch wartenden Items zurück.)*
+    - *... und 1 weitere Hilfsmethoden.*
 
 ---
 
@@ -1391,9 +1395,9 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
 
 ---
 
-### 📄 [`tests/test_scan_scheduler.py`](tests/test_scan_scheduler.py) (371 Zeilen)
+### 📄 [`tests/test_scan_scheduler.py`](tests/test_scan_scheduler.py) (430 Zeilen)
 #### Klassen & Komponenten
-- **[`TestScanScheduler`](tests/test_scan_scheduler.py#L13-L367)** : *unittest.TestCase* — `L13-L367`
+- **[`TestScanScheduler`](tests/test_scan_scheduler.py#L13-L426)** : *unittest.TestCase* — `L13-L426`
   - **Wichtige Methoden:**
     - [`setUp()`](tests/test_scan_scheduler.py#L14) — `L14`
     - [`test_01_mode_labels_and_descriptions()`](tests/test_scan_scheduler.py#L22) — `L22`
@@ -1406,6 +1410,7 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
     - [`test_08_sweep_early_exit_on_first_hit()`](tests/test_scan_scheduler.py#L217) — `L217`
     - [`test_09_multithreaded_concurrency()`](tests/test_scan_scheduler.py#L262) — `L262` *(Testet threadsichere Abarbeitung mit 8 parallelen Worker-Threads.)*
     - [`test_10_main_window_start_mac_scan_hot_spot_integration()`](tests/test_scan_scheduler.py#L311) — `L311`
+    - [`test_11_hot_spot_backfills_previously_failed_macs()`](tests/test_scan_scheduler.py#L369) — `L369` *(Verifiziert, dass beim Entdecken eines Hot-Portals zuvor auf anderen Portalen abgewiesene MACs nachgetestet werden.)*
 
 ---
 

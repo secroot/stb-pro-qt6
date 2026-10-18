@@ -302,10 +302,10 @@ class TestScanScheduler(unittest.TestCase):
         for t in threads:
             t.join(timeout=5.0)
 
-        self.assertEqual(len(completed_items), len(self.macs))
         done, total = scheduler.get_progress()
-        self.assertEqual(done, len(self.macs))
-        self.assertEqual(total, len(self.macs))
+        self.assertEqual(done, total)
+        self.assertEqual(len(completed_items), total)
+        self.assertGreaterEqual(total, len(self.macs))
         self.assertTrue(scheduler.is_exhausted())
 
     def test_10_main_window_start_mac_scan_hot_spot_integration(self):
@@ -365,6 +365,65 @@ class TestScanScheduler(unittest.TestCase):
         finally:
             win.stop_mac_scan()
             win.close()
+
+    def test_11_hot_spot_backfills_previously_failed_macs(self):
+        """Verifiziert, dass beim Entdecken eines Hot-Portals zuvor auf anderen Portalen abgewiesene MACs nachgetestet werden."""
+        logs = []
+        portals = ["http://portal-1.com/c", "http://portal-2.com/c", "http://portal-3.com/c"]
+        macs = ["00:1A:79:00:00:01", "00:1A:79:00:00:02", "00:1A:79:00:00:03", "00:1A:79:00:00:04"]
+
+        scheduler = MultiPortalScanScheduler(
+            portals=portals,
+            macs=macs,
+            mode=ScanRotationMode.HOT_SPOT,
+            hot_spot_burst=10,
+            on_log=logs.append,
+        )
+
+        # 1. MAC 1 wird auf Portal 1 getestet -> Abgewiesen
+        m1, p1 = scheduler.get_next_work_item()
+        self.assertEqual(m1, "00:1A:79:00:00:01")
+        self.assertEqual(p1, portals[0])
+        scheduler.report_result(p1, m1, {"valid": False, "channels": 0, "status": "Ungültig"})
+
+        # 2. MAC 2 wird auf Portal 2 getestet -> Abgewiesen
+        m2, p2 = scheduler.get_next_work_item()
+        self.assertEqual(m2, "00:1A:79:00:00:02")
+        self.assertEqual(p2, portals[1])
+        scheduler.report_result(p2, m2, {"valid": False, "channels": 0, "status": "Ungültig"})
+
+        # 3. MAC 3 wird auf Portal 3 getestet -> TREFFER! (HOT HIT)
+        m3, p3 = scheduler.get_next_work_item()
+        self.assertEqual(m3, "00:1A:79:00:00:03")
+        self.assertEqual(p3, portals[2])
+        scheduler.report_result(p3, m3, {"tag": "hot", "valid": True, "channels": 450, "status": "Aktiv"})
+
+        # Jetzt ist Portal 3 Hot!
+        # Der Scheduler MUSS nun MAC 1 und MAC 2 für Portal 3 nachfordern (Backfill),
+        # anstatt sie zu vergessen und nur noch die restlichen MACs (MAC 4) zu testen!
+        m_next_1, p_next_1 = scheduler.get_next_work_item()
+        self.assertEqual(p_next_1, portals[2])
+        self.assertIn(m_next_1, ["00:1A:79:00:00:01", "00:1A:79:00:00:02"])
+        scheduler.report_result(p_next_1, m_next_1, {"valid": False})
+
+        m_next_2, p_next_2 = scheduler.get_next_work_item()
+        self.assertEqual(p_next_2, portals[2])
+        self.assertIn(m_next_2, ["00:1A:79:00:00:01", "00:1A:79:00:00:02"])
+        # Treffer auf MAC 2 auf dem Hot-Portal!
+        scheduler.report_result(p_next_2, m_next_2, {"tag": "hot", "channels": 200})
+        self.assertIn(m_next_2, scheduler.solved_macs)
+
+        # Danach kommt die frische MAC 4 ebenfalls auf Portal 3
+        m_next_3, p_next_3 = scheduler.get_next_work_item()
+        self.assertEqual(m_next_3, "00:1A:79:00:00:04")
+        self.assertEqual(p_next_3, portals[2])
+        scheduler.report_result(p_next_3, m_next_3, {"valid": False})
+
+        # Keine Items mehr offen
+        self.assertIsNone(scheduler.get_next_work_item())
+        self.assertTrue(scheduler.is_exhausted())
+        # Log verifiziert
+        self.assertTrue(any("Backfill aktiviert" in l for l in logs))
 
 
 if __name__ == "__main__":

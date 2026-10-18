@@ -1,9 +1,9 @@
 """
 Multi-Portal Scan Scheduler für STB Pro Qt6.
 Bietet intelligente Verteilungsmodi für Multi-Portal MAC-Scans:
-- HOT_SPOT: Hot-Spot Affinity (Fokus bei Hit: bei einem Treffer nachfolgende MACs auf diesem Portal prüfen)
+- HOT_SPOT: Hot-Spot Affinity mit Backfill (bei einem Treffer werden auch zuvor auf anderen Portalen abgewiesene MACs auf dem Hot-Portal nachgetestet)
 - ROUND_ROBIN: Klassische zyklische Verteilung aller MACs über alle erreichbaren Portale
-- ADAPTIVE: Dynamische Hit-Rate-Gewichtung (Multi-Armed Bandit / epsilon-greedy)
+- ADAPTIVE: Dynamische Hit-Rate-Gewichtung mit Backfill (Multi-Armed Bandit / epsilon-greedy)
 - FAILOVER: Primäres Portal aktiv; automatischer Wechsel zum nächsten Portal bei 3 aufeinanderfolgenden Fehlern
 - SWEEP: Jede MAC gegen alle Portale prüfen (vollständige Matrix)
 - SWEEP_EARLY_EXIT: Sweep mit Abbruch sobald eine MAC auf einem Portal erfolgreich verifiziert wurde
@@ -28,9 +28,9 @@ class ScanRotationMode:
     @classmethod
     def describe(cls, mode: str) -> str:
         descriptions = {
-            cls.HOT_SPOT: "Hot-Spot Affinity (Fokus bei Hit)",
+            cls.HOT_SPOT: "Hot-Spot Affinity (Fokus & Backfill bei Hit)",
             cls.ROUND_ROBIN: "Round-Robin (Gleichmäßig verteilt)",
-            cls.ADAPTIVE: "Smart Adaptive (Hit-Rate gewichtet)",
+            cls.ADAPTIVE: "Smart Adaptive (Hit-Rate gewichtet & Backfill)",
             cls.FAILOVER: "Failover (Auto-Switch bei Fehler)",
             cls.SWEEP: "Sweep (Alle Portale vollständig)",
             cls.SWEEP_EARLY_EXIT: "Sweep (Stopp bei erstem Hit)",
@@ -55,8 +55,8 @@ class ScanRotationMode:
 
 class MultiPortalScanScheduler:
     """
-    Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans.
-    Verteilt MAC-Adressen dynamisch nach der gewählten Strategie auf Portale.
+    Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans mit intelligenter
+    Coverage- und Backfill-Logik.
     """
 
     def __init__(
@@ -64,14 +64,14 @@ class MultiPortalScanScheduler:
         portals: List[str],
         macs: List[str],
         mode: str = ScanRotationMode.HOT_SPOT,
-        hot_spot_burst: int = 15,
+        hot_spot_burst: int = 20,
         failover_threshold: int = 3,
         on_log: Optional[Callable[[str], None]] = None,
     ):
         self._lock = threading.Lock()
         self._on_log = on_log
 
-        # Deduplizierte und bereinigte Portale & MACs
+        # Deduplizierte Portale & MACs
         clean_portals: List[str] = []
         for p in portals or []:
             ps = (p or "").strip()
@@ -79,7 +79,6 @@ class MultiPortalScanScheduler:
                 clean_portals.append(ps)
         self.portals: List[str] = clean_portals or [""]
 
-        # Deduplizierte MAC-Liste unter Beibehaltung der Reihenfolge
         clean_macs: List[str] = []
         seen_macs = set()
         for m in macs or []:
@@ -90,7 +89,7 @@ class MultiPortalScanScheduler:
         self.macs: List[str] = clean_macs
 
         self.mode = mode or ScanRotationMode.HOT_SPOT
-        self.hot_spot_burst = max(1, int(hot_spot_burst or 15))
+        self.hot_spot_burst = max(1, int(hot_spot_burst or 20))
         self.failover_threshold = max(1, int(failover_threshold or 3))
 
         # Zähler & Metriken
@@ -98,27 +97,45 @@ class MultiPortalScanScheduler:
         self.skipped_count: int = 0
         self.in_flight: int = 0
 
-        # Warteschlangen je nach Modus
+        # Mapping: MAC -> Menge an Portalen, auf denen sie bereits getestet wurde
+        self.tested_map: Dict[str, Set[str]] = collections.defaultdict(set)
+        # Menge an MACs, die einen Hot-Hit (>0 Kanäle) erzielt haben
+        self.solved_macs: Set[str] = set()
+        # Aktuell in Bearbeitung befindliche Paare: (mac, portal)
+        self.in_flight_pairs: Set[Tuple[str, str]] = set()
+
+        # Requeue-Schlange für temporäre Fehler
+        self._retry_queue: collections.deque[Tuple[str, str]] = collections.deque()
+
+        # Frische MACs, die noch nirgends getestet wurden
+        self._fresh_macs: collections.deque[str] = collections.deque(self.macs)
+
+        # Backfill-Schlangen pro Portal: MACs, die auf anderen Portalen abgewiesen wurden,
+        # aber auf diesem Portal noch nie getestet wurden!
+        self._backfill_per_portal: Dict[str, collections.deque[str]] = {
+            p: collections.deque() for p in self.portals
+        }
+        self._backfill_set_per_portal: Dict[str, Set[str]] = {
+            p: set() for p in self.portals
+        }
+
+        # Modus-spezifische Queues
         if self.mode in (ScanRotationMode.SWEEP, ScanRotationMode.SWEEP_EARLY_EXIT):
             work_items: List[Tuple[str, str]] = []
             for m in self.macs:
                 for p in self.portals:
                     work_items.append((m, p))
             self._sweep_queue: collections.deque[Tuple[str, str]] = collections.deque(work_items)
-            self._solved_macs: Set[str] = set()
             self.total_checks: int = len(work_items)
         else:
-            self._pending_macs: collections.deque[str] = collections.deque(self.macs)
-            self._retry_queue: collections.deque[Tuple[str, str]] = collections.deque()
+            self._sweep_queue = collections.deque()
             self.total_checks: int = len(self.macs)
-
-        # Modus-spezifische Zustände
-        self._rr_index: int = 0
 
         # Hot-Spot Zustand
         self.active_hot_portal: Optional[str] = None
         self.hot_spot_remaining: int = 0
         self.hot_spot_consecutive_misses: int = 0
+        self.hot_spot_max_misses: int = 10
 
         # Adaptive Zustand
         self.portal_weights: Dict[str, float] = {p: 1.0 for p in self.portals}
@@ -130,6 +147,9 @@ class MultiPortalScanScheduler:
         self.current_primary_index: int = 0
         self.consecutive_errors: Dict[str, int] = {p: 0 for p in self.portals}
 
+        # Round-Robin Index
+        self._rr_index: int = 0
+
     def _log(self, msg: str):
         if self._on_log:
             try:
@@ -140,70 +160,168 @@ class MultiPortalScanScheduler:
     def get_next_work_item(self) -> Optional[Tuple[str, str]]:
         """
         Gibt das nächste (MAC, Portal)-Tupel thread-sicher zurück.
-        Gibt None zurück, wenn aktuell keine Items verfügbar sind.
         """
         with self._lock:
+            # 1. Sweep-Modi
             if self.mode in (ScanRotationMode.SWEEP, ScanRotationMode.SWEEP_EARLY_EXIT):
                 while self._sweep_queue:
                     mac, portal = self._sweep_queue.popleft()
-                    if self.mode == ScanRotationMode.SWEEP_EARLY_EXIT and mac in self._solved_macs:
+                    if self.mode == ScanRotationMode.SWEEP_EARLY_EXIT and mac in self.solved_macs:
                         self.skipped_count += 1
                         continue
+                    if (mac, portal) in self.in_flight_pairs:
+                        continue
                     self.in_flight += 1
+                    self.in_flight_pairs.add((mac, portal))
                     return mac, portal
                 return None
 
-            # Priorität 1: Requeue-Items (Retries bei transienten Fehlern)
-            if self._retry_queue:
+            # 2. Priorität: Transiente Retries
+            while self._retry_queue:
                 mac, portal = self._retry_queue.popleft()
+                if mac in self.solved_macs:
+                    self.skipped_count += 1
+                    continue
+                if (mac, portal) in self.in_flight_pairs:
+                    continue
                 self.in_flight += 1
+                self.in_flight_pairs.add((mac, portal))
                 return mac, portal
 
-            # Priorität 2: Nächste MAC aus der Ausgangsliste
-            if not self._pending_macs:
-                return None
+            # 3. Modus-spezifische Zuweisung
+            if self.mode == ScanRotationMode.HOT_SPOT:
+                return self._get_hot_spot_item()
+            elif self.mode == ScanRotationMode.ADAPTIVE:
+                return self._get_adaptive_item()
+            elif self.mode == ScanRotationMode.FAILOVER:
+                return self._get_failover_item()
+            else:  # ROUND_ROBIN
+                return self._get_round_robin_item()
 
-            mac = self._pending_macs.popleft()
-            portal = self._select_portal_for_mac(mac)
+    def _get_hot_spot_item(self) -> Optional[Tuple[str, str]]:
+        # Wird innerhalb von self._lock aufgerufen
+        # A. Hot-Spot aktiv: Zuerst Backfill-Kandidaten, dann frische MACs auf das Hot-Portal lenken
+        if self.active_hot_portal and self.hot_spot_remaining > 0:
+            hp = self.active_hot_portal
+
+            # 1. Bevorzuge Backfill (MACs, die auf anderen Portalen abgewiesen wurden, aber auf hp noch nie liefen!)
+            bf_queue = self._backfill_per_portal[hp]
+            while bf_queue:
+                mac = bf_queue.popleft()
+                self._backfill_set_per_portal[hp].discard(mac)
+                if mac in self.solved_macs or hp in self.tested_map[mac] or (mac, hp) in self.in_flight_pairs:
+                    continue
+                self.hot_spot_remaining -= 1
+                self.in_flight += 1
+                self.in_flight_pairs.add((mac, hp))
+                if self.hot_spot_remaining <= 0:
+                    self._log(f"[🔄 Hot-Spot] Burst für '{hp}' beendet. Kehre zur Portal-Erkundung zurück.")
+                    self.active_hot_portal = None
+                return mac, hp
+
+            # 2. Frische MACs auf hp testen
+            while self._fresh_macs:
+                mac = self._fresh_macs.popleft()
+                if mac in self.solved_macs or hp in self.tested_map[mac] or (mac, hp) in self.in_flight_pairs:
+                    continue
+                self.hot_spot_remaining -= 1
+                self.in_flight += 1
+                self.in_flight_pairs.add((mac, hp))
+                if self.hot_spot_remaining <= 0:
+                    self._log(f"[🔄 Hot-Spot] Burst für '{hp}' beendet. Kehre zur Portal-Erkundung zurück.")
+                    self.active_hot_portal = None
+                return mac, hp
+
+            # Weder Backfill noch frische MACs für hp vorhanden
+            self.active_hot_portal = None
+
+        # B. Reguläre Erkundung frischer MACs zyklisch über Portale
+        while self._fresh_macs:
+            mac = self._fresh_macs.popleft()
+            if mac in self.solved_macs:
+                continue
+            portal = self.portals[self._rr_index % len(self.portals)]
+            self._rr_index += 1
             self.in_flight += 1
+            self.in_flight_pairs.add((mac, portal))
             return mac, portal
 
-    def _select_portal_for_mac(self, mac: str) -> str:
-        # Wird nur innerhalb von self._lock aufgerufen
-        if not self.portals or self.portals == [""]:
-            return ""
-        if len(self.portals) == 1:
-            return self.portals[0]
+        return None
 
-        if self.mode == ScanRotationMode.HOT_SPOT:
-            if self.active_hot_portal and self.hot_spot_remaining > 0:
-                p = self.active_hot_portal
-                self.hot_spot_remaining -= 1
-                if self.hot_spot_remaining <= 0:
-                    self._log(
-                        f"[🔄 Hot-Spot] Burst für '{p}' abgeschlossen. Kehre zur Portal-Rotation zurück."
-                    )
-                    self.active_hot_portal = None
-                    self.hot_spot_consecutive_misses = 0
-                return p
-            else:
-                p = self.portals[self._rr_index % len(self.portals)]
-                self._rr_index += 1
-                return p
+    def _get_adaptive_item(self) -> Optional[Tuple[str, str]]:
+        # Wird innerhalb von self._lock aufgerufen
+        if random.random() < 0.15:
+            portal = random.choice(self.portals)
+        else:
+            portal = self._weighted_portal_choice()
 
-        elif self.mode == ScanRotationMode.ADAPTIVE:
-            # 15% Exploration, 85% Exploitation (roulette-wheel gewichtet)
-            if random.random() < 0.15:
-                return random.choice(self.portals)
-            return self._weighted_portal_choice()
+        # 1. Bevorzuge Backfill für gewähltes Portal
+        bf_q = self._backfill_per_portal[portal]
+        while bf_q:
+            mac = bf_q.popleft()
+            self._backfill_set_per_portal[portal].discard(mac)
+            if mac in self.solved_macs or portal in self.tested_map[mac] or (mac, portal) in self.in_flight_pairs:
+                continue
+            self.in_flight += 1
+            self.in_flight_pairs.add((mac, portal))
+            return mac, portal
 
-        elif self.mode == ScanRotationMode.FAILOVER:
-            return self.portals[self.current_primary_index % len(self.portals)]
+        # 2. Frische MACs
+        while self._fresh_macs:
+            mac = self._fresh_macs.popleft()
+            if mac in self.solved_macs or portal in self.tested_map[mac] or (mac, portal) in self.in_flight_pairs:
+                continue
+            self.in_flight += 1
+            self.in_flight_pairs.add((mac, portal))
+            return mac, portal
 
-        else:  # ROUND_ROBIN
-            p = self.portals[self._rr_index % len(self.portals)]
+        # 3. Fallback: Suche beliebiges Portal mit ausstehenden Backfill-Kandidaten
+        for p in self.portals:
+            p_bf = self._backfill_per_portal[p]
+            while p_bf:
+                mac = p_bf.popleft()
+                self._backfill_set_per_portal[p].discard(mac)
+                if mac in self.solved_macs or p in self.tested_map[mac] or (mac, p) in self.in_flight_pairs:
+                    continue
+                self.in_flight += 1
+                self.in_flight_pairs.add((mac, p))
+                return mac, p
+
+        return None
+
+    def _get_failover_item(self) -> Optional[Tuple[str, str]]:
+        portal = self.portals[self.current_primary_index % len(self.portals)]
+        bf_q = self._backfill_per_portal[portal]
+        while bf_q:
+            mac = bf_q.popleft()
+            self._backfill_set_per_portal[portal].discard(mac)
+            if mac in self.solved_macs or portal in self.tested_map[mac] or (mac, portal) in self.in_flight_pairs:
+                continue
+            self.in_flight += 1
+            self.in_flight_pairs.add((mac, portal))
+            return mac, portal
+
+        while self._fresh_macs:
+            mac = self._fresh_macs.popleft()
+            if mac in self.solved_macs:
+                continue
+            self.in_flight += 1
+            self.in_flight_pairs.add((mac, portal))
+            return mac, portal
+
+        return None
+
+    def _get_round_robin_item(self) -> Optional[Tuple[str, str]]:
+        while self._fresh_macs:
+            mac = self._fresh_macs.popleft()
+            if mac in self.solved_macs:
+                continue
+            portal = self.portals[self._rr_index % len(self.portals)]
             self._rr_index += 1
-            return p
+            self.in_flight += 1
+            self.in_flight_pairs.add((mac, portal))
+            return mac, portal
+        return None
 
     def _weighted_portal_choice(self) -> str:
         total = sum(self.portal_weights.get(p, 1.0) for p in self.portals)
@@ -218,6 +336,36 @@ class MultiPortalScanScheduler:
             upto += w
         return self.portals[-1]
 
+    def _activate_hot_spot(self, portal: str, ch_cnt: int):
+        """Aktiviert Hot-Spot Modus und sammelt alle bisher auf anderen Portalen abgewiesenen MACs."""
+        self.active_hot_portal = portal
+        self.hot_spot_remaining = self.hot_spot_burst
+        self.hot_spot_consecutive_misses = 0
+
+        # Sammle alle bisher auf ANDEREN Portalen getesteten MACs, die auf diesem Portal noch NIE probiert wurden!
+        backfill_candidates = []
+        if len(self.portals) > 1:
+            for m in self.macs:
+                if m not in self.solved_macs and portal not in self.tested_map[m]:
+                    if len(self.tested_map[m]) > 0 and (m, portal) not in self.in_flight_pairs:
+                        if m not in self._backfill_set_per_portal[portal]:
+                            self._backfill_per_portal[portal].append(m)
+                            self._backfill_set_per_portal[portal].add(m)
+                            backfill_candidates.append(m)
+
+        bf_count = len(backfill_candidates)
+        if bf_count > 0:
+            self.total_checks += bf_count
+            self._log(
+                f"[🔥 Hot-Spot] HIT auf '{portal}' ({ch_cnt} Kanäle)! Backfill aktiviert: "
+                f"{bf_count} zuvor auf anderen Portalen abgewiesene MACs werden nun hier nachgetestet!"
+            )
+        else:
+            self._log(
+                f"[🔥 Hot-Spot] HIT auf '{portal}' ({ch_cnt} Kanäle)! Starte Hot-Spot Fokus "
+                f"(nächste {self.hot_spot_burst} MACs werden hier geprüft)."
+            )
+
     def report_result(self, portal_url: str, mac: str, result: Dict[str, Any]):
         """
         Aktualisiert Metriken, Treffer, Burst-Quotas und Failover-Zustände thread-sicher.
@@ -225,6 +373,8 @@ class MultiPortalScanScheduler:
         with self._lock:
             self.completed_count += 1
             self.in_flight = max(0, self.in_flight - 1)
+            self.in_flight_pairs.discard((mac, portal_url))
+            self.tested_map[mac].add(portal_url)
 
             is_hot = bool(
                 result.get("tag") == "hot"
@@ -246,47 +396,48 @@ class MultiPortalScanScheduler:
                 or "WAF" in stat_str or "WAF" in err_str
             )
 
+            # Bei Treffer: MAC global als gelöst markieren
+            if is_hot:
+                self.solved_macs.add(mac)
+
             # --- SWEEP EARLY EXIT ---
             if self.mode == ScanRotationMode.SWEEP_EARLY_EXIT and is_hot:
-                if mac not in self._solved_macs:
-                    self._solved_macs.add(mac)
-                    self._log(
-                        f"[⚡ Early-Exit] MAC {mac} auf '{portal_url}' erfolgreich verifiziert ({ch_cnt} Kanäle)! Weitere Portale für diese MAC übersprungen."
-                    )
+                self._log(
+                    f"[⚡ Early-Exit] MAC {mac} auf '{portal_url}' erfolgreich verifiziert ({ch_cnt} Kanäle)! Weitere Portale für diese MAC übersprungen."
+                )
 
             # --- HOT-SPOT AFFINITY ---
             elif self.mode == ScanRotationMode.HOT_SPOT:
                 if is_hot:
                     if self.active_hot_portal == portal_url:
-                        self.hot_spot_remaining = min(30, self.hot_spot_remaining + 10)
+                        self.hot_spot_remaining = min(60, self.hot_spot_remaining + 10)
                         self.hot_spot_consecutive_misses = 0
                         self._log(
-                            f"[🔥 Hot-Spot] Neuer Hit auf '{portal_url}' ({ch_cnt} Kanäle)! Burst um +10 MACs verlängert (Rest: {self.hot_spot_remaining})."
+                            f"[🔥 Hot-Spot] Neuer Hit auf '{portal_url}' ({ch_cnt} Kanäle)! Burst um +10 verlängert (Rest: {self.hot_spot_remaining})."
                         )
                     else:
-                        self.active_hot_portal = portal_url
-                        self.hot_spot_remaining = self.hot_spot_burst
-                        self.hot_spot_consecutive_misses = 0
-                        self._log(
-                            f"[🔥 Hot-Spot] HIT auf '{portal_url}' ({ch_cnt} Kanäle)! Starte Hot-Spot Fokus (nächste {self.hot_spot_burst} MACs werden hier geprüft)."
-                        )
+                        self._activate_hot_spot(portal_url, ch_cnt)
                 elif self.active_hot_portal == portal_url:
                     if is_error:
                         self._log(
-                            f"[⚠️ Hot-Spot] Serverfehler/Rate-Limit auf '{portal_url}' -> Hot-Spot abgebrochen, rotiere zurück."
+                            f"[⚠️ Hot-Spot] Serverfehler/Rate-Limit auf '{portal_url}' -> Hot-Spot abgebrochen, rotiere weiter."
                         )
                         self.active_hot_portal = None
                         self.hot_spot_remaining = 0
                         self.hot_spot_consecutive_misses = 0
+                        self._backfill_per_portal[portal_url].clear()
+                        self._backfill_set_per_portal[portal_url].clear()
                     else:
                         self.hot_spot_consecutive_misses += 1
-                        if self.hot_spot_consecutive_misses >= 8:
+                        if self.hot_spot_consecutive_misses >= self.hot_spot_max_misses:
                             self._log(
-                                f"[🔄 Hot-Spot] 8x kein Treffer in Folge auf '{portal_url}' -> Beende Hot-Spot Fokus, kehre zur Rotation zurück."
+                                f"[🔄 Hot-Spot] {self.hot_spot_max_misses}x kein Treffer in Folge auf '{portal_url}' -> Beende Hot-Spot Fokus, kehre zur Rotation zurück."
                             )
                             self.active_hot_portal = None
                             self.hot_spot_remaining = 0
                             self.hot_spot_consecutive_misses = 0
+                            self._backfill_per_portal[portal_url].clear()
+                            self._backfill_set_per_portal[portal_url].clear()
 
             # --- SMART ADAPTIVE ---
             elif self.mode == ScanRotationMode.ADAPTIVE:
@@ -300,6 +451,20 @@ class MultiPortalScanScheduler:
                     self._log(
                         f"[🧠 Adaptive] HIT auf '{portal_url}' ({ch_cnt} Kanäle) -> Prioritäts-Score auf {new_w:.1f} erhöht."
                     )
+                    # Sammle Backfill-Kandidaten für das erfolgreiche Portal
+                    bf_count = 0
+                    if len(self.portals) > 1:
+                        for m in self.macs:
+                            if m not in self.solved_macs and portal_url not in self.tested_map[m] and len(self.tested_map[m]) > 0:
+                                if m not in self._backfill_set_per_portal[portal_url]:
+                                    self._backfill_per_portal[portal_url].append(m)
+                                    self._backfill_set_per_portal[portal_url].add(m)
+                                    bf_count += 1
+                    if bf_count > 0:
+                        self.total_checks += bf_count
+                        self._log(
+                            f"[🧠 Adaptive] Backfill: {bf_count} zuvor abgewiesene MACs werden für das erfolgreiche Portal '{portal_url}' priorisiert."
+                        )
                 elif is_error:
                     stats["errors"] += 1
                     new_w = max(0.1, cur_w * 0.5)
@@ -328,6 +493,12 @@ class MultiPortalScanScheduler:
                         self._log(
                             f"[🔀 Failover] Server-Fehlerhäufung ({self.failover_threshold}x) auf '{old_p}' -> Automatischer Notfall-Wechsel zu '{new_p}'!"
                         )
+                        # Übertrage noch ungelöste MACs in die Backfill-Schlange des neuen Primär-Portals
+                        for m in self.macs:
+                            if m not in self.solved_macs and new_p not in self.tested_map[m]:
+                                if m not in self._backfill_set_per_portal[new_p]:
+                                    self._backfill_per_portal[new_p].append(m)
+                                    self._backfill_set_per_portal[new_p].add(m)
                 else:
                     self.consecutive_errors[portal_url] = 0
 
@@ -337,6 +508,7 @@ class MultiPortalScanScheduler:
         """
         with self._lock:
             self.in_flight = max(0, self.in_flight - 1)
+            self.in_flight_pairs.discard((mac, portal_url))
             if self.mode == ScanRotationMode.FAILOVER and len(self.portals) > 1:
                 target_portal = self.portals[self.current_primary_index % len(self.portals)]
             else:
@@ -357,7 +529,10 @@ class MultiPortalScanScheduler:
         with self._lock:
             if self.mode in (ScanRotationMode.SWEEP, ScanRotationMode.SWEEP_EARLY_EXIT):
                 return len(self._sweep_queue) == 0 and self.in_flight == 0
-            return len(self._pending_macs) == 0 and len(self._retry_queue) == 0 and self.in_flight == 0
+            has_retries = len(self._retry_queue) > 0
+            has_fresh = len(self._fresh_macs) > 0
+            has_backfill = any(len(q) > 0 for q in self._backfill_per_portal.values())
+            return not (has_retries or has_fresh or has_backfill) and self.in_flight == 0
 
     def get_progress(self) -> Tuple[int, int]:
         """Gibt (effektive_fertige_checks, gesamt_checks) zurück."""
@@ -370,7 +545,8 @@ class MultiPortalScanScheduler:
         with self._lock:
             if self.mode in (ScanRotationMode.SWEEP, ScanRotationMode.SWEEP_EARLY_EXIT):
                 return len(self._sweep_queue)
-            return len(self._pending_macs) + len(self._retry_queue)
+            bf_sum = sum(len(q) for q in self._backfill_per_portal.values())
+            return len(self._fresh_macs) + len(self._retry_queue) + bf_sum
 
     def get_active_portal(self) -> str:
         """Gibt das aktuell bevorzugte Portal zurück (für Status-Anzeigen)."""
