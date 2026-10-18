@@ -2530,7 +2530,6 @@ class MainWindow(QMainWindow):
                         # Wenn die gewünschte Thread-Anzahl reduziert wurde: überzählige Worker sauber beenden
                         with lock:
                             if active_workers > self._current_scan_threads:
-                                active_workers -= 1
                                 return
 
                         # 2. Prüfe ob Scheduler erschöpft ist
@@ -2557,7 +2556,7 @@ class MainWindow(QMainWindow):
                                     stop_check=lambda: not self._scan_stop_ev.is_set() and self._scan_pause_ev.is_set()
                                 )
                             if self._scan_stop_ev.is_set():
-                                scheduler.release_in_flight()
+                                scheduler.release_in_flight(cur_portal, mac, requeue=True)
                                 continue
 
                             res = check_mac_account(
@@ -2600,6 +2599,8 @@ class MainWindow(QMainWindow):
                                 or "504" in err_str
                                 or "Timeout" in stat_str
                                 or "timeout" in err_str
+                                or "Verbindungsfehler" in stat_str
+                                or "Verbindungsfehler" in err_str
                                 or "ConnectionError" in err_str
                                 or "RemoteDisconnected" in err_str
                             )
@@ -2755,8 +2756,11 @@ class MainWindow(QMainWindow):
                             event_bus.scan_result_received.emit(res)
                             event_bus.scan_progress_updated.emit(cur_done, cur_total)
 
-                        except Exception:
-                            scheduler.release_in_flight()
+                        except Exception as worker_err:
+                            event_bus.log_message.emit(f"[⚠️ Worker-Fehler] MAC {mac} auf {cur_portal}: {worker_err}")
+                            scheduler.release_in_flight(cur_portal, mac, count_as_skipped=True)
+                            cur_done, cur_total = scheduler.get_progress()
+                            event_bus.scan_progress_updated.emit(cur_done, cur_total)
 
                 finally:
                     with lock:

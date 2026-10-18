@@ -474,5 +474,45 @@ class TestScanScheduler(unittest.TestCase):
         self.assertTrue(any("kein Treffer in Folge" in l for l in logs))
 
 
+    def test_13_discrepancy_prevention_on_worker_error_and_skips(self):
+        """
+        Verifiziert, dass Worker-Fehler via release_in_flight(portal, mac, count_as_skipped=True)
+        und Backfill-Bereinigungen bei Server-Fehlern zu 100% konsistenten Zählern führen
+        (done == total_checks).
+        """
+        macs = [f"00:1A:79:00:00:{i:02X}" for i in range(1, 31)]
+        portals = ["http://portal-1.com/c", "http://portal-2.com/c"]
+        scheduler = MultiPortalScanScheduler(
+            portals=portals,
+            macs=macs,
+            mode=ScanRotationMode.HOT_SPOT,
+        )
+
+        step = 0
+        while not scheduler.is_exhausted():
+            item = scheduler.get_next_work_item()
+            if not item:
+                break
+            step += 1
+            mac, portal = item
+
+            # Bei Step 5: Hot Hit -> Backfill wird queued
+            if step == 5:
+                scheduler.report_result(portal, mac, {"tag": "hot", "channels": 200, "valid": True})
+            # Bei Step 10: Simulierter Worker-Absturz (Exception)
+            elif step == 10:
+                scheduler.release_in_flight(portal, mac, count_as_skipped=True)
+            # Bei Step 15: Serverfehler auf Portal 1 -> Backfill für Portal 1 wird bereinigt
+            elif step == 15 and portal == portals[0]:
+                scheduler.report_result(portal, mac, {"error": "503 Service Unavailable", "status": "503"})
+            else:
+                scheduler.report_result(portal, mac, {"valid": False, "channels": 0})
+
+        done, total = scheduler.get_progress()
+        self.assertEqual(done, total)
+        self.assertTrue(scheduler.is_exhausted())
+        self.assertGreater(done, 0)
+
+
 if __name__ == "__main__":
     unittest.main()

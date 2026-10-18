@@ -70,7 +70,7 @@ class MultiPortalScanScheduler:
         failover_threshold: int = 3,
         on_log: Optional[Callable[[str], None]] = None,
     ):
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._on_log = on_log
 
         # Deduplizierte Portale & MACs
@@ -172,6 +172,7 @@ class MultiPortalScanScheduler:
                         self.skipped_count += 1
                         continue
                     if (mac, portal) in self.in_flight_pairs:
+                        self.skipped_count += 1
                         continue
                     self.in_flight += 1
                     self.in_flight_pairs.add((mac, portal))
@@ -185,6 +186,7 @@ class MultiPortalScanScheduler:
                     self.skipped_count += 1
                     continue
                 if (mac, portal) in self.in_flight_pairs:
+                    self.skipped_count += 1
                     continue
                 self.in_flight += 1
                 self.in_flight_pairs.add((mac, portal))
@@ -229,6 +231,7 @@ class MultiPortalScanScheduler:
                     self.skipped_count += 1
                     continue
                 if hp in self.tested_map[mac] or (mac, hp) in self.in_flight_pairs:
+                    self.skipped_count += 1
                     continue
                 self.hot_spot_remaining -= 1
                 self.in_flight += 1
@@ -249,6 +252,16 @@ class MultiPortalScanScheduler:
                 continue
             portal = self.portals[self._rr_index % len(self.portals)]
             self._rr_index += 1
+            if portal in self.tested_map[mac] or (mac, portal) in self.in_flight_pairs:
+                alt_portals = [
+                    p for p in self.portals
+                    if p not in self.tested_map[mac] and (mac, p) not in self.in_flight_pairs
+                ]
+                if alt_portals:
+                    portal = alt_portals[0]
+                else:
+                    self.skipped_count += 1
+                    continue
             self.in_flight += 1
             self.in_flight_pairs.add((mac, portal))
             return mac, portal
@@ -294,11 +307,20 @@ class MultiPortalScanScheduler:
             if mac in self.solved_macs:
                 self.skipped_count += 1
                 continue
-            if portal in self.tested_map[mac] or (mac, portal) in self.in_flight_pairs:
-                continue
+            target_portal = portal
+            if target_portal in self.tested_map[mac] or (mac, target_portal) in self.in_flight_pairs:
+                alt_portals = [
+                    p for p in self.portals
+                    if p not in self.tested_map[mac] and (mac, p) not in self.in_flight_pairs
+                ]
+                if alt_portals:
+                    target_portal = random.choice(alt_portals)
+                else:
+                    self.skipped_count += 1
+                    continue
             self.in_flight += 1
-            self.in_flight_pairs.add((mac, portal))
-            return mac, portal
+            self.in_flight_pairs.add((mac, target_portal))
+            return mac, target_portal
 
         # 3. Fallback: Suche beliebiges Portal mit ausstehenden Backfill-Kandidaten
         for p in self.portals:
@@ -333,6 +355,9 @@ class MultiPortalScanScheduler:
             if mac in self.solved_macs:
                 self.skipped_count += 1
                 continue
+            if portal in self.tested_map[mac] or (mac, portal) in self.in_flight_pairs:
+                self.skipped_count += 1
+                continue
             self.in_flight += 1
             self.in_flight_pairs.add((mac, portal))
             return mac, portal
@@ -347,6 +372,16 @@ class MultiPortalScanScheduler:
                 continue
             portal = self.portals[self._rr_index % len(self.portals)]
             self._rr_index += 1
+            if portal in self.tested_map[mac] or (mac, portal) in self.in_flight_pairs:
+                alt_portals = [
+                    p for p in self.portals
+                    if p not in self.tested_map[mac] and (mac, p) not in self.in_flight_pairs
+                ]
+                if alt_portals:
+                    portal = alt_portals[0]
+                else:
+                    self.skipped_count += 1
+                    continue
             self.in_flight += 1
             self.in_flight_pairs.add((mac, portal))
             return mac, portal
@@ -451,28 +486,32 @@ class MultiPortalScanScheduler:
                         )
                     else:
                         self._activate_hot_spot(portal_url, ch_cnt)
-                elif self.active_hot_portal == portal_url:
-                    if is_error:
+                elif is_error:
+                    # Wenn Fehler auf diesem Portal auftreten: immer verbleibenden Backfill dieses Portals bereinigen
+                    dropped = len(self._backfill_per_portal.get(portal_url, []))
+                    if dropped > 0:
+                        self.total_checks = max(self.completed_count + self.skipped_count, self.total_checks - dropped)
+                        self._backfill_per_portal[portal_url].clear()
+                        self._backfill_set_per_portal[portal_url].clear()
                         self._log(
-                            f"[⚠️ Hot-Spot] Serverfehler/Rate-Limit auf '{portal_url}' -> Hot-Spot abgebrochen, rotiere weiter."
+                            f"[⚠️ Hot-Spot] Serverfehler/Rate-Limit auf '{portal_url}' -> {dropped} Backfill-Checks verworfen."
+                        )
+                    if self.active_hot_portal == portal_url:
+                        self._log(
+                            f"[⚠️ Hot-Spot] Serverfehler auf aktivem Hot-Portal '{portal_url}' -> Hot-Spot abgebrochen, rotiere weiter."
                         )
                         self.active_hot_portal = None
                         self.hot_spot_remaining = 0
                         self.hot_spot_consecutive_misses = 0
-                        dropped = len(self._backfill_per_portal[portal_url])
-                        if dropped > 0:
-                            self.total_checks = max(self.completed_count + self.skipped_count, self.total_checks - dropped)
-                        self._backfill_per_portal[portal_url].clear()
-                        self._backfill_set_per_portal[portal_url].clear()
-                    else:
-                        self.hot_spot_consecutive_misses += 1
-                        if self.hot_spot_consecutive_misses >= self.hot_spot_max_misses:
-                            self._log(
-                                f"[🔄 Hot-Spot] {self.hot_spot_max_misses}x kein Treffer in Folge auf '{portal_url}' -> Beende Hot-Spot Fokus, kehre zur Rotation zurück."
-                            )
-                            self.active_hot_portal = None
-                            self.hot_spot_remaining = 0
-                            self.hot_spot_consecutive_misses = 0
+                elif self.active_hot_portal == portal_url:
+                    self.hot_spot_consecutive_misses += 1
+                    if self.hot_spot_consecutive_misses >= self.hot_spot_max_misses:
+                        self._log(
+                            f"[🔄 Hot-Spot] {self.hot_spot_max_misses}x kein Treffer in Folge auf '{portal_url}' -> Beende Hot-Spot Fokus, kehre zur Rotation zurück."
+                        )
+                        self.active_hot_portal = None
+                        self.hot_spot_remaining = 0
+                        self.hot_spot_consecutive_misses = 0
 
             # --- SMART ADAPTIVE ---
             elif self.mode == ScanRotationMode.ADAPTIVE:
@@ -504,6 +543,14 @@ class MultiPortalScanScheduler:
                     stats["errors"] += 1
                     new_w = max(0.1, cur_w * 0.5)
                     self.portal_weights[portal_url] = new_w
+                    dropped = len(self._backfill_per_portal.get(portal_url, []))
+                    if dropped > 0:
+                        self.total_checks = max(self.completed_count + self.skipped_count, self.total_checks - dropped)
+                        self._backfill_per_portal[portal_url].clear()
+                        self._backfill_set_per_portal[portal_url].clear()
+                        self._log(
+                            f"[⚠️ Adaptive] Serverfehler auf '{portal_url}' -> {dropped} Backfill-Checks verworfen."
+                        )
                 elif result.get("valid"):
                     new_w = min(20.0, cur_w + 0.3)
                     self.portal_weights[portal_url] = new_w
@@ -557,25 +604,46 @@ class MultiPortalScanScheduler:
             else:
                 self._retry_queue.append((mac, target_portal))
 
-    def release_in_flight(self):
-        """Reduziert in_flight falls ein Worker unerwartet abbricht."""
+    def release_in_flight(
+        self,
+        portal_url: Optional[str] = None,
+        mac: Optional[str] = None,
+        requeue: bool = False,
+        count_as_skipped: bool = True,
+    ):
+        """Reduziert in_flight und bereinigt in_flight_pairs, falls ein Worker abbricht oder pausiert wird."""
         with self._lock:
             self.in_flight = max(0, self.in_flight - 1)
+            if mac and portal_url:
+                self.in_flight_pairs.discard((mac, portal_url))
+                if requeue:
+                    if self.mode in (ScanRotationMode.SWEEP, ScanRotationMode.SWEEP_EARLY_EXIT):
+                        self._sweep_queue.append((mac, portal_url))
+                    else:
+                        self._retry_queue.append((mac, portal_url))
+                    return
+            if count_as_skipped:
+                self.skipped_count += 1
+
+    def _is_exhausted_locked(self) -> bool:
+        if self.mode in (ScanRotationMode.SWEEP, ScanRotationMode.SWEEP_EARLY_EXIT):
+            return len(self._sweep_queue) == 0 and self.in_flight == 0
+        has_retries = len(self._retry_queue) > 0
+        has_fresh = len(self._fresh_macs) > 0
+        has_backfill = any(len(q) > 0 for q in self._backfill_per_portal.values())
+        return not (has_retries or has_fresh or has_backfill) and self.in_flight == 0
 
     def is_exhausted(self) -> bool:
         """Prüft, ob alle Items verarbeitet wurden und keine mehr in Bearbeitung sind."""
         with self._lock:
-            if self.mode in (ScanRotationMode.SWEEP, ScanRotationMode.SWEEP_EARLY_EXIT):
-                return len(self._sweep_queue) == 0 and self.in_flight == 0
-            has_retries = len(self._retry_queue) > 0
-            has_fresh = len(self._fresh_macs) > 0
-            has_backfill = any(len(q) > 0 for q in self._backfill_per_portal.values())
-            return not (has_retries or has_fresh or has_backfill) and self.in_flight == 0
+            return self._is_exhausted_locked()
 
     def get_progress(self) -> Tuple[int, int]:
         """Gibt (effektive_fertige_checks, gesamt_checks) zurück."""
         with self._lock:
             done = self.completed_count + self.skipped_count
+            if self._is_exhausted_locked():
+                self.total_checks = done
             return min(self.total_checks, done), self.total_checks
 
     def get_queue_size(self) -> int:
