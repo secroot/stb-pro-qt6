@@ -88,11 +88,12 @@ class EPGGuideDialog(QDialog):
 
         # Programs Table
         self.table = QTableWidget(0, 4)
-        self.table.setHorizontalHeaderLabels(["Zeitraum", "Status / Archiv", "Sendung", "Dauer"])
+        self.table.setHorizontalHeaderLabels(["Zeitraum", "Status / Archiv", "Sendung", "Dauer (Min.)"])
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.verticalHeader().setVisible(False)
+        self.table.setSortingEnabled(True)
         hdr = self.table.horizontalHeader()
         hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         hdr.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
@@ -180,6 +181,7 @@ class EPGGuideDialog(QDialog):
                 continue
             self._filtered_programs.append(p)
 
+        self.table.setSortingEnabled(False)
         self.table.setRowCount(len(self._filtered_programs))
         for row, p in enumerate(self._filtered_programs):
             t1 = p.time_str or (datetime.fromtimestamp(p.start_timestamp).strftime("%Y-%m-%d %H:%M") if p.start_timestamp else "")
@@ -205,21 +207,28 @@ class EPGGuideDialog(QDialog):
             dur_min = max(0, (p.stop_timestamp - p.start_timestamp) // 60) if (p.start_timestamp and p.stop_timestamp) else (p.duration // 60)
 
             it_time = QTableWidgetItem(span)
+            it_time.setData(Qt.ItemDataRole.UserRole, p)
             it_stat = QTableWidgetItem(status)
             it_stat.setForeground(color)
             it_name = QTableWidgetItem(p.name)
-            it_dur = QTableWidgetItem(f"{dur_min} Min." if dur_min > 0 else "—")
+
+            it_dur = QTableWidgetItem()
+            it_dur.setData(Qt.ItemDataRole.DisplayRole, dur_min)
+            it_dur.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             self.table.setItem(row, 0, it_time)
             self.table.setItem(row, 1, it_stat)
             self.table.setItem(row, 2, it_name)
             self.table.setItem(row, 3, it_dur)
 
+        self.table.setSortingEnabled(True)
+
     def _selected_program(self) -> EPGProgram | None:
         row = self.table.currentRow()
-        if 0 <= row < len(self._filtered_programs):
-            return self._filtered_programs[row]
-        return None
+        if row < 0:
+            return None
+        it = self.table.item(row, 0)
+        return it.data(Qt.ItemDataRole.UserRole) if it else None
 
     def _on_selection_changed(self):
         prog = self._selected_program()

@@ -76,6 +76,7 @@ class SeriesBrowserDialog(QDialog):
         self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.verticalHeader().setVisible(False)
+        self.table.setSortingEnabled(True)
         hdr = self.table.horizontalHeader()
         hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         hdr.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
@@ -119,6 +120,7 @@ class SeriesBrowserDialog(QDialog):
                 continue
             self._visible_episodes.append(ep)
 
+        self.table.setSortingEnabled(False)
         self.table.setRowCount(len(self._visible_episodes))
         for row, ep in enumerate(self._visible_episodes):
             ep_num = str(
@@ -132,19 +134,24 @@ class SeriesBrowserDialog(QDialog):
             info = ep.get("info") if isinstance(ep.get("info"), dict) else {}
             dur = str(info.get("duration") or ep.get("time") or "—")
 
-            self.table.setItem(row, 0, QTableWidgetItem(f"E{ep_num.zfill(2)}"))
+            it_ep = QTableWidgetItem(f"E{ep_num.zfill(2)}")
+            it_ep.setData(Qt.ItemDataRole.UserRole, ep)
+            self.table.setItem(row, 0, it_ep)
             self.table.setItem(row, 1, QTableWidgetItem(title))
             self.table.setItem(row, 2, QTableWidgetItem(ext))
             self.table.setItem(row, 3, QTableWidgetItem(dur))
+
+        self.table.setSortingEnabled(True)
 
         if self._visible_episodes:
             self.table.selectRow(0)
 
     def _selected_episode(self) -> Dict[str, Any] | None:
         row = self.table.currentRow()
-        if 0 <= row < len(self._visible_episodes):
-            return self._visible_episodes[row]
-        return None
+        if row < 0:
+            return None
+        it = self.table.item(row, 0)
+        return it.data(Qt.ItemDataRole.UserRole) if it else None
 
     def _on_play(self):
         ep = self._selected_episode()

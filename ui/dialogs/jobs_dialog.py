@@ -51,6 +51,7 @@ class JobsDialog(QDialog):
         self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.verticalHeader().setVisible(False)
+        self.table.setSortingEnabled(True)
         hdr = self.table.horizontalHeader()
         hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         hdr.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
@@ -84,6 +85,7 @@ class JobsDialog(QDialog):
 
     def refresh_jobs(self):
         jobs = self._recorder.jobs
+        self.table.setSortingEnabled(False)
         self.table.setRowCount(len(jobs))
         for row, job in enumerate(jobs):
             mb = job.bytes_written / (1024 * 1024)
@@ -113,6 +115,7 @@ class JobsDialog(QDialog):
             self.table.setItem(row, 3, it_status)
             self.table.setItem(row, 4, QTableWidgetItem(size_str))
             self.table.setItem(row, 5, QTableWidgetItem(spd_str))
+        self.table.setSortingEnabled(True)
 
     def _stop_selected(self):
         row = self.table.currentRow()

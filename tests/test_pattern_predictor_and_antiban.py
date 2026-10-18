@@ -196,5 +196,49 @@ class TestAntiBanShieldLogic(unittest.TestCase):
         self.assertNotIn(cold_host, hosts_with_hits)
 
 
+class TestPatternPredictorUiIntegration(unittest.TestCase):
+    """Tests für UI-Integration und Signalübergabe des Pattern-Prädiktors."""
+
+    @classmethod
+    def setUpClass(cls):
+        from PySide6.QtWidgets import QApplication
+        cls.app = QApplication.instance() or QApplication([])
+        cls.app.setQuitOnLastWindowClosed(False)
+
+    def test_pattern_dialog_send_to_scanner_accepts_cleanly(self):
+        """Testet, dass _on_send_to_scanner den Dialog schließt und MACs emittiert ohne modales Hängen."""
+        import tempfile
+        import os
+        from ui.dialogs.mac_pattern_dialog import MacPatternDialog
+
+        with tempfile.TemporaryDirectory() as td:
+            db_path = os.path.join(td, "test_db.json")
+            db = MacDatabase(filepath=db_path)
+            db.save_found_mac("http://test.portal/c/", {
+                "mac": "00:1A:79:B5:42:10",
+                "channels": 50,
+                "expire": "2029-01-01 00:00:00",
+                "status": "Aktiv"
+            })
+            dlg = MacPatternDialog(db)
+            received = []
+            dlg.send_to_scanner_requested.connect(lambda macs: received.extend(macs))
+
+            dlg._generated_macs = ["00:1A:79:B5:42:99", "00:1A:79:B5:42:9A"]
+            dlg._on_send_to_scanner()
+
+            self.assertEqual(len(received), 2)
+            self.assertEqual(received[0], "00:1A:79:B5:42:99")
+
+    def test_scanner_view_pattern_analysis_button_and_signal(self):
+        """Testet, dass ScannerView den Analyse-Button besitzt und das Signal feuert."""
+        from ui.views.scanner_view import ScannerView
+        sv = ScannerView()
+        emitted = []
+        sv.pattern_analysis_requested.connect(lambda: emitted.append(True))
+        sv.pattern_analysis_requested.emit()
+        self.assertEqual(len(emitted), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

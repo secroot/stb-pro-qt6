@@ -88,6 +88,7 @@ from ui.dialogs import (
     JobsDialog,
     JsonViewerDialog,
     MacDatabaseDialog,
+    MacPatternDialog,
     ProfileEditorDialog,
     SeriesBrowserDialog,
 )
@@ -377,6 +378,7 @@ class MainWindow(QMainWindow):
         self.scanner_view.scan_settings_updated.connect(self.update_scan_settings)
         self.scanner_view.apply_mac_requested.connect(self.apply_mac_from_scanner_or_db)
         self.scanner_view.prepend_db_macs_requested.connect(self._prepend_known_macs_to_scanner)
+        self.scanner_view.pattern_analysis_requested.connect(self._open_pattern_predictor_from_scanner)
         self.scanner_view.scan_exported.connect(lambda p: self._on_reload_scans())
         self.scanner_view._portal_signals.finished.connect(lambda res, reachables: self.config_mgr.set_reachable_portals(reachables))
 
@@ -2640,7 +2642,7 @@ class MainWindow(QMainWindow):
                                     err_cnt_5s = len(q_err)
 
                                 # Trigger: >30 Fehler in 5s NUR wenn dieser Host zuvor Hits produziert hat
-                                if err_cnt_5s > 30 and (norm_host in hosts_with_hits or bool(self.mac_db.get_known_macs(cur_portal))):
+                                if err_cnt_5s > 30 and (norm_host in hosts_with_hits or self.mac_db.has_portal_entries(cur_portal)):
                                     should_rotate = False
                                     with vpn_rotation_lock:
                                         now_now = time.time()
@@ -2905,6 +2907,13 @@ class MainWindow(QMainWindow):
     def _on_db_macs_to_scanner(self, macs: list):
         self.scanner_view.prepend_macs(macs)
         self.top_bar.set_active_view("scanner")
+        event_bus.log_message.emit(f"[🎯] {len(macs)} MAC-Permutationen erfolgreich in den Scanner geladen.")
+
+    def _open_pattern_predictor_from_scanner(self):
+        cur_url = self.scanner_view.entry_portal.text().strip()
+        dlg = MacPatternDialog(self.mac_db, initial_portal=cur_url or "*", parent=self)
+        dlg.send_to_scanner_requested.connect(self._on_db_macs_to_scanner)
+        dlg.exec()
 
     def open_epg_guide_dialog(self, channel: Channel):
         if not self.active_client:
@@ -3074,6 +3083,8 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         self._selection_timer.stop()
         self._preview_timer.stop()
+        self._live_snapshot_timer.stop()
+        self._telemetry_timer.stop()
         self._scan_stop_ev.set()
         self._scan_pause_ev.set()
         self._val_stop_ev.set()
@@ -3082,10 +3093,28 @@ class MainWindow(QMainWindow):
         self.osd.shutdown()
         self.ext_player.stop()
         self.vlc_ctrl.shutdown()
+        try:
+            self.buffer_proxy.shutdown()
+        except Exception:
+            pass
         self.recorder.stop_all()
         if self.active_client and hasattr(self.active_client, "close"):
             try:
                 self.active_client.close()
+            except Exception:
+                pass
+        for sig, slot in (
+            (event_bus.log_message, self.console_view.append_log),
+            (event_bus.http_Exchange_logged, self.inspector_view.add_http_entry),
+            (event_bus.recorder_changed, self._on_recorder_changed),
+            (event_bus.scan_result_received, self.scanner_view.add_scan_result),
+            (event_bus.scan_progress_updated, self.scanner_view.update_scan_progress),
+            (event_bus.scan_state_changed, self.scanner_view.set_scan_running),
+            (event_bus.vpn_status_changed, self._on_vpn_status_changed),
+            (event_bus.stream_ip_ban_detected, self._on_stream_ip_ban_detected),
+        ):
+            try:
+                sig.disconnect(slot)
             except Exception:
                 pass
         worker_pool.shutdown()

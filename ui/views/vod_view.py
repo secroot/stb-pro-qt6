@@ -150,6 +150,7 @@ class VODView(QWidget):
         self.table.setAlternatingRowColors(True)
         self.table.verticalHeader().setVisible(False)
         self.table.verticalHeader().setDefaultSectionSize(34)
+        self.table.setSortingEnabled(True)
 
         thdr = self.table.horizontalHeader()
         thdr.setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)

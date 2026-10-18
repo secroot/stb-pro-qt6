@@ -92,6 +92,7 @@ class ScannerView(QWidget):
     scan_settings_updated = Signal(int, float)                 # (threads, delay_s)
     apply_mac_requested = Signal(str, str, str)                # (portal_url, mac, model)
     prepend_db_macs_requested = Signal()
+    pattern_analysis_requested = Signal()
     scan_exported = Signal(str)
 
     def __init__(self, parent: QWidget | None = None):
@@ -182,6 +183,12 @@ class ScannerView(QWidget):
         btn_prepend_db = QPushButton("⭐ Bekannte DB-MACs voranstellen")
         btn_prepend_db.clicked.connect(self.prepend_db_macs_requested.emit)
         row2.addWidget(btn_prepend_db)
+
+        btn_patterns = QPushButton("🧠 MAC-Muster analysieren")
+        btn_patterns.setStyleSheet("color: #38BDF8; font-weight: bold;")
+        btn_patterns.setToolTip("Analysiert bekannte Treffer auf Muster/Reihen (z.B. B5-Reihe) und generiert Permutationen")
+        btn_patterns.clicked.connect(self.pattern_analysis_requested.emit)
+        row2.addWidget(btn_patterns)
 
         btn_import_file = QPushButton("📂 Aus Datei (.txt/.csv)")
         btn_import_file.clicked.connect(self._import_from_file)
@@ -343,6 +350,7 @@ class ScannerView(QWidget):
         self.table_portals.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table_portals.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.table_portals.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.table_portals.setSortingEnabled(True)
         self.table_portals.verticalHeader().setVisible(False)
         self.table_portals.setFixedHeight(180)
         phdr = self.table_portals.horizontalHeader()
@@ -552,6 +560,7 @@ class ScannerView(QWidget):
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.table.setSortingEnabled(True)
         self.table.verticalHeader().setVisible(False)
         hdr = self.table.horizontalHeader()
         hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
@@ -650,7 +659,7 @@ class ScannerView(QWidget):
 
     def _import_from_file(self):
         path, _ = QFileDialog.getOpenFileName(
-            self, "MAC-Liste importieren", "", "Text/CSV Dateien (*.txt *.csv *.log);;Alle Dateien (*.*)"
+            self.window(), "MAC-Liste importieren", "", "Text/CSV Dateien (*.txt *.csv *.log);;Alle Dateien (*.*)"
         )
         if not path:
             return
@@ -664,7 +673,7 @@ class ScannerView(QWidget):
 
     def _import_from_folder(self):
         folder = QFileDialog.getExistingDirectory(
-            self, "Ordner auswählen (durchsucht alle .txt-Dateien rekursiv nach MACs)"
+            self.window(), "Ordner auswählen (durchsucht alle .txt-Dateien rekursiv nach MACs)"
         )
         if not folder:
             return
@@ -930,48 +939,64 @@ class ScannerView(QWidget):
                 self._append_row(r)
 
     def _append_row(self, res: Dict[str, Any]):
-        row = self.table.rowCount()
-        self.table.insertRow(row)
+        was_sort = self.table.isSortingEnabled()
+        if was_sort:
+            self.table.setSortingEnabled(False)
+        try:
+            row = self.table.rowCount()
+            self.table.insertRow(row)
 
-        mac = str(res.get("mac", ""))
-        raw_p_url = str(res.get("portal_url", "")).strip()
-        parsed_p = urlparse(raw_p_url if "://" in raw_p_url else f"http://{raw_p_url}")
-        portal_disp = parsed_p.netloc or raw_p_url or "—"
-        status = str(res.get("status", ""))
-        expire = str(res.get("expire", "-"))
-        channels = int(res.get("channels") or 0)
-        token = str(res.get("token", ""))
-        tag = res.get("tag", "invalid")
+            mac = str(res.get("mac", ""))
+            raw_p_url = str(res.get("portal_url", "")).strip()
+            parsed_p = urlparse(raw_p_url if "://" in raw_p_url else f"http://{raw_p_url}")
+            portal_disp = parsed_p.netloc or raw_p_url or "—"
+            status = str(res.get("status", ""))
+            expire = str(res.get("expire", "-"))
+            channels = int(res.get("channels") or 0)
+            token = str(res.get("token", ""))
+            tag = res.get("tag", "invalid")
 
-        it_mac = QTableWidgetItem(mac)
-        it_mac.setData(Qt.ItemDataRole.UserRole, res)
-        it_portal = QTableWidgetItem(portal_disp)
-        it_portal.setToolTip(raw_p_url)
-        it_stat = QTableWidgetItem(status)
-        it_exp = QTableWidgetItem(expire)
-        it_ch = QTableWidgetItem(str(channels) if channels > 0 else ("0" if res.get("valid") else "—"))
-        it_tok = QTableWidgetItem(token)
+            it_mac = QTableWidgetItem(mac)
+            it_mac.setData(Qt.ItemDataRole.UserRole, res)
+            it_portal = QTableWidgetItem(portal_disp)
+            it_portal.setToolTip(raw_p_url)
+            it_stat = QTableWidgetItem(status)
+            it_exp = QTableWidgetItem(expire)
 
-        if tag == "hot":
-            color = QColor("#10B981")
-        elif tag == "valid":
-            color = QColor("#38BDF8")
-        elif res.get("rate_limited"):
-            color = QColor("#F59E0B")
-        else:
-            color = QColor("#64748B")
+            it_ch = QTableWidgetItem()
+            if channels > 0:
+                it_ch.setData(Qt.ItemDataRole.DisplayRole, channels)
+            elif res.get("valid"):
+                it_ch.setData(Qt.ItemDataRole.DisplayRole, 0)
+            else:
+                it_ch.setText("—")
+            it_ch.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        it_mac.setForeground(color)
-        it_portal.setForeground(QColor("#94A3B8"))
-        it_stat.setForeground(color)
-        it_ch.setForeground(color)
+            it_tok = QTableWidgetItem(token)
 
-        self.table.setItem(row, 0, it_mac)
-        self.table.setItem(row, 1, it_portal)
-        self.table.setItem(row, 2, it_stat)
-        self.table.setItem(row, 3, it_exp)
-        self.table.setItem(row, 4, it_ch)
-        self.table.setItem(row, 5, it_tok)
+            if tag == "hot":
+                color = QColor("#10B981")
+            elif tag == "valid":
+                color = QColor("#38BDF8")
+            elif res.get("rate_limited"):
+                color = QColor("#F59E0B")
+            else:
+                color = QColor("#64748B")
+
+            it_mac.setForeground(color)
+            it_portal.setForeground(QColor("#94A3B8"))
+            it_stat.setForeground(color)
+            it_ch.setForeground(color)
+
+            self.table.setItem(row, 0, it_mac)
+            self.table.setItem(row, 1, it_portal)
+            self.table.setItem(row, 2, it_stat)
+            self.table.setItem(row, 3, it_exp)
+            self.table.setItem(row, 4, it_ch)
+            self.table.setItem(row, 5, it_tok)
+        finally:
+            if was_sort:
+                self.table.setSortingEnabled(True)
 
     def _on_row_double_clicked(self, row: int, _col: int):
         it = self.table.item(row, 0)
@@ -1008,7 +1033,7 @@ class ScannerView(QWidget):
         default_filepath = os.path.join(scans_dir, default_filename)
 
         path, _ = QFileDialog.getSaveFileName(
-            self, "HOT MAC-Treffer exportieren", default_filepath, "Textdateien (*.txt)"
+            self.window(), "HOT MAC-Treffer exportieren", default_filepath, "Textdateien (*.txt)"
         )
         if path:
             try:
@@ -1076,7 +1101,7 @@ class ScannerView(QWidget):
 
     def _browse_portal_file(self):
         path, _ = QFileDialog.getOpenFileName(
-            self, "Stalker-Portal Liste wählen", "", "Textdateien (*.txt);;Alle Dateien (*.*)"
+            self.window(), "Stalker-Portal Liste wählen", "", "Textdateien (*.txt);;Alle Dateien (*.*)"
         )
         if path:
             self.entry_portal_file.setText(path)
@@ -1084,7 +1109,7 @@ class ScannerView(QWidget):
 
     def _import_portals_from_folder(self):
         folder = QFileDialog.getExistingDirectory(
-            self, "Ordner auswählen (durchsucht alle .txt-Dateien rekursiv nach Portal-URLs)"
+            self.window(), "Ordner auswählen (durchsucht alle .txt-Dateien rekursiv nach Portal-URLs)"
         )
         if not folder:
             return
@@ -1249,40 +1274,59 @@ class ScannerView(QWidget):
                 self._append_portal_row(r)
 
     def _append_portal_row(self, res: PortalCheckResult):
-        row = self.table_portals.rowCount()
-        self.table_portals.insertRow(row)
+        was_sort = self.table_portals.isSortingEnabled()
+        if was_sort:
+            self.table_portals.setSortingEnabled(False)
+        try:
+            row = self.table_portals.rowCount()
+            self.table_portals.insertRow(row)
 
-        it_stat = QTableWidgetItem(res.display_status())
-        it_url = QTableWidgetItem(res.url)
-        it_url.setData(Qt.ItemDataRole.UserRole, res.url)
-        it_code = QTableWidgetItem(str(res.status_code) if res.status_code is not None else "—")
-        it_ping = QTableWidgetItem(f"{res.latency_ms:.0f} ms" if res.latency_ms > 0 else "—")
+            it_stat = QTableWidgetItem(res.display_status())
+            it_url = QTableWidgetItem(res.url)
+            it_url.setData(Qt.ItemDataRole.UserRole, res.url)
 
-        info_parts = []
-        if res.server:
-            info_parts.append(res.server)
-        if res.stalker_detected:
-            info_parts.append("Ministra/Stalker erkannt")
-        if res.error:
-            info_parts.append(res.error)
-        it_info = QTableWidgetItem(" | ".join(info_parts) if info_parts else "—")
+            it_code = QTableWidgetItem()
+            if res.status_code is not None:
+                it_code.setData(Qt.ItemDataRole.DisplayRole, int(res.status_code))
+            else:
+                it_code.setText("—")
+            it_code.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        if res.is_online and res.stalker_detected:
-            color = QColor("#10B981")
-        elif res.status_code is not None and not res.stalker_detected:
-            color = QColor("#F59E0B")
-        else:
-            color = QColor("#EF4444")
+            it_ping = QTableWidgetItem()
+            if res.latency_ms > 0:
+                it_ping.setData(Qt.ItemDataRole.DisplayRole, int(round(res.latency_ms)))
+            else:
+                it_ping.setText("—")
+            it_ping.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        it_stat.setForeground(color)
-        it_code.setForeground(color)
-        it_ping.setForeground(QColor("#94A3B8"))
+            info_parts = []
+            if res.server:
+                info_parts.append(res.server)
+            if res.stalker_detected:
+                info_parts.append("Ministra/Stalker erkannt")
+            if res.error:
+                info_parts.append(res.error)
+            it_info = QTableWidgetItem(" | ".join(info_parts) if info_parts else "—")
 
-        self.table_portals.setItem(row, 0, it_stat)
-        self.table_portals.setItem(row, 1, it_url)
-        self.table_portals.setItem(row, 2, it_code)
-        self.table_portals.setItem(row, 3, it_ping)
-        self.table_portals.setItem(row, 4, it_info)
+            if res.is_online and res.stalker_detected:
+                color = QColor("#10B981")
+            elif res.status_code is not None and not res.stalker_detected:
+                color = QColor("#F59E0B")
+            else:
+                color = QColor("#EF4444")
+
+            it_stat.setForeground(color)
+            it_code.setForeground(color)
+            it_ping.setForeground(QColor("#94A3B8"))
+
+            self.table_portals.setItem(row, 0, it_stat)
+            self.table_portals.setItem(row, 1, it_url)
+            self.table_portals.setItem(row, 2, it_code)
+            self.table_portals.setItem(row, 3, it_ping)
+            self.table_portals.setItem(row, 4, it_info)
+        finally:
+            if was_sort:
+                self.table_portals.setSortingEnabled(True)
 
     def _clear_portal_results(self):
         self._portal_results.clear()
@@ -1307,7 +1351,7 @@ class ScannerView(QWidget):
 
         default_file = self._default_reachable_file
         path, _ = QFileDialog.getSaveFileName(
-            self, "Erreichbare Stalker-Portale speichern", default_file, "Textdateien (*.txt)"
+            self.window(), "Erreichbare Stalker-Portale speichern", default_file, "Textdateien (*.txt)"
         )
         if path:
             ok = save_reachable_portals_file(path, self._reachable_portals)

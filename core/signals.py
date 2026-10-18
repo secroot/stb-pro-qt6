@@ -107,9 +107,9 @@ class AsyncWorkerPool(QObject):
     def dispatch_to_ui(self, fn: Callable[..., Any], *args, **kwargs):
         self.ui_dispatch_signal.emit(fn, args, kwargs)
 
-    def shutdown(self):
+    def shutdown(self, msecs: int = 150):
         self.pool.clear()
-        self.pool.waitForDone(1500)
+        self.pool.waitForDone(msecs)
 
 
 # Singleton-Instanzen

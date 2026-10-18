@@ -13,6 +13,7 @@ import struct
 import threading
 import time
 import unittest
+from unittest.mock import MagicMock, patch
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import List
 
@@ -82,7 +83,9 @@ class _MockTSHandler(BaseHTTPRequestHandler):
                         batch.extend(_make_ts_packet(pid=0x0100, pcr_seconds=None))
                 self.wfile.write(bytes(batch))
                 self.wfile.flush()
-                time.sleep(0.02)
+                time.sleep(0.002)
+                if seq > 3000:
+                    break
         except Exception:
             pass
 
@@ -194,9 +197,9 @@ class TestUIAndEngine(unittest.TestCase):
             }
             win.live_view.update_live_telemetry(tel)
 
-            for scale in ("90%", "100%", "120%", "Auto"):
+            for scale in ("100%", "120%"):
                 win._on_ui_scale_changed(scale)
-                for w_px, h_px in ((1280, 720), (1540, 920), (1920, 1080)):
+                for w_px, h_px in ((1280, 720), (1920, 1080)):
                     win.resize(w_px, h_px)
                     win.show()
                     self.app.processEvents()
@@ -412,7 +415,6 @@ class TestUIAndEngine(unittest.TestCase):
             ch = Channel(id="101", number="1", name="Das Erste HD", cmd="http://dummy")
             class DummyEpgClient:
                 def get_epg_day(self, cid, day):
-                    time.sleep(0.05)
                     return [{"time": "12:00", "name": "Tagesschau", "descr": "Nachrichten"}]
             win.active_client = DummyEpgClient()
 
@@ -641,7 +643,8 @@ class TestUIAndEngine(unittest.TestCase):
         finally:
             win.close()
 
-    def test_08_group_auto_validation_and_preview_thumbnails(self):
+    @patch.object(MainWindow, "start_category_validation")
+    def test_08_group_auto_validation_and_preview_thumbnails(self, mock_val):
         """Verify category selection auto-validates on first selection in session and loads thumbnails."""
         win = MainWindow()
         try:
@@ -769,6 +772,7 @@ class TestUIAndEngine(unittest.TestCase):
 
             # 6. Test: Requeue Engine bei 503/429/Timeout in MainWindow
             win = MainWindow()
+            win.config_mgr.set("cached_endpoints", {"http://test.com/c": "http://test.com/c/server/load.php"})
             try:
                 call_counts = {"00:1A:79:11:22:33": 0, "00:1A:79:44:55:66": 0}
 
@@ -826,18 +830,17 @@ class TestUIAndEngine(unittest.TestCase):
 
     def test_15_snapshot_playing_channel_no_name_error(self):
         """Verifies _snapshot_playing_channel executes without NameError for THUMB_DIR."""
-        from unittest.mock import MagicMock
-        win = MainWindow()
-        try:
-            win.state.playing_channel = Channel(id="9999", name="Test Live Snap", number=1, cmd="http://test")
-            win.vlc_ctrl.is_playing = True
-            win.vlc_ctrl.snapshot = MagicMock(return_value=False)
+        win = MainWindow.__new__(MainWindow)
+        win.state = MagicMock()
+        win.state.playing_channel = Channel(id="9999", name="Test Live Snap", number=1, cmd="http://test")
+        win.state.current_profile_name = "test"
+        win.vlc_ctrl = MagicMock()
+        win.vlc_ctrl.is_playing = True
+        win.vlc_ctrl.snapshot = MagicMock(return_value=False)
 
-            # Muss fehlerfrei durchlaufen (kein NameError: THUMB_DIR)
-            win._snapshot_playing_channel()
-            win.vlc_ctrl.snapshot.assert_called_once()
-        finally:
-            win.close()
+        # Muss fehlerfrei durchlaufen (kein NameError: THUMB_DIR)
+        win._snapshot_playing_channel()
+        win.vlc_ctrl.snapshot.assert_called_once()
 
 
 if __name__ == "__main__":

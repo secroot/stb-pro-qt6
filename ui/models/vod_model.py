@@ -223,6 +223,10 @@ class VODFilterProxyModel(QSortFilterProxyModel):
         model = self.sourceModel()
         if not model:
             return False
+        if col == 0:
+            fav_left = bool(model.data(left, VODRoles.IsFavRole))
+            fav_right = bool(model.data(right, VODRoles.IsFavRole))
+            return (1 if fav_left else 0) < (1 if fav_right else 0)
         if col == 3:
             r_left = model.data(left, VODRoles.RatingRole) or 0.0
             r_right = model.data(right, VODRoles.RatingRole) or 0.0
@@ -231,6 +235,10 @@ class VODFilterProxyModel(QSortFilterProxyModel):
             y_left = model.data(left, VODRoles.YearRole) or ""
             y_right = model.data(right, VODRoles.YearRole) or ""
             return str(y_left) < str(y_right)
+        if col == 4:
+            q_left = str(model.data(left, VODRoles.QualityRole) or "")
+            q_right = str(model.data(right, VODRoles.QualityRole) or "")
+            return q_left < q_right
         t_left = (model.data(left, VODRoles.TitleRole) or "").lower()
         t_right = (model.data(right, VODRoles.TitleRole) or "").lower()
         return t_left < t_right

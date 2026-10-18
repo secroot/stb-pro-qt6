@@ -40,7 +40,7 @@ class MacDatabase:
                     pass
             filepath = LOCAL_DB_FILE
         self.filepath = filepath
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._db: Dict[str, Any] = self._load()
 
     def _load(self) -> Dict[str, Any]:
@@ -233,6 +233,14 @@ class MacDatabase:
 
     def total_count(self) -> int:
         return self.get_count()
+
+    def has_portal_entries(self, portal_url: Optional[str] = None) -> bool:
+        if not portal_url:
+            return self.get_count() > 0
+        norm = portal_url.strip().rstrip("/")
+        with self._lock:
+            p_dict = self._db.get("portals", {}).get(norm, {})
+            return len(p_dict) > 0
 
     def get_entries(self, portal_url: Optional[str] = None) -> List[Dict[str, Any]]:
         raw = self.get_all_records(portal_url)

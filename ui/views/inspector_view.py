@@ -88,13 +88,13 @@ class InspectorView(QWidget):
         # ── Main Vertical Splitter: Request Table (Top) + Detail Tabs (Bottom) ──
         splitter = QSplitter(Qt.Orientation.Vertical)
 
-        # Request History Table
         self.table = QTableWidget(0, 5)
-        self.table.setHorizontalHeaderLabels(["Zeit", "Methode", "Status", "Dauer", "URL / Endpoint"])
+        self.table.setHorizontalHeaderLabels(["Zeit", "Methode", "Status", "Dauer (ms)", "URL / Endpoint"])
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.verticalHeader().setVisible(False)
+        self.table.setSortingEnabled(True)
         hdr = self.table.horizontalHeader()
         hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         hdr.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
@@ -187,18 +187,28 @@ class InspectorView(QWidget):
 
     def _refresh_table(self):
         self._filtered_entries = [e for e in self._entries if self._matches(e)]
+        self.table.setSortingEnabled(False)
         self.table.setRowCount(0)
         for e in self._filtered_entries:
             self._append_row(e)
+        self.table.setSortingEnabled(True)
 
     def _append_row(self, entry: HttpLogEntry):
         row = self.table.rowCount()
         self.table.insertRow(row)
 
         it_time = QTableWidgetItem(entry.timestamp)
+        it_time.setData(Qt.ItemDataRole.UserRole, entry)
         it_method = QTableWidgetItem(entry.method)
-        it_status = QTableWidgetItem(str(entry.status_code))
-        it_dur = QTableWidgetItem(f"{entry.elapsed_ms} ms")
+
+        it_status = QTableWidgetItem()
+        it_status.setData(Qt.ItemDataRole.DisplayRole, int(entry.status_code))
+        it_status.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        it_dur = QTableWidgetItem()
+        it_dur.setData(Qt.ItemDataRole.DisplayRole, int(entry.elapsed_ms))
+        it_dur.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
         it_url = QTableWidgetItem(entry.url)
 
         if 200 <= entry.status_code < 300:
@@ -216,9 +226,12 @@ class InspectorView(QWidget):
 
     def _on_row_selected(self):
         row = self.table.currentRow()
-        if not (0 <= row < len(self._filtered_entries)):
+        if row < 0:
             return
-        entry = self._filtered_entries[row]
+        it_time = self.table.item(row, 0)
+        entry = it_time.data(Qt.ItemDataRole.UserRole) if it_time else None
+        if not entry or not isinstance(entry, HttpLogEntry):
+            return
 
         # Format Response Body (Pretty JSON if applicable)
         raw_body = (entry.response_preview or "").strip()

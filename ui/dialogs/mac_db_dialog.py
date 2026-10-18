@@ -6,7 +6,7 @@ exports hits, applies a MAC directly to the active profile, or sends portal MACs
 from __future__ import annotations
 
 from typing import Any, Dict, List
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QFont
 from PySide6.QtWidgets import (
     QApplication,
@@ -73,6 +73,7 @@ class MacDatabaseDialog(QDialog):
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.table.setSortingEnabled(True)
         self.table.verticalHeader().setVisible(False)
         hdr = self.table.horizontalHeader()
         hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
@@ -146,35 +147,57 @@ class MacDatabaseDialog(QDialog):
             self._visible_rows.append(e)
 
         self.lbl_summary.setText(f"🗄 MAC Hit-Datenbank ({len(self._visible_rows)} / {self._db.total_count()} Treffer)")
-        self.table.setRowCount(len(self._visible_rows))
-        for row, e in enumerate(self._visible_rows):
-            status = str(e.get("status", "OK"))
-            it_status = QTableWidgetItem(status)
-            if "HOT" in status.upper() or "AKTIV" in status.upper():
-                it_status.setForeground(QColor("#10B981"))
-            else:
-                it_status.setForeground(QColor("#F59E0B"))
+        self.table.setSortingEnabled(False)
+        self.table.setUpdatesEnabled(False)
+        try:
+            self.table.setRowCount(len(self._visible_rows))
+            for row, e in enumerate(self._visible_rows):
+                status = str(e.get("status", "OK"))
+                it_status = QTableWidgetItem(status)
+                if "HOT" in status.upper() or "AKTIV" in status.upper():
+                    it_status.setForeground(QColor("#10B981"))
+                else:
+                    it_status.setForeground(QColor("#F59E0B"))
 
-            loc = str(e.get("vpn_location") or e.get("proxy_location") or "—")
-            it_loc = QTableWidgetItem(loc)
-            if loc != "—":
-                it_loc.setForeground(QColor("#38BDF8"))
-            else:
-                it_loc.setForeground(QColor("#94A3B8"))
+                loc = str(e.get("vpn_location") or e.get("proxy_location") or "—")
+                it_loc = QTableWidgetItem(loc)
+                if loc != "—":
+                    it_loc.setForeground(QColor("#38BDF8"))
+                else:
+                    it_loc.setForeground(QColor("#94A3B8"))
 
-            self.table.setItem(row, 0, QTableWidgetItem(str(e.get("portal", ""))))
-            self.table.setItem(row, 1, QTableWidgetItem(str(e.get("mac", ""))))
-            self.table.setItem(row, 2, it_status)
-            self.table.setItem(row, 3, QTableWidgetItem(str(e.get("expiry", "—"))))
-            self.table.setItem(row, 4, QTableWidgetItem(str(e.get("channels", 0))))
-            self.table.setItem(row, 5, QTableWidgetItem(str(e.get("model", "MAG 250"))))
-            self.table.setItem(row, 6, it_loc)
-            self.table.setItem(row, 7, QTableWidgetItem(str(e.get("last_seen", "—"))))
+                it_portal = QTableWidgetItem(str(e.get("portal", "")))
+                it_portal.setData(Qt.ItemDataRole.UserRole, e)
+
+                it_mac = QTableWidgetItem(str(e.get("mac", "")))
+                it_exp = QTableWidgetItem(str(e.get("expiry", "—")))
+
+                it_ch = QTableWidgetItem()
+                ch_num = int(str(e.get("channels", 0)).strip() or 0)
+                it_ch.setData(Qt.ItemDataRole.DisplayRole, ch_num)
+                it_ch.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+                it_model = QTableWidgetItem(str(e.get("model", "MAG 250")))
+                it_seen = QTableWidgetItem(str(e.get("last_seen", "—")))
+
+                self.table.setItem(row, 0, it_portal)
+                self.table.setItem(row, 1, it_mac)
+                self.table.setItem(row, 2, it_status)
+                self.table.setItem(row, 3, it_exp)
+                self.table.setItem(row, 4, it_ch)
+                self.table.setItem(row, 5, it_model)
+                self.table.setItem(row, 6, it_loc)
+                self.table.setItem(row, 7, it_seen)
+        finally:
+            self.table.setUpdatesEnabled(True)
+            self.table.setSortingEnabled(True)
 
     def _selected_entry(self) -> Dict[str, Any] | None:
         row = self.table.currentRow()
-        if 0 <= row < len(self._visible_rows):
-            return self._visible_rows[row]
+        if row >= 0:
+            it = self.table.item(row, 0)
+            if it:
+                return it.data(Qt.ItemDataRole.UserRole)
         return None
 
     def _on_pattern_search(self):
@@ -185,8 +208,8 @@ class MacDatabaseDialog(QDialog):
 
     def _on_pattern_to_scanner(self, macs: list):
         if macs:
-            self.send_to_scanner_requested.emit(macs)
             self.accept()
+            self.send_to_scanner_requested.emit(macs)
 
     def _on_apply_selected(self):
         e = self._selected_entry()
@@ -200,10 +223,14 @@ class MacDatabaseDialog(QDialog):
         self.accept()
 
     def _on_send_to_scanner(self):
-        macs = [str(e.get("mac", "")) for e in self._visible_rows if e.get("mac")]
+        macs = []
+        for r in range(self.table.rowCount()):
+            it = self.table.item(r, 1)
+            if it and it.text().strip():
+                macs.append(it.text().strip())
         if macs:
-            self.send_to_scanner_requested.emit(macs)
             self.accept()
+            self.send_to_scanner_requested.emit(macs)
 
     def _on_copy_mac(self):
         e = self._selected_entry()
@@ -213,7 +240,7 @@ class MacDatabaseDialog(QDialog):
     def _on_dedup(self):
         removed = self._db.deduplicate()
         self.refresh_view()
-        QMessageBox.information(self, "Bereinigung", f"{removed} doppelte MAC-Einträge entfernt.")
+        QMessageBox.information(self.window(), "Bereinigung", f"{removed} doppelte MAC-Einträge entfernt.")
 
     def _on_delete_selected(self):
         e = self._selected_entry()
@@ -222,15 +249,17 @@ class MacDatabaseDialog(QDialog):
             self.refresh_view()
 
     def _on_export(self):
-        if not self._visible_rows:
+        if self.table.rowCount() == 0:
             return
         path, _ = QFileDialog.getSaveFileName(
-            self, "MAC Hits exportieren", "mac_hits_export.txt", "Textdateien (*.txt)"
+            self.window(), "MAC Hits exportieren", "mac_hits_export.txt", "Textdateien (*.txt)"
         )
         if path:
-            lines = [
-                f"{e.get('mac')} | {e.get('portal')} | Exp: {e.get('expiry')} | Ch: {e.get('channels')}"
-                for e in self._visible_rows
-            ]
+            lines = []
+            for r in range(self.table.rowCount()):
+                it_p = self.table.item(r, 0)
+                e = it_p.data(Qt.ItemDataRole.UserRole) if it_p else None
+                if e:
+                    lines.append(f"{e.get('mac')} | {e.get('portal')} | Exp: {e.get('expiry')} | Ch: {e.get('channels')}")
             with open(path, "w", encoding="utf-8") as f:
                 f.write("\n".join(lines) + "\n")

@@ -6,7 +6,7 @@ Transfer von generierten Permutationen in den Scanner oder als TXT-Export.
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QTimer
 from PySide6.QtGui import QColor, QFont
 from PySide6.QtWidgets import (
     QApplication,
@@ -85,7 +85,10 @@ class MacPatternDialog(QDialog):
         self.spin_count.setRange(20, 10000)
         self.spin_count.setSingleStep(100)
         self.spin_count.setValue(500)
-        self.spin_count.valueChanged.connect(self._generate_candidates)
+        self._debounce_timer = QTimer(self)
+        self._debounce_timer.setSingleShot(True)
+        self._debounce_timer.timeout.connect(self._generate_candidates)
+        self.spin_count.valueChanged.connect(lambda: self._debounce_timer.start(200))
         ctrl_row.addWidget(self.spin_count)
 
         btn_refresh = QPushButton("🔄 Neu analysieren")
@@ -113,11 +116,16 @@ class MacPatternDialog(QDialog):
         self.table_patterns.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table_patterns.verticalHeader().setVisible(False)
         pHdr = self.table_patterns.horizontalHeader()
-        pHdr.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
-        pHdr.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
-        pHdr.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
-        pHdr.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
+        pHdr.setSectionResizeMode(0, QHeaderView.ResizeMode.Interactive)
+        pHdr.setSectionResizeMode(1, QHeaderView.ResizeMode.Interactive)
+        pHdr.setSectionResizeMode(2, QHeaderView.ResizeMode.Interactive)
+        pHdr.setSectionResizeMode(3, QHeaderView.ResizeMode.Interactive)
         pHdr.setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
+        self.table_patterns.setColumnWidth(0, 160)
+        self.table_patterns.setColumnWidth(1, 150)
+        self.table_patterns.setColumnWidth(2, 90)
+        self.table_patterns.setColumnWidth(3, 80)
+        self.table_patterns.setSortingEnabled(True)
         v_top.addWidget(self.table_patterns)
         splitter.addWidget(w_top)
 
@@ -135,8 +143,10 @@ class MacPatternDialog(QDialog):
         self.table_candidates.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table_candidates.verticalHeader().setVisible(False)
         cHdr = self.table_candidates.horizontalHeader()
-        cHdr.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+        cHdr.setSectionResizeMode(0, QHeaderView.ResizeMode.Interactive)
         cHdr.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        self.table_candidates.setColumnWidth(0, 65)
+        self.table_candidates.setSortingEnabled(True)
         v_bot.addWidget(self.table_candidates)
         splitter.addWidget(w_bot)
 
@@ -189,32 +199,41 @@ class MacPatternDialog(QDialog):
         source_macs = [str(r.get("mac", "")) for r in records if r.get("mac")]
 
         self._patterns = MacPatternPredictor.analyze(source_macs)
-        self.table_patterns.setRowCount(len(self._patterns))
+        self.table_patterns.setSortingEnabled(False)
+        self.table_patterns.setUpdatesEnabled(False)
+        self.table_patterns.blockSignals(True)
+        try:
+            self.table_patterns.setRowCount(len(self._patterns))
+            for row, pat in enumerate(self._patterns):
+                it_prefix = QTableWidgetItem(pat.prefix)
+                it_prefix.setFont(QFont("Consolas", 10, QFont.Weight.Bold))
+                if pat.depth == 4:
+                    it_prefix.setForeground(QColor("#38BDF8"))
+                else:
+                    it_prefix.setForeground(QColor("#10B981"))
 
-        for row, pat in enumerate(self._patterns):
-            it_prefix = QTableWidgetItem(pat.prefix)
-            it_prefix.setFont(QFont("Consolas", 10, QFont.Weight.Bold))
-            if pat.depth == 4:
-                it_prefix.setForeground(QColor("#38BDF8"))
-            else:
-                it_prefix.setForeground(QColor("#10B981"))
+                it_type = QTableWidgetItem(f"{pat.depth}-Byte Reihe" if pat.depth == 4 else "5-Byte Sub-Cluster")
+                it_hits = QTableWidgetItem()
+                it_hits.setData(Qt.ItemDataRole.DisplayRole, int(pat.hit_count))
+                it_hits.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-            it_type = QTableWidgetItem(f"{pat.depth}-Byte Reihe" if pat.depth == 4 else "5-Byte Sub-Cluster")
-            it_hits = QTableWidgetItem(str(pat.hit_count))
-            it_hits.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                d_pct = int(pat.density_score * 100)
+                it_density = QTableWidgetItem()
+                it_density.setData(Qt.ItemDataRole.DisplayRole, d_pct)
+                it_density.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-            d_pct = int(pat.density_score * 100)
-            it_density = QTableWidgetItem(f"{d_pct} %")
-            it_density.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                examples = ", ".join(pat.sample_macs[:2])
+                it_ex = QTableWidgetItem(examples)
 
-            examples = ", ".join(pat.sample_macs[:2])
-            it_ex = QTableWidgetItem(examples)
-
-            self.table_patterns.setItem(row, 0, it_prefix)
-            self.table_patterns.setItem(row, 1, it_type)
-            self.table_patterns.setItem(row, 2, it_hits)
-            self.table_patterns.setItem(row, 3, it_density)
-            self.table_patterns.setItem(row, 4, it_ex)
+                self.table_patterns.setItem(row, 0, it_prefix)
+                self.table_patterns.setItem(row, 1, it_type)
+                self.table_patterns.setItem(row, 2, it_hits)
+                self.table_patterns.setItem(row, 3, it_density)
+                self.table_patterns.setItem(row, 4, it_ex)
+        finally:
+            self.table_patterns.blockSignals(False)
+            self.table_patterns.setUpdatesEnabled(True)
+            self.table_patterns.setSortingEnabled(True)
 
         self.lbl_patterns_hdr.setText(
             f"📊 Erkannte Cluster & Hot-Präfixe ({len(self._patterns)} Muster aus {len(source_macs)} Hits):"
@@ -240,15 +259,24 @@ class MacPatternDialog(QDialog):
             existing_macs=known_set,
         )
 
-        self.table_candidates.setRowCount(len(self._generated_macs))
-        for row, mac in enumerate(self._generated_macs):
-            it_num = QTableWidgetItem(str(row + 1))
-            it_num.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            it_mac = QTableWidgetItem(mac)
-            it_mac.setFont(QFont("Consolas", 10))
-            it_mac.setForeground(QColor("#38BDF8"))
-            self.table_candidates.setItem(row, 0, it_num)
-            self.table_candidates.setItem(row, 1, it_mac)
+        self.table_candidates.setSortingEnabled(False)
+        self.table_candidates.setUpdatesEnabled(False)
+        self.table_candidates.blockSignals(True)
+        try:
+            self.table_candidates.setRowCount(len(self._generated_macs))
+            for row, mac in enumerate(self._generated_macs):
+                it_num = QTableWidgetItem()
+                it_num.setData(Qt.ItemDataRole.DisplayRole, row + 1)
+                it_num.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                it_mac = QTableWidgetItem(mac)
+                it_mac.setFont(QFont("Consolas", 10))
+                it_mac.setForeground(QColor("#38BDF8"))
+                self.table_candidates.setItem(row, 0, it_num)
+                self.table_candidates.setItem(row, 1, it_mac)
+        finally:
+            self.table_candidates.blockSignals(False)
+            self.table_candidates.setUpdatesEnabled(True)
+            self.table_candidates.setSortingEnabled(True)
 
         self.lbl_candidates_hdr.setText(
             f"🎯 Berechnete neue Permutationen für den Scanner ({len(self._generated_macs)} ungetestete MACs):"
@@ -258,27 +286,23 @@ class MacPatternDialog(QDialog):
     def _on_send_to_scanner(self):
         if not self._generated_macs:
             return
-        self.send_to_scanner_requested.emit(list(self._generated_macs))
-        QMessageBox.information(
-            self,
-            "In Scanner übernommen",
-            f"{len(self._generated_macs)} generierte MAC-Permutationen wurden an die Scan-Warteschlange übergeben!",
-        )
+        macs_to_send = list(self._generated_macs)
         self.accept()
+        self.send_to_scanner_requested.emit(macs_to_send)
 
     def _on_export_txt(self):
         if not self._generated_macs:
             return
         path, _ = QFileDialog.getSaveFileName(
-            self, "MAC-Permutationen exportieren", "mac_permutations.txt", "Textdateien (*.txt)"
+            self.window(), "MAC-Permutationen exportieren", "mac_permutations.txt", "Textdateien (*.txt)"
         )
         if path:
             with open(path, "w", encoding="utf-8") as f:
                 f.write("\n".join(self._generated_macs) + "\n")
-            QMessageBox.information(self, "Export erfolgreich", f"{len(self._generated_macs)} MACs gespeichert nach:\n{path}")
+            QMessageBox.information(self.window(), "Export erfolgreich", f"{len(self._generated_macs)} MACs gespeichert nach:\n{path}")
 
     def _on_copy_all(self):
         if not self._generated_macs:
             return
         QApplication.clipboard().setText("\n".join(self._generated_macs))
-        QMessageBox.information(self, "Kopiert", f"{len(self._generated_macs)} MACs in die Zwischenablage kopiert.")
+        QMessageBox.information(self.window(), "Kopiert", f"{len(self._generated_macs)} MACs in die Zwischenablage kopiert.")
