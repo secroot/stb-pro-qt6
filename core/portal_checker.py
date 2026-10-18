@@ -687,6 +687,7 @@ class StalkerPortalChecker:
         threads: int = DEFAULT_CHECKER_THREADS,
         timeout: float = DEFAULT_PORTAL_TIMEOUT,
         verify_ssl: bool = False,
+        delay_s: float = 0.0,
     ):
         """Startet die asynchrone Multi-Threaded Portalprüfung im Hintergrund."""
         if self._is_running:
@@ -745,6 +746,9 @@ class StalkerPortalChecker:
                         try:
                             if self._stop_ev.is_set():
                                 break
+
+                            if delay_s > 0:
+                                time.sleep(delay_s)
 
                             res = check_single_portal(
                                 portal_url,

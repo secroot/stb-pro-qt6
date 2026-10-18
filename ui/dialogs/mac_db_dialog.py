@@ -26,6 +26,7 @@ from PySide6.QtWidgets import (
 )
 
 from core.mac_database import MacDatabase
+from .mac_pattern_dialog import MacPatternDialog
 
 
 class MacDatabaseDialog(QDialog):
@@ -35,7 +36,7 @@ class MacDatabaseDialog(QDialog):
     def __init__(self, mac_db: MacDatabase, parent: QWidget | None = None):
         super().__init__(parent)
         self.setWindowTitle("🗄 Persistente MAC Hit-Datenbank")
-        self.resize(940, 560)
+        self.resize(1020, 580)
         self._db = mac_db
         self._visible_rows: List[Dict[str, Any]] = []
 
@@ -64,10 +65,10 @@ class MacDatabaseDialog(QDialog):
         top_row.addWidget(self.entry_search)
         layout.addLayout(top_row)
 
-        # Table
-        self.table = QTableWidget(0, 7)
+        # Table (8 Spalten inkl. Proxy/VPN Standort)
+        self.table = QTableWidget(0, 8)
         self.table.setHorizontalHeaderLabels([
-            "Portal URL", "MAC-Adresse", "Status", "Ablaufdatum", "Kanäle", "Modell", "Zuletzt geprüft"
+            "Portal URL", "MAC-Adresse", "Status", "Ablaufdatum", "Kanäle", "Modell", "Proxy / VPN", "Zuletzt geprüft"
         ])
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
@@ -75,7 +76,7 @@ class MacDatabaseDialog(QDialog):
         self.table.verticalHeader().setVisible(False)
         hdr = self.table.horizontalHeader()
         hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-        for col in range(1, 7):
+        for col in range(1, 8):
             hdr.setSectionResizeMode(col, QHeaderView.ResizeMode.ResizeToContents)
         self.table.doubleClicked.connect(lambda _: self._on_apply_selected())
         layout.addWidget(self.table, 1)
@@ -83,20 +84,25 @@ class MacDatabaseDialog(QDialog):
         # Bottom Actions
         btn_row = QHBoxLayout()
 
-        btn_apply = QPushButton("🚀 Im aktiven Profil verwenden & verbinden")
+        btn_pattern = QPushButton("🧠 Nach MAC-Mustern suchen")
+        btn_pattern.setStyleSheet("font-weight: bold; color: #38BDF8;")
+        btn_pattern.clicked.connect(self._on_pattern_search)
+        btn_row.addWidget(btn_pattern)
+
+        btn_apply = QPushButton("🚀 Im aktiven Profil verbinden")
         btn_apply.setObjectName("PrimaryButton")
         btn_apply.clicked.connect(self._on_apply_selected)
         btn_row.addWidget(btn_apply)
 
-        btn_send_scan = QPushButton("🎯 Sichtbare MACs an Scanner senden")
+        btn_send_scan = QPushButton("🎯 Sichtbare MACs an Scanner")
         btn_send_scan.clicked.connect(self._on_send_to_scanner)
         btn_row.addWidget(btn_send_scan)
 
-        btn_copy = QPushButton("📋 MAC kopieren")
+        btn_copy = QPushButton("📋 Kopieren")
         btn_copy.clicked.connect(self._on_copy_mac)
         btn_row.addWidget(btn_copy)
 
-        btn_dedup = QPushButton("🧹 Duplikate bereinigen")
+        btn_dedup = QPushButton("🧹 Bereinigen")
         btn_dedup.clicked.connect(self._on_dedup)
         btn_row.addWidget(btn_dedup)
 
@@ -104,7 +110,7 @@ class MacDatabaseDialog(QDialog):
         btn_export.clicked.connect(self._on_export)
         btn_row.addWidget(btn_export)
 
-        btn_del = QPushButton("🗑 Eintrag löschen")
+        btn_del = QPushButton("🗑 Löschen")
         btn_del.setObjectName("DangerButton")
         btn_del.clicked.connect(self._on_delete_selected)
         btn_row.addWidget(btn_del)
@@ -149,19 +155,38 @@ class MacDatabaseDialog(QDialog):
             else:
                 it_status.setForeground(QColor("#F59E0B"))
 
+            loc = str(e.get("vpn_location") or e.get("proxy_location") or "—")
+            it_loc = QTableWidgetItem(loc)
+            if loc != "—":
+                it_loc.setForeground(QColor("#38BDF8"))
+            else:
+                it_loc.setForeground(QColor("#94A3B8"))
+
             self.table.setItem(row, 0, QTableWidgetItem(str(e.get("portal", ""))))
             self.table.setItem(row, 1, QTableWidgetItem(str(e.get("mac", ""))))
             self.table.setItem(row, 2, it_status)
             self.table.setItem(row, 3, QTableWidgetItem(str(e.get("expiry", "—"))))
             self.table.setItem(row, 4, QTableWidgetItem(str(e.get("channels", 0))))
             self.table.setItem(row, 5, QTableWidgetItem(str(e.get("model", "MAG 250"))))
-            self.table.setItem(row, 6, QTableWidgetItem(str(e.get("last_seen", "—"))))
+            self.table.setItem(row, 6, it_loc)
+            self.table.setItem(row, 7, QTableWidgetItem(str(e.get("last_seen", "—"))))
 
     def _selected_entry(self) -> Dict[str, Any] | None:
         row = self.table.currentRow()
         if 0 <= row < len(self._visible_rows):
             return self._visible_rows[row]
         return None
+
+    def _on_pattern_search(self):
+        portal_filter = self.combo_portal.currentData() or "*"
+        dlg = MacPatternDialog(self._db, initial_portal=portal_filter, parent=self)
+        dlg.send_to_scanner_requested.connect(self._on_pattern_to_scanner)
+        dlg.exec()
+
+    def _on_pattern_to_scanner(self, macs: list):
+        if macs:
+            self.send_to_scanner_requested.emit(macs)
+            self.accept()
 
     def _on_apply_selected(self):
         e = self._selected_entry()

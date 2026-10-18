@@ -89,6 +89,7 @@
 | `HeroCard` | **Class / Widget** | [ui/components/hero_card.py](ui/components/hero_card.py#L25-L283) | `L25-L283` | Basis: QFrame |
 | `HttpLogEntry` | **Class / Widget** | [core/models.py](core/models.py#L614-L660) | `L614-L660` | Basis:  |
 | `InspectorView` | **Class / Widget** | [ui/views/inspector_view.py](ui/views/inspector_view.py#L32-L262) | `L32-L262` | Basis: QWidget |
+| `int_to_mac` | **Function** | [core/pattern_predictor.py](core/pattern_predictor.py#L42-L45) | `L42-L45` | Konvertiert eine 48-Bit-Ganzzahl in eine formatierte MAC-Adresse. |
 | `is_blank_or_black_jpeg` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L40-L61) | `L40-L61` | Erkennt korrupte, leere oder rein schwarze Dummy-Frames zuverlässig. |
 | `is_ip_or_stream_ban` | **Function** | [core/stream_probe.py](core/stream_probe.py#L295-L308) | `L295-L308` | Ermittelt zuverlässig, ob ein HTTP-Statuscode oder Fehlertext auf |
 | `is_stalker_response` | **Function** | [core/portal_checker.py](core/portal_checker.py#L395-L441) | `L395-L441` | Prüft eine HTTP-Response rigoros auf definitive Stalker / Ministra Signaturen. |
@@ -101,12 +102,17 @@
 | `load_cached_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L120-L133) | `L120-L133` | def load_cached_thumb(key) |
 | `load_portal_list` | **Function** | [core/portal_checker.py](core/portal_checker.py#L348-L376) | `L348-L376` | Liest eine Stalker-Portal-Datei (.txt) ein, bereinigt Kommentare und |
 | `LogoCache` | **Class / Widget** | [core/logo_cache.py](core/logo_cache.py#L22-L151) | `L22-L151` | Lädt Kanal-Logos und VOD-Poster im Hintergrund als QImage (Thread-sicher!) |
-| `MacDatabase` | **Class / Widget** | [core/mac_database.py](core/mac_database.py#L28-L250) | `L28-L250` | Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern. |
-| `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L31-L211) | `L31-L211` | Basis: QDialog |
+| `mac_to_int` | **Function** | [core/pattern_predictor.py](core/pattern_predictor.py#L34-L39) | `L34-L39` | Konvertiert eine MAC-Adresse in eine 48-Bit-Ganzzahl. |
+| `MacClusterPattern` | **Class / Widget** | [core/pattern_predictor.py](core/pattern_predictor.py#L15-L23) | `L15-L23` | Repräsentiert ein identifiziertes MAC-Muster oder Cluster. |
+| `MacDatabase` | **Class / Widget** | [core/mac_database.py](core/mac_database.py#L28-L254) | `L28-L254` | Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern. |
+| `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L32-L236) | `L32-L236` | Basis: QDialog |
+| `MacPatternDialog` | **Class / Widget** | [ui/dialogs/mac_pattern_dialog.py](ui/dialogs/mac_pattern_dialog.py#L33-L284) | `L33-L284` | Dialog für die Mustererkennung und Permutations-Generierung. |
+| `MacPatternPredictor` | **Class / Widget** | [core/pattern_predictor.py](core/pattern_predictor.py#L48-L197) | `L48-L197` | Analysiert MAC-Treffer auf wiederkehrende Muster und generiert |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
-| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L104-L3006) | `L104-L3006` | Basis: QMainWindow |
+| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L105-L3092) | `L105-L3092` | Basis: QMainWindow |
 | `MultiPortalScanScheduler` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L58-L596) | `L58-L596` | Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans mit intelligenter |
 | `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L29-L653) | `L29-L653` | Verwaltet die Integration mit NordVPN unter Windows. |
+| `normalize_mac` | **Function** | [core/pattern_predictor.py](core/pattern_predictor.py#L26-L31) | `L26-L31` | Bereinigt und formatiert eine MAC-Adresse nach XX:XX:XX:XX:XX:XX. |
 | `normalize_portal_url` | **Function** | [core/portal_checker.py](core/portal_checker.py#L324-L345) | `L324-L345` | Normalisiert eine Portal-URL sauber (Protokoll, Leerzeichen, Format). |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
 | `pcr_bitrate_kbps` | **Function** | [core/stream_probe.py](core/stream_probe.py#L38-L66) | `L38-L66` | Echte Mux-Bitrate aus MPEG-TS-PCR. |
@@ -126,7 +132,7 @@
 | `save_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L136-L144) | `L136-L144` | def save_thumb(key, data) |
 | `ScanAccount` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L24-L58) | `L24-L58` | Repräsentiert einen einzelnen gescannten MAC-Account eines Portals. |
 | `ScanHost` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L62-L85) | `L62-L85` | Repräsentiert einen Host / ein Portal mit allen zugehörigen Logins. |
-| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L87-L1378) | `L87-L1378` | Basis: QWidget |
+| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L87-L1396) | `L87-L1396` | Basis: QWidget |
 | `ScanRepository` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L88-L264) | `L88-L264` | Verwaltet das Einlesen, Filtern und Cachen aller Scan-Dateien aus 'mac_scans/'. |
 | `ScanResult` | **Class / Widget** | [core/models.py](core/models.py#L600-L610) | `L600-L610` | Basis:  |
 | `ScanRotationMode` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L21-L55) | `L21-L55` | Konstanten für Multi-Portal Rotations- und Scan-Modi. |
@@ -134,12 +140,15 @@
 | `SeriesBrowserDialog` | **Class / Widget** | [ui/dialogs/series_dialog.py](ui/dialogs/series_dialog.py#L26-L163) | `L26-L163` | Basis: QDialog |
 | `SettingsView` | **Class / Widget** | [ui/views/settings_view.py](ui/views/settings_view.py#L45-L968) | `L45-L968` | Basis: QWidget |
 | `SidebarWidget` | **Class / Widget** | [ui/components/sidebar.py](ui/components/sidebar.py#L32-L453) | `L32-L453` | Basis: QFrame |
-| `StalkerPortalChecker` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L629-L835) | `L629-L835` | Multi-threaded Stalker Portal Prüf-Engine. |
+| `StalkerPortalChecker` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L629-L839) | `L629-L839` | Multi-threaded Stalker Portal Prüf-Engine. |
 | `StbClient` | **Class / Widget** | [clients/stb_client.py](clients/stb_client.py#L151-L203) | `L151-L203` | Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging |
 | `StreamBufferProxy` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L590-L634) | `L590-L634` | Basis:  |
 | `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L578-L596) | `L578-L596` | Basis:  |
+| `TestAntiBanShieldLogic` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L141-L196) | `L141-L196` | Tests für die Anti-Ban Erkennung und den 45s-Cooldown. |
 | `TestExpireDateValidation` | **Class / Widget** | [tests/test_expire_validation.py](tests/test_expire_validation.py#L16-L118) | `L16-L118` | Tests für is_valid_expire_date Hilfsfunktion. |
 | `TestMacDatabaseExpireFilter` | **Class / Widget** | [tests/test_expire_validation.py](tests/test_expire_validation.py#L121-L229) | `L121-L229` | Tests für MacDatabase Filterung ungültiger Ablaufdaten. |
+| `TestMacDatabaseVpnLocation` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L113-L138) | `L113-L138` | Tests für Speicherung und Auslesen von VPN-Standorten in MacDatabase. |
+| `TestMacPatternPredictor` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L21-L110) | `L21-L110` | Tests für MacPatternPredictor Analyse und Permutationen. |
 | `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L26-L532) | `L26-L532` | Basis: unittest.TestCase |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
 | `TestScanScheduler` | **Class / Widget** | [tests/test_scan_scheduler.py](tests/test_scan_scheduler.py#L13-L474) | `L13-L474` | Basis: unittest.TestCase |
@@ -233,7 +242,7 @@ Mit automatischer HTTP-Telemetrie für den Protokoll-Inspector sowie Serien-API-
 
 ## 📦 Core (Business Logic, Cache & DB)
 
-### 📄 [`core/__init__.py`](core/__init__.py) (38 Zeilen)
+### 📄 [`core/__init__.py`](core/__init__.py) (41 Zeilen)
 > Core-Paket für STB Pro Qt6.
 Enthält Datenmodelle, Event-Bus, Persistenz, Stream-Puffer, Probing und Recording.
 
@@ -308,28 +317,28 @@ als standardkonforme .m3u8 Datei für VLC, Kodi, TiviMate oder externe Tools.
 
 ---
 
-### 📄 [`core/mac_database.py`](core/mac_database.py) (251 Zeilen)
+### 📄 [`core/mac_database.py`](core/mac_database.py) (255 Zeilen)
 > Persistente, threadsichere MAC-Hit-Datenbank für STB Pro Qt6.
 Synchronisiert sich automatisch mit einer vorhandenen mac_database.json im Hauptordner.
 
 #### Klassen & Komponenten
-- **[`MacDatabase`](core/mac_database.py#L28-L250)** — `L28-L250`
+- **[`MacDatabase`](core/mac_database.py#L28-L254)** — `L28-L254`
   - *Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern.*
   - **Wichtige Methoden:**
     - [`__init__(filepath)`](core/mac_database.py#L34) — `L34`
     - [`_load()`](core/mac_database.py#L46) — `L46`
     - [`_save()`](core/mac_database.py#L59) — `L59`
     - [`save_found_mac(portal_url, res)`](core/mac_database.py#L76) — `L76`
-    - [`get_known_macs(portal_url)`](core/mac_database.py#L133) — `L133`
-    - [`get_all_records(portal_url)`](core/mac_database.py#L156) — `L156`
-    - [`get_portals()`](core/mac_database.py#L165) — `L165`
-    - [`delete_entry(mac, portal_url)`](core/mac_database.py#L169) — `L169`
-    - [`clean_duplicates()`](core/mac_database.py#L192) — `L192`
-    - [`get_count()`](core/mac_database.py#L228) — `L228`
-    - [`total_count()`](core/mac_database.py#L232) — `L232`
-    - [`get_entries(portal_url)`](core/mac_database.py#L235) — `L235`
-    - [`deduplicate()`](core/mac_database.py#L246) — `L246`
-    - [`remove_entry(portal_url, mac)`](core/mac_database.py#L249) — `L249`
+    - [`get_known_macs(portal_url)`](core/mac_database.py#L135) — `L135`
+    - [`get_all_records(portal_url)`](core/mac_database.py#L158) — `L158`
+    - [`get_portals()`](core/mac_database.py#L167) — `L167`
+    - [`delete_entry(mac, portal_url)`](core/mac_database.py#L171) — `L171`
+    - [`clean_duplicates()`](core/mac_database.py#L194) — `L194`
+    - [`get_count()`](core/mac_database.py#L230) — `L230`
+    - [`total_count()`](core/mac_database.py#L234) — `L234`
+    - [`get_entries(portal_url)`](core/mac_database.py#L237) — `L237`
+    - [`deduplicate()`](core/mac_database.py#L250) — `L250`
+    - [`remove_entry(portal_url, mac)`](core/mac_database.py#L253) — `L253`
 
 #### Modul-Funktionen
 - **[`format_mac_str(mac)`](core/mac_database.py#L21-L25)** — `L21`
@@ -402,7 +411,28 @@ Strikt typisiert und unabhängig von UI-Komponenten.
 
 ---
 
-### 📄 [`core/portal_checker.py`](core/portal_checker.py) (835 Zeilen)
+### 📄 [`core/pattern_predictor.py`](core/pattern_predictor.py) (197 Zeilen)
+> Intelligenter MAC-Muster-Prädiktor und Permutations-Generator für STB Pro Qt6.
+Analysiert bekannte Treffer aus der MAC-Datenbank auf Präfix-Häufungen (z. B. B5-Reihe '00:1A:79:B5:XX:XX'),
+erkennt dichte Adress-Cluster und generiert gezielte Permutationen für weitere Scans.
+
+#### Klassen & Komponenten
+- **[`MacClusterPattern`](core/pattern_predictor.py#L15-L23)** — `L15-L23`
+  - *Repräsentiert ein identifiziertes MAC-Muster oder Cluster.*
+- **[`MacPatternPredictor`](core/pattern_predictor.py#L48-L197)** — `L48-L197`
+  - *Analysiert MAC-Treffer auf wiederkehrende Muster und generiert*
+  - **Wichtige Methoden:**
+    - [`analyze(mac_list)`](core/pattern_predictor.py#L55) — `L55` *(Analysiert eine Liste von MAC-Adressen und ermittelt die heißesten Muster)*
+    - [`generate_permutations(cls, source_macs, selected_patterns, max_total, mode, existing_macs)`](core/pattern_predictor.py#L126) — `L126` *(Generiert neue, noch nicht bekannte MAC-Kandidaten aus Mustern und Cluster-Nachbarschaften.)*
+
+#### Modul-Funktionen
+- **[`normalize_mac(mac)`](core/pattern_predictor.py#L26-L31)** — `L26` — *Bereinigt und formatiert eine MAC-Adresse nach XX:XX:XX:XX:XX:XX.*
+- **[`mac_to_int(mac)`](core/pattern_predictor.py#L34-L39)** — `L34` — *Konvertiert eine MAC-Adresse in eine 48-Bit-Ganzzahl.*
+- **[`int_to_mac(val)`](core/pattern_predictor.py#L42-L45)** — `L42` — *Konvertiert eine 48-Bit-Ganzzahl in eine formatierte MAC-Adresse.*
+
+---
+
+### 📄 [`core/portal_checker.py`](core/portal_checker.py) (839 Zeilen)
 > Stalker Portal Erreichbarkeits-Checker & Rotations-Pool.
 Prüft Stalker-Portale aus Listen (z. B. stalker_portals.txt) multi-threaded
 auf Erreichbarkeit, Latenz (Ping), HTTP-Status und Stalker-Signaturen.
@@ -416,7 +446,7 @@ zur automatischen Rotation im MAC-Scanner.
     - [`to_dict()`](core/portal_checker.py#L48) — `L48`
     - [`from_dict(cls, data)`](core/portal_checker.py#L64) — `L64`
     - [`display_status()`](core/portal_checker.py#L79) — `L79`
-- **[`StalkerPortalChecker`](core/portal_checker.py#L629-L835)** — `L629-L835`
+- **[`StalkerPortalChecker`](core/portal_checker.py#L629-L839)** — `L629-L839`
   - *Multi-threaded Stalker Portal Prüf-Engine.*
   - **Wichtige Methoden:**
     - [`__init__()`](core/portal_checker.py#L635) — `L635`
@@ -426,7 +456,7 @@ zur automatischen Rotation im MAC-Scanner.
     - [`stop()`](core/portal_checker.py#L670) — `L670` *(Stoppt die laufende Prüfung sofort.)*
     - [`pause()`](core/portal_checker.py#L676) — `L676` *(Pausiert die Prüfung.)*
     - [`resume()`](core/portal_checker.py#L680) — `L680` *(Setzt die Prüfung fort.)*
-    - [`start_check(urls, threads, timeout, verify_ssl)`](core/portal_checker.py#L684) — `L684` *(Startet die asynchrone Multi-Threaded Portalprüfung im Hintergrund.)*
+    - [`start_check(urls, threads, timeout, verify_ssl, delay_s)`](core/portal_checker.py#L684) — `L684` *(Startet die asynchrone Multi-Threaded Portalprüfung im Hintergrund.)*
 
 #### Modul-Funktionen
 - **[`is_valid_portal_hostname(host)`](core/portal_checker.py#L162-L211)** — `L162` — *Validiert streng, ob ein Hostname eine reale Internet-Domain oder IPv4-Adresse darstellt.*
@@ -825,31 +855,31 @@ Nutzt Qt Signals für reaktive Status- und Puffer-Updates ohne UI-Blockade.
 
 ---
 
-### 📄 [`ui/main_window.py`](ui/main_window.py) (3008 Zeilen)
+### 📄 [`ui/main_window.py`](ui/main_window.py) (3094 Zeilen)
 > Main Application Window (Orchestrator) for STB Pro v6.0 Qt6 Edition.
 Coordinates Sidebar, TopNavigationBar, LiveTVView, VODView, ScannerView, InspectorView, ConsoleView,
 LibVLC Hardware Player, External Player Runner, Fullscreen HUD Overlay, PiP Mini-Player,
 Multi-Thread MAC Scanner, Parallel Category Validator, and all 7 Dialogs.
 
 #### Klassen & Komponenten
-- **[`MainWindow`](ui/main_window.py#L104-L3006)** : *QMainWindow* — `L104-L3006`
+- **[`MainWindow`](ui/main_window.py#L105-L3092)** : *QMainWindow* — `L105-L3092`
   - **Signals**: `_val_progress_sig`, `_val_finished_sig`, `_val_thumb_progress_sig`, `_val_thumb_finished_sig`, `_epg_loaded_sig`, `_probe_done_sig`, `_preview_ready_sig`
   - **Wichtige Methoden:**
-    - [`__init__()`](ui/main_window.py#L114) — `L114`
-    - [`_build_ui()`](ui/main_window.py#L213) — `L213`
-    - [`_bind_signals()`](ui/main_window.py#L274) — `L274`
-    - [`_on_buffer_settings_from_view(st)`](ui/main_window.py#L397) — `L397`
-    - [`_on_settings_applied(cfg)`](ui/main_window.py#L402) — `L402`
-    - [`_is_text_input_focused()`](ui/main_window.py#L422) — `L422`
-    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L426) — `L426`
-    - [`_cycle_aspect_ratio()`](ui/main_window.py#L435) — `L435`
-    - [`_setup_shortcuts()`](ui/main_window.py#L440) — `L440`
-    - [`_load_initial_config()`](ui/main_window.py#L463) — `L463`
-    - [`switch_view(view_key)`](ui/main_window.py#L551) — `L551`
-    - [`toggle_sidebar()`](ui/main_window.py#L559) — `L559`
-    - [`toggle_cinema_mode()`](ui/main_window.py#L565) — `L565`
-    - [`toggle_pip_mode()`](ui/main_window.py#L573) — `L573` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
-    - [`toggle_fullscreen()`](ui/main_window.py#L615) — `L615`
+    - [`__init__()`](ui/main_window.py#L115) — `L115`
+    - [`_build_ui()`](ui/main_window.py#L214) — `L214`
+    - [`_bind_signals()`](ui/main_window.py#L275) — `L275`
+    - [`_on_buffer_settings_from_view(st)`](ui/main_window.py#L398) — `L398`
+    - [`_on_settings_applied(cfg)`](ui/main_window.py#L403) — `L403`
+    - [`_is_text_input_focused()`](ui/main_window.py#L423) — `L423`
+    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L427) — `L427`
+    - [`_cycle_aspect_ratio()`](ui/main_window.py#L436) — `L436`
+    - [`_setup_shortcuts()`](ui/main_window.py#L441) — `L441`
+    - [`_load_initial_config()`](ui/main_window.py#L464) — `L464`
+    - [`switch_view(view_key)`](ui/main_window.py#L552) — `L552`
+    - [`toggle_sidebar()`](ui/main_window.py#L560) — `L560`
+    - [`toggle_cinema_mode()`](ui/main_window.py#L566) — `L566`
+    - [`toggle_pip_mode()`](ui/main_window.py#L574) — `L574` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
+    - [`toggle_fullscreen()`](ui/main_window.py#L616) — `L616`
     - *... und 95 weitere Hilfsmethoden.*
 
 ---
@@ -964,7 +994,7 @@ VOD/Catchup Seekbar, Audio/Subtitle/Aspect/Speed Controls, Multi-Thread Category
 
 ---
 
-### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (1378 Zeilen)
+### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (1396 Zeilen)
 > Multi-MAC Scanner & Pentest Generator View.
 Features 22 OUI Vendor Presets, custom wildcard masks (XX:XX:XX), sequential & random generation,
 adaptive WAF/429 Throttle Controller integration, live CPS (Checks/sec) & ETA telemetry,
@@ -974,24 +1004,24 @@ filterable hit table, and 1-click profile adoption.
 - **[`_PortalCheckerSignals`](ui/views/scanner_view.py#L80-L84)** : *QObject* — `L80-L84`
   - *Thread-sichere Qt-Signals für Hintergrund-Prüfungen der Stalker-Portale.*
   - **Signals**: `result_received`, `progress_updated`, `finished`
-- **[`ScannerView`](ui/views/scanner_view.py#L87-L1378)** : *QWidget* — `L87-L1378`
+- **[`ScannerView`](ui/views/scanner_view.py#L87-L1396)** : *QWidget* — `L87-L1396`
   - **Signals**: `start_scan_requested`, `stop_scan_requested`, `pause_scan_requested`, `resume_scan_requested`, `scan_settings_updated`, `apply_mac_requested`, `prepend_db_macs_requested`, `scan_exported`
   - **Wichtige Methoden:**
     - [`__init__(parent)`](ui/views/scanner_view.py#L97) — `L97`
-    - [`set_portal_url(url)`](ui/views/scanner_view.py#L568) — `L568`
-    - [`_on_oui_selected(text)`](ui/views/scanner_view.py#L572) — `L572`
-    - [`generate_macs()`](ui/views/scanner_view.py#L579) — `L579`
-    - [`prepend_macs(macs)`](ui/views/scanner_view.py#L618) — `L618`
-    - [`get_candidate_macs()`](ui/views/scanner_view.py#L629) — `L629`
-    - [`clear_candidates()`](ui/views/scanner_view.py#L634) — `L634`
-    - [`_update_queue_count()`](ui/views/scanner_view.py#L638) — `L638`
-    - [`_import_from_file()`](ui/views/scanner_view.py#L642) — `L642`
-    - [`_import_from_folder()`](ui/views/scanner_view.py#L656) — `L656`
-    - [`_import_from_clipboard()`](ui/views/scanner_view.py#L703) — `L703`
-    - [`_deduplicate_list()`](ui/views/scanner_view.py#L709) — `L709`
-    - [`_on_start_clicked()`](ui/views/scanner_view.py#L719) — `L719`
-    - [`get_scan_threads()`](ui/views/scanner_view.py#L761) — `L761`
-    - [`get_scan_delay()`](ui/views/scanner_view.py#L764) — `L764`
+    - [`set_portal_url(url)`](ui/views/scanner_view.py#L577) — `L577`
+    - [`_on_oui_selected(text)`](ui/views/scanner_view.py#L581) — `L581`
+    - [`generate_macs()`](ui/views/scanner_view.py#L588) — `L588`
+    - [`prepend_macs(macs)`](ui/views/scanner_view.py#L627) — `L627`
+    - [`get_candidate_macs()`](ui/views/scanner_view.py#L638) — `L638`
+    - [`clear_candidates()`](ui/views/scanner_view.py#L643) — `L643`
+    - [`_update_queue_count()`](ui/views/scanner_view.py#L647) — `L647`
+    - [`_import_from_file()`](ui/views/scanner_view.py#L651) — `L651`
+    - [`_import_from_folder()`](ui/views/scanner_view.py#L665) — `L665`
+    - [`_import_from_clipboard()`](ui/views/scanner_view.py#L712) — `L712`
+    - [`_deduplicate_list()`](ui/views/scanner_view.py#L718) — `L718`
+    - [`_on_start_clicked()`](ui/views/scanner_view.py#L728) — `L728`
+    - [`get_scan_threads()`](ui/views/scanner_view.py#L770) — `L770`
+    - [`get_scan_delay()`](ui/views/scanner_view.py#L773) — `L773`
     - *... und 37 weitere Hilfsmethoden.*
 
 #### Wichtige Konstanten / Konfigurationen
@@ -1151,7 +1181,7 @@ Sidebar Toggle, Cinema Mode Toggle, PiP Floating Player Toggle, and Fullscreen T
 
 ## 📦 UI - Dialoge & Overlays
 
-### 📄 [`ui/dialogs/__init__.py`](ui/dialogs/__init__.py) (20 Zeilen)
+### 📄 [`ui/dialogs/__init__.py`](ui/dialogs/__init__.py) (22 Zeilen)
 > Modal & Non-Modal Dialogs for STB Pro v6.0 Qt6 Edition.
 
 ---
@@ -1217,25 +1247,47 @@ Provides both a collapsible QTreeWidget view and formatted JSON text view with s
 
 ---
 
-### 📄 [`ui/dialogs/mac_db_dialog.py`](ui/dialogs/mac_db_dialog.py) (211 Zeilen)
+### 📄 [`ui/dialogs/mac_db_dialog.py`](ui/dialogs/mac_db_dialog.py) (236 Zeilen)
 > MAC Hit Database Explorer Dialog.
 Browses `mac_database.json`, filters by Portal URL or search text, removes duplicates,
 exports hits, applies a MAC directly to the active profile, or sends portal MACs to the scanner.
 
 #### Klassen & Komponenten
-- **[`MacDatabaseDialog`](ui/dialogs/mac_db_dialog.py#L31-L211)** : *QDialog* — `L31-L211`
+- **[`MacDatabaseDialog`](ui/dialogs/mac_db_dialog.py#L32-L236)** : *QDialog* — `L32-L236`
   - **Signals**: `apply_mac_requested`, `send_to_scanner_requested`
   - **Wichtige Methoden:**
-    - [`__init__(mac_db, parent)`](ui/dialogs/mac_db_dialog.py#L35) — `L35`
-    - [`_reload_portals()`](ui/dialogs/mac_db_dialog.py#L121) — `L121`
-    - [`refresh_view()`](ui/dialogs/mac_db_dialog.py#L129) — `L129`
-    - [`_selected_entry()`](ui/dialogs/mac_db_dialog.py#L160) — `L160`
-    - [`_on_apply_selected()`](ui/dialogs/mac_db_dialog.py#L166) — `L166`
-    - [`_on_send_to_scanner()`](ui/dialogs/mac_db_dialog.py#L177) — `L177`
-    - [`_on_copy_mac()`](ui/dialogs/mac_db_dialog.py#L183) — `L183`
-    - [`_on_dedup()`](ui/dialogs/mac_db_dialog.py#L188) — `L188`
-    - [`_on_delete_selected()`](ui/dialogs/mac_db_dialog.py#L193) — `L193`
-    - [`_on_export()`](ui/dialogs/mac_db_dialog.py#L199) — `L199`
+    - [`__init__(mac_db, parent)`](ui/dialogs/mac_db_dialog.py#L36) — `L36`
+    - [`_reload_portals()`](ui/dialogs/mac_db_dialog.py#L127) — `L127`
+    - [`refresh_view()`](ui/dialogs/mac_db_dialog.py#L135) — `L135`
+    - [`_selected_entry()`](ui/dialogs/mac_db_dialog.py#L174) — `L174`
+    - [`_on_pattern_search()`](ui/dialogs/mac_db_dialog.py#L180) — `L180`
+    - [`_on_pattern_to_scanner(macs)`](ui/dialogs/mac_db_dialog.py#L186) — `L186`
+    - [`_on_apply_selected()`](ui/dialogs/mac_db_dialog.py#L191) — `L191`
+    - [`_on_send_to_scanner()`](ui/dialogs/mac_db_dialog.py#L202) — `L202`
+    - [`_on_copy_mac()`](ui/dialogs/mac_db_dialog.py#L208) — `L208`
+    - [`_on_dedup()`](ui/dialogs/mac_db_dialog.py#L213) — `L213`
+    - [`_on_delete_selected()`](ui/dialogs/mac_db_dialog.py#L218) — `L218`
+    - [`_on_export()`](ui/dialogs/mac_db_dialog.py#L224) — `L224`
+
+---
+
+### 📄 [`ui/dialogs/mac_pattern_dialog.py`](ui/dialogs/mac_pattern_dialog.py) (284 Zeilen)
+> Dialog zur Visualisierung von MAC-Mustern und Generierung von Permutationen.
+Ermöglicht das Erkennen von Hot-Prefixes (z. B. B5-Reihe) und den direkten
+Transfer von generierten Permutationen in den Scanner oder als TXT-Export.
+
+#### Klassen & Komponenten
+- **[`MacPatternDialog`](ui/dialogs/mac_pattern_dialog.py#L33-L284)** : *QDialog* — `L33-L284`
+  - *Dialog für die Mustererkennung und Permutations-Generierung.*
+  - **Signals**: `send_to_scanner_requested`
+  - **Wichtige Methoden:**
+    - [`__init__(mac_db, initial_portal, parent)`](ui/dialogs/mac_pattern_dialog.py#L39) — `L39`
+    - [`_populate_portals()`](ui/dialogs/mac_pattern_dialog.py#L174) — `L174`
+    - [`_run_analysis()`](ui/dialogs/mac_pattern_dialog.py#L186) — `L186`
+    - [`_generate_candidates()`](ui/dialogs/mac_pattern_dialog.py#L224) — `L224`
+    - [`_on_send_to_scanner()`](ui/dialogs/mac_pattern_dialog.py#L258) — `L258`
+    - [`_on_export_txt()`](ui/dialogs/mac_pattern_dialog.py#L269) — `L269`
+    - [`_on_copy_all()`](ui/dialogs/mac_pattern_dialog.py#L280) — `L280`
 
 ---
 
@@ -1396,6 +1448,31 @@ die Verhinderung von False-Positive Hot-Hits bei 0000000 / None / Unbekannt / ab
   - **Wichtige Methoden:**
     - [`test_report_result_with_zero_expire_does_not_trigger_hotspot()`](tests/test_expire_validation.py#L235) — `L235` *(Ein Account mit 0000000 / None Expire darf keinen Hot-Spot Burst auslösen.)*
     - [`test_report_result_with_valid_expire_triggers_hotspot()`](tests/test_expire_validation.py#L266) — `L266` *(Ein echter Hot-Hit mit gültigem Ablaufdatum löst wie gewohnt Hot-Spot Burst aus.)*
+
+---
+
+### 📄 [`tests/test_pattern_predictor_and_antiban.py`](tests/test_pattern_predictor_and_antiban.py) (200 Zeilen)
+> Unit-Tests für den MAC-Muster-Prädiktor, Permutations-Generator,
+Anti-Ban VPN-Shield und erweiterte Delays.
+
+#### Klassen & Komponenten
+- **[`TestMacPatternPredictor`](tests/test_pattern_predictor_and_antiban.py#L21-L110)** : *unittest.TestCase* — `L21-L110`
+  - *Tests für MacPatternPredictor Analyse und Permutationen.*
+  - **Wichtige Methoden:**
+    - [`setUp()`](tests/test_pattern_predictor_and_antiban.py#L24) — `L24`
+    - [`test_mac_conversions()`](tests/test_pattern_predictor_and_antiban.py#L36) — `L36` *(Prüft die bidirektionale MAC-Ganzzahl-Konvertierung.)*
+    - [`test_analyze_identifies_b5_series_and_subclusters()`](tests/test_pattern_predictor_and_antiban.py#L50) — `L50` *(analyze muss die B5-Reihe als Top-Cluster mit 5 Treffern identifizieren.)*
+    - [`test_generate_permutations_neighbor_sweep()`](tests/test_pattern_predictor_and_antiban.py#L67) — `L67` *(neighbor_sweep generiert benachbarte MACs um bekannte Treffer ohne Duplikate.)*
+    - [`test_generate_permutations_cluster_full()`](tests/test_pattern_predictor_and_antiban.py#L86) — `L86` *(cluster_full füllt Sub-Blöcke der Top-Treffer systematisch auf.)*
+    - [`test_generate_permutations_deduplicates_against_existing()`](tests/test_pattern_predictor_and_antiban.py#L100) — `L100` *(Bereits bekannte MACs aus der Datenbank werden nicht erneut generiert.)*
+- **[`TestMacDatabaseVpnLocation`](tests/test_pattern_predictor_and_antiban.py#L113-L138)** : *unittest.TestCase* — `L113-L138`
+  - *Tests für Speicherung und Auslesen von VPN-Standorten in MacDatabase.*
+  - **Wichtige Methoden:**
+    - [`test_save_and_retrieve_vpn_location()`](tests/test_pattern_predictor_and_antiban.py#L116) — `L116`
+- **[`TestAntiBanShieldLogic`](tests/test_pattern_predictor_and_antiban.py#L141-L196)** : *unittest.TestCase* — `L141-L196`
+  - *Tests für die Anti-Ban Erkennung und den 45s-Cooldown.*
+  - **Wichtige Methoden:**
+    - [`test_antiban_trigger_and_cooldown()`](tests/test_pattern_predictor_and_antiban.py#L144) — `L144` *(Prüft, dass >30 Fehler in 5s nur bei Hosts mit Treffern feuern und 45s Cooldown greift.)*
 
 ---
 

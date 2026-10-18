@@ -107,6 +107,7 @@ class MacDatabase:
             if ch_cnt <= 0 or not is_valid_expire_date(new_expire):
                 return False
 
+            vpn_loc = str(res.get("vpn_location") or res.get("proxy_location") or (existing or {}).get("vpn_location") or "")
             record = {
                 "mac": mac,
                 "portal_url": norm_portal,
@@ -115,6 +116,7 @@ class MacDatabase:
                 "status": str(res.get("status", "Aktiv")),
                 "token": str(res.get("token", "")),
                 "model": str(res.get("model") or (existing or {}).get("model") or "MAG 250"),
+                "vpn_location": vpn_loc,
                 "first_seen": first_seen,
                 "last_seen": now_str,
             }
@@ -240,6 +242,8 @@ class MacDatabase:
             item.setdefault("portal", item.get("portal_url", ""))
             item.setdefault("expiry", item.get("expire", "—"))
             item.setdefault("model", item.get("model", "MAG 250"))
+            item.setdefault("vpn_location", item.get("vpn_location", "—"))
+            item.setdefault("proxy_location", item.get("proxy_location", item.get("vpn_location", "—")))
             out.append(item)
         return out
 

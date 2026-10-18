@@ -239,8 +239,8 @@ class SettingsView(QWidget):
         r += 1
         form.addWidget(QLabel("Standard-Verzögerung zwischen Requests (Sek.):"), r, 0)
         self.spin_scan_delay = QDoubleSpinBox()
-        self.spin_scan_delay.setRange(0.0, 5.0)
-        self.spin_scan_delay.setSingleStep(0.05)
+        self.spin_scan_delay.setRange(0.0, 15.0)
+        self.spin_scan_delay.setSingleStep(0.1)
         self.spin_scan_delay.setDecimals(2)
         self.spin_scan_delay.setSuffix(" s")
         form.addWidget(self.spin_scan_delay, r, 1)

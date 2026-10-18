@@ -13,7 +13,8 @@ import os
 import queue
 import threading
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
+from urllib.parse import urlparse
 
 from PySide6.QtCore import QRect, Qt, QTimer, Signal, Slot
 from PySide6.QtGui import QGuiApplication, QIcon, QKeySequence, QShortcut
@@ -2484,6 +2485,13 @@ class MainWindow(QMainWindow):
             retry_counts = collections.defaultdict(int)
             lock = threading.Lock()
 
+            # Anti-Ban Tracking (VPN-Rotation bei >30 Verbindungsfehlern in 5s nach früheren Hits)
+            hosts_with_hits: Set[str] = set()
+            host_error_samples: Dict[str, collections.deque] = collections.defaultdict(collections.deque)
+            active_vpn_locations: Dict[str, str] = {}
+            last_vpn_rotation_ts: float = 0.0
+            vpn_rotation_lock = threading.Lock()
+
             def _worker():
                 nonlocal active_workers
                 with lock:
@@ -2537,6 +2545,8 @@ class MainWindow(QMainWindow):
                         item_key = f"{cur_portal}|{mac}"
                         norm_target = cur_portal.strip().rstrip("/")
                         cached_target_ep = cached_eps.get(norm_target)
+                        parsed_p = urlparse(cur_portal if "://" in cur_portal else f"http://{cur_portal}")
+                        norm_host = parsed_p.hostname or cur_portal
 
                         try:
                             if delay_s > 0:
@@ -2606,6 +2616,76 @@ class MainWindow(QMainWindow):
                                 or active_date_missing_channels
                             )
 
+                            # Anti-Ban Shield: Verbindungsfehler pro Host im 5s-Fenster zählen
+                            is_conn_error = bool(
+                                "ConnectionError" in err_str
+                                or "Verbindungsfehler" in stat_str
+                                or "Timeout" in stat_str
+                                or "timeout" in err_str
+                                or "503" in stat_str
+                                or "503" in err_str
+                                or "502" in stat_str
+                                or "502" in err_str
+                                or "504" in stat_str
+                                or "504" in err_str
+                                or "RemoteDisconnected" in err_str
+                            )
+                            if is_conn_error:
+                                now_err = time.time()
+                                with lock:
+                                    q_err = host_error_samples[norm_host]
+                                    q_err.append(now_err)
+                                    while q_err and q_err[0] < now_err - 5.0:
+                                        q_err.popleft()
+                                    err_cnt_5s = len(q_err)
+
+                                # Trigger: >30 Fehler in 5s NUR wenn dieser Host zuvor Hits produziert hat
+                                if err_cnt_5s > 30 and (norm_host in hosts_with_hits or bool(self.mac_db.get_known_macs(cur_portal))):
+                                    should_rotate = False
+                                    with vpn_rotation_lock:
+                                        now_now = time.time()
+                                        if now_now - last_vpn_rotation_ts >= 45.0:
+                                            should_rotate = True
+                                            last_vpn_rotation_ts = now_now
+                                            with lock:
+                                                host_error_samples[norm_host].clear()
+
+                                    if should_rotate:
+                                        event_bus.log_message.emit(
+                                            f"[🛡️ Anti-Ban Shield] Host '{norm_host}' hat {err_cnt_5s} Verbindungsfehler in 5s nach früheren Treffern! "
+                                            f"Pausiere Scan kurz und rotiere VPN (45s Cooldown)..."
+                                        )
+                                        was_paused = not self._scan_pause_ev.is_set()
+                                        if not was_paused:
+                                            self._scan_pause_ev.clear()
+
+                                        def _anti_ban_vpn_switch(target_h=norm_host, p_was_paused=was_paused):
+                                            try:
+                                                if vpn_manager.is_installed() and vpn_manager.auto_switch_enabled:
+                                                    vpn_manager.rotate_server_for_host(target_h)
+                                                    time.sleep(2.5)
+                                                    loc = getattr(vpn_manager, "_last_known_country", "") or getattr(vpn_manager, "_last_known_ip", "")
+                                                    if loc:
+                                                        active_vpn_locations[target_h] = loc
+                                                        event_bus.log_message.emit(
+                                                            f"[🛡️ Anti-Ban Shield] VPN erfolgreich rotiert ({loc}) für '{target_h}'. Scan wird fortgesetzt."
+                                                        )
+                                                    else:
+                                                        active_vpn_locations[target_h] = "NordVPN"
+                                                        event_bus.log_message.emit(
+                                                            f"[🛡️ Anti-Ban Shield] VPN rotiert. Scan wird fortgesetzt."
+                                                        )
+                                                else:
+                                                    time.sleep(3.0)
+                                                    event_bus.log_message.emit(
+                                                        f"[🛡️ Anti-Ban Shield] Cooldown-Pause beendet. Scan wird fortgesetzt."
+                                                    )
+                                            finally:
+                                                if not p_was_paused and not self._scan_stop_ev.is_set():
+                                                    self._scan_pause_ev.set()
+
+                                        threading.Thread(target=_anti_ban_vpn_switch, daemon=True).start()
+
                             # Sporadisches Logging von Verbindungs- & Timeout-Fehlern in den HTTP-Inspector
                             if (
                                 is_transient
@@ -2640,9 +2720,15 @@ class MainWindow(QMainWindow):
                             is_valid_exp = is_valid_expire_date(res.get("expire"))
                             if res.get("valid") and ch_cnt > 0 and is_valid_exp:
                                 res["tag"] = "hot"
+                                hosts_with_hits.add(norm_host)
+                                loc = active_vpn_locations.get(norm_host) or getattr(vpn_manager, "_last_known_country", "") or ""
+                                if loc:
+                                    res["vpn_location"] = loc
+                                    res["proxy_location"] = loc
                                 self.mac_db.save_found_mac(cur_portal, res)
+                                loc_txt = f" | VPN: {loc}" if loc else ""
                                 event_bus.log_message.emit(
-                                    f"[🔥 HIT] {res['mac']} | {ch_cnt} Kanäle | Exp: {res.get('expire')} ({cur_portal})"
+                                    f"[🔥 HIT] {res['mac']} | {ch_cnt} Kanäle | Exp: {res.get('expire')}{loc_txt} ({cur_portal})"
                                 )
                             elif res.get("valid"):
                                 res["tag"] = "valid"

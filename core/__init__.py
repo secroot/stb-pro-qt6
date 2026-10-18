@@ -17,6 +17,7 @@ from core.models import (
 from core.signals import event_bus, worker_pool
 from core.vpn_manager import vpn_manager, NordVpnManager
 from core.scan_scheduler import ScanRotationMode, MultiPortalScanScheduler
+from core.pattern_predictor import MacPatternPredictor, MacClusterPattern
 
 __all__ = [
     "Channel",
@@ -35,4 +36,6 @@ __all__ = [
     "NordVpnManager",
     "ScanRotationMode",
     "MultiPortalScanScheduler",
+    "MacPatternPredictor",
+    "MacClusterPattern",
 ]

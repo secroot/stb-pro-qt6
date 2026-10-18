@@ -6,6 +6,7 @@ from .epg_guide_dialog import EPGGuideDialog
 from .jobs_dialog import JobsDialog
 from .json_viewer_dialog import JsonViewerDialog
 from .mac_db_dialog import MacDatabaseDialog
+from .mac_pattern_dialog import MacPatternDialog
 from .profile_dialog import ProfileEditorDialog
 from .series_dialog import SeriesBrowserDialog
 
@@ -17,4 +18,5 @@ __all__ = [
     "SeriesBrowserDialog",
     "JobsDialog",
     "MacDatabaseDialog",
+    "MacPatternDialog",
 ]

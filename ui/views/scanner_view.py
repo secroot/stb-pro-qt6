@@ -272,9 +272,15 @@ class ScannerView(QWidget):
 
         drow1.addWidget(QLabel("Timeout:"))
         self.combo_checker_timeout = QComboBox()
-        self.combo_checker_timeout.addItems(["1.5 s", "2.5 s", "3.0 s", "5.0 s"])
+        self.combo_checker_timeout.addItems(["1.0 s", "1.5 s", "2.0 s", "2.5 s", "3.0 s", "4.0 s", "5.0 s", "8.0 s", "10.0 s", "15.0 s"])
         self.combo_checker_timeout.setCurrentText("3.0 s")
         drow1.addWidget(self.combo_checker_timeout)
+
+        drow1.addWidget(QLabel("Delay:"))
+        self.combo_checker_delay = QComboBox()
+        self.combo_checker_delay.addItems(["0 ms", "50 ms", "100 ms", "250 ms", "500 ms", "1000 ms", "2000 ms", "3000 ms", "5000 ms"])
+        self.combo_checker_delay.setCurrentIndex(0)
+        drow1.addWidget(self.combo_checker_delay)
 
         self.btn_start_portal_check = QPushButton("🚀 Portale prüfen")
         self.btn_start_portal_check.setObjectName("SuccessButton")
@@ -425,7 +431,10 @@ class ScannerView(QWidget):
 
         crow1.addWidget(QLabel("Delay:"))
         self.combo_delay = QComboBox()
-        self.combo_delay.addItems(["0 ms", "20 ms", "50 ms", "100 ms", "250 ms", "500 ms", "1000 ms", "2000 ms"])
+        self.combo_delay.addItems([
+            "0 ms", "20 ms", "50 ms", "100 ms", "250 ms", "500 ms", "750 ms",
+            "1000 ms", "1500 ms", "2000 ms", "3000 ms", "5000 ms", "8000 ms", "10000 ms", "15000 ms"
+        ])
         self.combo_delay.setCurrentIndex(0)  # Default to 0 ms for full speed
         self.spin_threads.valueChanged.connect(self._on_settings_changed_live)
         self.combo_delay.currentIndexChanged.connect(self._on_settings_changed_live)
@@ -824,8 +833,8 @@ class ScannerView(QWidget):
             self._scan_start_perf = now
         self._scan_samples.append((now, done))
 
-        # Dynamisches Roll-Fenster über die letzten 3.5 Sekunden zur Vermeidung von Verzögerungen
-        cutoff = now - 3.5
+        # Exaktes 3.0-Sekunden gleitendes Zeitfenster zur Eliminierung von Sprüngen
+        cutoff = now - 3.0
         while len(self._scan_samples) > 2 and self._scan_samples[0][0] < cutoff:
             self._scan_samples.popleft()
 
@@ -833,7 +842,7 @@ class ScannerView(QWidget):
         dt = now - oldest_t
         dn = done - oldest_d
 
-        if dt >= 0.4:
+        if dt >= 0.5:
             instant_cps = max(0.0, dn / dt)
         elif done > 0:
             total_elapsed = max(0.001, now - self._scan_start_perf)
@@ -841,17 +850,17 @@ class ScannerView(QWidget):
         else:
             instant_cps = 0.0
 
-        # Glättung über Exponential Moving Average (EMA)
+        # Glättung über Moving Average
         if self._smoothed_cps <= 0.0:
             self._smoothed_cps = instant_cps
         else:
-            alpha = 0.25
+            alpha = 0.35
             self._smoothed_cps = alpha * instant_cps + (1.0 - alpha) * self._smoothed_cps
 
         cps = max(0.0, self._smoothed_cps)
         rem = max(0, total - done)
 
-        # ETA-Berechnung mit zweistufiger Glättung gegen Sprünge
+        # ETA-Berechnung mit stabiler Glättung
         if rem == 0:
             eta_str = "00:00"
             self._smoothed_eta = 0.0
@@ -860,7 +869,7 @@ class ScannerView(QWidget):
             if self._smoothed_eta is None or self._smoothed_eta <= 0:
                 self._smoothed_eta = raw_eta
             else:
-                alpha_eta = 0.20
+                alpha_eta = 0.25
                 self._smoothed_eta = alpha_eta * raw_eta + (1.0 - alpha_eta) * self._smoothed_eta
 
             eta_sec = int(round(self._smoothed_eta))
@@ -875,6 +884,13 @@ class ScannerView(QWidget):
                 eta_str = f"{m:02d}:{s:02d}"
         else:
             eta_str = "—"
+
+        # Visuals gezielt im stabilen Takt (alle 0.3s), bei Statuswechsel (ETA erstmals verfügbar) oder bei Scan-Ende aktualisieren
+        last_vis = getattr(self, "_last_telemetry_visual_ts", 0.0)
+        had_no_eta = ("—" in self.lbl_telemetry.text() and eta_str != "—")
+        if last_vis > 0 and (now - last_vis) < 0.3 and done < total and not had_no_eta:
+            return
+        self._last_telemetry_visual_ts = now
 
         hot_cnt = sum(1 for r in self._results if r.get("tag") == "hot")
         pause_txt = " [⏸ PAUSIERT]" if self._is_paused else ""
@@ -1125,6 +1141,8 @@ class ScannerView(QWidget):
         threads = self.spin_checker_threads.value()
         tout_str = self.combo_checker_timeout.currentText().replace(" s", "").strip()
         timeout = float(tout_str) if tout_str.replace(".", "").isdigit() else 3.0
+        del_str = self.combo_checker_delay.currentText().replace(" ms", "").strip()
+        chk_delay = float(del_str) / 1000.0 if del_str.isdigit() else 0.0
 
         self.btn_start_portal_check.setEnabled(False)
         self.btn_stop_portal_check.setEnabled(True)
@@ -1137,9 +1155,9 @@ class ScannerView(QWidget):
 
         event_bus.log_message.emit(
             f"[🌐] Starte Erreichbarkeits-Check für {len(self._loaded_portals)} Stalker-Portale "
-            f"({threads} Threads, Timeout {timeout}s)..."
+            f"({threads} Threads, Timeout {timeout}s, Delay {del_str} ms)..."
         )
-        self._portal_checker.start_check(self._loaded_portals, threads=threads, timeout=timeout)
+        self._portal_checker.start_check(self._loaded_portals, threads=threads, timeout=timeout, delay_s=chk_delay)
 
     def _on_stop_portal_check_clicked(self):
         self._portal_checker.stop()
