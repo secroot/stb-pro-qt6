@@ -45,6 +45,7 @@ from clients.stb_client import (
     StbClient,
     check_mac_account,
     emit_scanner_connection_error_log,
+    emit_scanner_http_log,
 )
 from clients.throttle import ScanThrottleController
 from clients.xtream_client import XtreamClient
@@ -2743,6 +2744,13 @@ class MainWindow(QMainWindow):
 
                             scheduler.report_result(cur_portal, mac, res)
                             cur_done, cur_total = scheduler.get_progress()
+
+                            emit_scanner_http_log(
+                                portal_url=cur_portal,
+                                mac=mac,
+                                res=res,
+                                endpoint=cached_target_ep or res.get("load_url"),
+                            )
 
                             event_bus.scan_result_received.emit(res)
                             event_bus.scan_progress_updated.emit(cur_done, cur_total)

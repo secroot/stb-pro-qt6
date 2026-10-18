@@ -141,6 +141,113 @@ def emit_scanner_connection_error_log(
         pass
 
 
+_last_scanner_http_ts = 0.0
+_scanner_http_counter = 0
+_scanner_http_lock = threading.Lock()
+
+
+def emit_scanner_http_log(
+    portal_url: str,
+    mac: str,
+    res: Dict[str, Any],
+    endpoint: Optional[str] = None,
+    elapsed_ms: int = 0,
+    force: bool = False,
+):
+    """
+    Kontinuierliches & gesampeltes Logging von MAC-Scanner Requests/Responses in den Inspector.
+    - HOT Hits werden IMMER sofort und ungedrosselt geloggt.
+    - Fehler & Timeouts werden mit ca. 2 Samples/s geloggt.
+    - Normale Scan-Prüfungen werden gleichmäßig (~1 Sample alle 1.2s) geloggt,
+      damit der Inspector während des gesamten Scans aktiv bleibt und nicht abbricht.
+    """
+    global _last_scanner_http_ts, _scanner_http_counter
+    tag = res.get("tag", "")
+    ch_cnt = int(res.get("channels") or 0)
+    is_hot = (tag == "hot" or (res.get("valid") and ch_cnt > 0))
+    is_err = (
+        not res.get("valid")
+        and not is_hot
+        and any(k in str(res.get("status") or "") for k in ("Fehler", "Timeout", "503", "502", "429"))
+    )
+
+    now = time.time()
+    if not is_hot and not force:
+        with _scanner_http_lock:
+            _scanner_http_counter += 1
+            time_since = now - _last_scanner_http_ts
+            min_interval = 0.5 if is_err else 1.2
+            if time_since < min_interval:
+                return
+            _last_scanner_http_ts = now
+
+    target_url = endpoint or res.get("load_url") or f"{portal_url.rstrip('/')}/c/server/load.php"
+    req_headers = {
+        "User-Agent": "Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Cookie": f"mac={mac}; stb_lang=en; timezone=Europe/Berlin",
+    }
+    req_params = f"type=stb&action=handshake&mac={mac}&token=&JsHttpRequest=1-xml"
+
+    if is_hot or res.get("valid"):
+        code = 200
+    elif is_err:
+        code = 504 if "timeout" in str(res.get("status") or "").lower() else 503
+    elif "401" in str(res.get("status") or "") or "Nicht autorisiert" in str(res.get("status") or ""):
+        code = 401
+    else:
+        code = 200
+
+    now_str = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if is_hot:
+        preview = (
+            f"--- [🔥 HOT HIT] ---\n"
+            f"Zeitstempel: {now_str}\n"
+            f"Portal: {portal_url}\n"
+            f"MAC-Adresse: {mac}\n"
+            f"Status: {res.get('status', 'Aktiv')}\n"
+            f"Ablaufdatum: {res.get('expire', '-')}\n"
+            f"Kanäle: {ch_cnt}\n"
+            f"Token: {res.get('token', '-')}\n"
+            f"Endpoint: {target_url}\n"
+        )
+    elif is_err:
+        preview = (
+            f"--- [⚠ SCAN FEHLER / TIMEOUT] ---\n"
+            f"Zeitstempel: {now_str}\n"
+            f"Portal: {portal_url}\n"
+            f"MAC-Adresse: {mac}\n"
+            f"Status: {res.get('status', 'Verbindungsfehler')}\n"
+            f"Endpoint: {target_url}\n"
+        )
+    else:
+        preview = (
+            f"--- [SCAN PROBE] ---\n"
+            f"Zeitstempel: {now_str}\n"
+            f"Portal: {portal_url}\n"
+            f"MAC-Adresse: {mac}\n"
+            f"Status: {res.get('status', 'Ungültig')}\n"
+            f"Ablaufdatum: {res.get('expire', '-')}\n"
+            f"Kanäle: {ch_cnt}\n"
+            f"Endpoint: {target_url}\n"
+        )
+
+    entry = HttpLogEntry.create(
+        method="GET",
+        url=target_url,
+        status_code=code,
+        elapsed_ms=elapsed_ms or 120,
+        headers=req_headers,
+        params=req_params,
+        body=preview,
+    )
+    try:
+        event_bus.http_Exchange_logged.emit(entry)
+    except Exception:
+        pass
+
+
 try:
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

@@ -98,6 +98,7 @@ class ScannerView(QWidget):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
         self._results: List[Dict[str, Any]] = []
+        self._hot_results_count: int = 0
         self._filter_mode: str = "ALL"  # ALL, HOT, VALID, DEAD
         self._scan_start_ts: float = 0.0
         self._scan_start_perf: float = 0.0
@@ -560,7 +561,7 @@ class ScannerView(QWidget):
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
-        self.table.setSortingEnabled(True)
+        self.table.setSortingEnabled(False)
         self.table.verticalHeader().setVisible(False)
         hdr = self.table.horizontalHeader()
         hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
@@ -813,8 +814,12 @@ class ScannerView(QWidget):
             self.btn_pause.setStyleSheet("")
 
     def add_scan_result(self, res: Dict[str, Any]):
+        is_hot = (res.get("tag") == "hot" and int(res.get("channels") or 0) > 0)
+        if is_hot:
+            self._hot_results_count += 1
+            self._filter_btns["HOT"].setText(f"HOT ({self._hot_results_count})")
+
         self._results.append(res)
-        self._update_filter_badges()
         if self._matches_filter(res):
             self._append_row(res)
             if self.chk_autoscroll.isChecked():
@@ -901,7 +906,7 @@ class ScannerView(QWidget):
             return
         self._last_telemetry_visual_ts = now
 
-        hot_cnt = sum(1 for r in self._results if r.get("tag") == "hot")
+        hot_cnt = self._hot_results_count
         pause_txt = " [⏸ PAUSIERT]" if self._is_paused else ""
         self.lbl_telemetry.setText(
             f"{done} / {total} geprüft{pause_txt}  |  🔥 {hot_cnt} Hot  |  ⚡ {cps:.1f} CPS  |  ETA: {eta_str}"
@@ -919,6 +924,8 @@ class ScannerView(QWidget):
 
     def _set_result_filter(self, mode: str):
         self._filter_mode = mode
+        if mode == "ALL":
+            self.table.setSortingEnabled(False)
         for k, btn in self._filter_btns.items():
             btn.setProperty("active", "true" if k == mode else "false")
             btn.style().unpolish(btn)
@@ -926,17 +933,16 @@ class ScannerView(QWidget):
         self._rebuild_table()
 
     def _update_filter_badges(self):
-        hot = sum(1 for r in self._results if r.get("tag") == "hot" and int(r.get("channels") or 0) > 0)
+        self._hot_results_count = sum(1 for r in self._results if r.get("tag") == "hot" and int(r.get("channels") or 0) > 0)
         self._filter_btns["ALL"].setText("ALL")
-        self._filter_btns["HOT"].setText(f"HOT ({hot})")
+        self._filter_btns["HOT"].setText(f"HOT ({self._hot_results_count})")
         self._filter_btns["VALID"].setText("OK")
         self._filter_btns["DEAD"].setText("ERR")
 
     def _rebuild_table(self):
         filtered = [r for r in self._results if self._matches_filter(r)]
-        was_sort = self.table.isSortingEnabled()
-        if was_sort:
-            self.table.setSortingEnabled(False)
+        enable_sort = (self._filter_mode != "ALL")
+        self.table.setSortingEnabled(False)
         self.table.setUpdatesEnabled(False)
         self.table.blockSignals(True)
         try:
@@ -946,8 +952,12 @@ class ScannerView(QWidget):
         finally:
             self.table.blockSignals(False)
             self.table.setUpdatesEnabled(True)
-            if was_sort:
+            if enable_sort:
                 self.table.setSortingEnabled(True)
+            else:
+                self.table.setSortingEnabled(False)
+                if self.chk_autoscroll.isChecked():
+                    self.table.scrollToBottom()
 
     def _append_row(self, res: Dict[str, Any]):
         was_sort = self.table.isSortingEnabled()
@@ -958,7 +968,7 @@ class ScannerView(QWidget):
             self.table.insertRow(row)
             self._populate_row(row, res)
         finally:
-            if was_sort:
+            if was_sort and self._filter_mode != "ALL":
                 self.table.setSortingEnabled(True)
 
     def _populate_row(self, row: int, res: Dict[str, Any]):
@@ -1083,6 +1093,7 @@ class ScannerView(QWidget):
 
     def clear_results(self):
         self._results.clear()
+        self._hot_results_count = 0
         self.table.setRowCount(0)
         self._update_filter_badges()
 

@@ -69,6 +69,10 @@ class InspectorView(QWidget):
         self.chk_pause = QCheckBox("Aufzeichnung pausieren")
         top_lay.addWidget(self.chk_pause)
 
+        self.chk_autoscroll = QCheckBox("Auto-Scroll")
+        self.chk_autoscroll.setChecked(True)
+        top_lay.addWidget(self.chk_autoscroll)
+
         btn_test_hs = QPushButton("⚡ Handshake & Account prüfen")
         btn_test_hs.setObjectName("PrimaryButton")
         btn_test_hs.clicked.connect(self.handshake_test_requested.emit)
@@ -94,7 +98,7 @@ class InspectorView(QWidget):
         self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.verticalHeader().setVisible(False)
-        self.table.setSortingEnabled(True)
+        self.table.setSortingEnabled(False)
         hdr = self.table.horizontalHeader()
         hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         hdr.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
@@ -166,13 +170,19 @@ class InspectorView(QWidget):
         if self.chk_pause.isChecked():
             return
         self._entries.append(entry)
-        if len(self._entries) > 600:
+        if len(self._entries) > 500:
             self._entries = self._entries[-500:]
         self.lbl_counter.setText(f"{len(self._entries)} Requests")
 
         if self._matches(entry):
             self._filtered_entries.append(entry)
+            if len(self._filtered_entries) > 500:
+                self._filtered_entries = self._filtered_entries[-500:]
             self._append_row(entry)
+            while self.table.rowCount() > 500:
+                self.table.removeRow(0)
+            if self.chk_autoscroll.isChecked():
+                self.table.scrollToBottom()
 
     def _matches(self, entry: HttpLogEntry) -> bool:
         q = (self.entry_filter.text() or "").strip().lower()
@@ -187,42 +197,60 @@ class InspectorView(QWidget):
 
     def _refresh_table(self):
         self._filtered_entries = [e for e in self._entries if self._matches(e)]
-        self.table.setSortingEnabled(False)
-        self.table.setRowCount(0)
-        for e in self._filtered_entries:
-            self._append_row(e)
-        self.table.setSortingEnabled(True)
+        was_sort = self.table.isSortingEnabled()
+        if was_sort:
+            self.table.setSortingEnabled(False)
+        self.table.setUpdatesEnabled(False)
+        self.table.blockSignals(True)
+        try:
+            self.table.setRowCount(0)
+            for e in self._filtered_entries:
+                self._append_row(e)
+        finally:
+            self.table.blockSignals(False)
+            self.table.setUpdatesEnabled(True)
+            if was_sort:
+                self.table.setSortingEnabled(True)
+            if self.chk_autoscroll.isChecked():
+                self.table.scrollToBottom()
 
     def _append_row(self, entry: HttpLogEntry):
-        row = self.table.rowCount()
-        self.table.insertRow(row)
+        was_sort = self.table.isSortingEnabled()
+        if was_sort:
+            self.table.setSortingEnabled(False)
+        try:
+            row = self.table.rowCount()
+            self.table.insertRow(row)
 
-        it_time = QTableWidgetItem(entry.timestamp)
-        it_time.setData(Qt.ItemDataRole.UserRole, entry)
-        it_method = QTableWidgetItem(entry.method)
+            it_time = QTableWidgetItem(entry.timestamp)
+            it_time.setData(Qt.ItemDataRole.UserRole, entry)
+            it_method = QTableWidgetItem(entry.method)
 
-        it_status = QTableWidgetItem()
-        it_status.setData(Qt.ItemDataRole.DisplayRole, int(entry.status_code))
-        it_status.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            it_status = QTableWidgetItem()
+            it_status.setData(Qt.ItemDataRole.DisplayRole, int(entry.status_code))
+            it_status.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        it_dur = QTableWidgetItem()
-        it_dur.setData(Qt.ItemDataRole.DisplayRole, int(entry.elapsed_ms))
-        it_dur.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            it_dur = QTableWidgetItem()
+            it_dur.setData(Qt.ItemDataRole.DisplayRole, int(entry.elapsed_ms))
+            it_dur.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        it_url = QTableWidgetItem(entry.url)
+            it_url = QTableWidgetItem(entry.url)
 
-        if 200 <= entry.status_code < 300:
-            it_status.setForeground(QColor("#10B981"))
-        elif entry.status_code in (401, 403, 429):
-            it_status.setForeground(QColor("#F59E0B"))
-        elif entry.status_code >= 400 or entry.status_code == 0:
-            it_status.setForeground(QColor("#EF4444"))
+            if 200 <= entry.status_code < 300:
+                it_status.setForeground(QColor("#10B981"))
+            elif entry.status_code in (401, 403, 429):
+                it_status.setForeground(QColor("#F59E0B"))
+            elif entry.status_code >= 400 or entry.status_code == 0:
+                it_status.setForeground(QColor("#EF4444"))
 
-        self.table.setItem(row, 0, it_time)
-        self.table.setItem(row, 1, it_method)
-        self.table.setItem(row, 2, it_status)
-        self.table.setItem(row, 3, it_dur)
-        self.table.setItem(row, 4, it_url)
+            self.table.setItem(row, 0, it_time)
+            self.table.setItem(row, 1, it_method)
+            self.table.setItem(row, 2, it_status)
+            self.table.setItem(row, 3, it_dur)
+            self.table.setItem(row, 4, it_url)
+        finally:
+            if was_sort:
+                self.table.setSortingEnabled(True)
 
     def _on_row_selected(self):
         row = self.table.currentRow()

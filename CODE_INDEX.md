@@ -52,7 +52,7 @@
 | `ChannelFilterProxyModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L213-L281) | `L213-L281` | Zero-allocation filter proxy supporting Category, Search, Favorites, Recent, HD/4K, and De... |
 | `ChannelListModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L51-L210) | `L51-L210` | High-performance backing model for 50,000+ Live TV channels. |
 | `ChannelRoles` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L33-L48) | `L33-L48` | Basis:  |
-| `check_mac_account` | **Function** | [clients/stb_client.py](clients/stb_client.py#L206-L374) | `L206-L374` | Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarke... |
+| `check_mac_account` | **Function** | [clients/stb_client.py](clients/stb_client.py#L313-L481) | `L313-L481` | Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarke... |
 | `check_single_portal` | **Function** | [core/portal_checker.py](core/portal_checker.py#L482-L626) | `L482-L626` | Prüft einen einzelnen Portal-Host rigoros auf echte Stalker/Ministra-Erreichbarkeit, |
 | `ConfigManager` | **Class / Widget** | [core/config_manager.py](core/config_manager.py#L60-L334) | `L60-L334` | Verwaltet Profile, Live-/VOD-Favoriten, Verlauf, Player-Pfade und UI-Einstellungen. |
 | `ConsoleView` | **Class / Widget** | [ui/views/console_view.py](ui/views/console_view.py#L26-L156) | `L26-L156` | Basis: QWidget |
@@ -64,6 +64,7 @@
 | `detect_vlc_path` | **Function** | [core/config_manager.py](core/config_manager.py#L19-L33) | `L19-L33` | def detect_vlc_path() |
 | `diagnose_iptv_status` | **Function** | [core/stream_probe.py](core/stream_probe.py#L311-L329) | `L311-L329` | Diagnostiziert proprietäre/spezifische HTTP-Statuscodes von IPTV- und Streaming-Clustern. |
 | `emit_scanner_connection_error_log` | **Function** | [clients/stb_client.py](clients/stb_client.py#L71-L141) | `L71-L141` | Sporadisches / gesampeltes Logging von Verbindungs- und Timeout-Fehlern während des MAC-Sc... |
+| `emit_scanner_http_log` | **Function** | [clients/stb_client.py](clients/stb_client.py#L149-L248) | `L149-L248` | Kontinuierliches & gesampeltes Logging von MAC-Scanner Requests/Responses in den Inspector... |
 | `EPGGuideDialog` | **Class / Widget** | [ui/dialogs/epg_guide_dialog.py](ui/dialogs/epg_guide_dialog.py#L31-L254) | `L31-L254` | Basis: QDialog |
 | `EPGPanel` | **Class / Widget** | [ui/components/epg_panel.py](ui/components/epg_panel.py#L26-L192) | `L26-L192` | Basis: QFrame |
 | `EPGProgram` | **Class / Widget** | [core/models.py](core/models.py#L293-L451) | `L293-L451` | Basis:  |
@@ -88,7 +89,7 @@
 | `grab_thumbnail` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L216-L280) | `L216-L280` | High-Performance Standalone Thumbnail Grabber. |
 | `HeroCard` | **Class / Widget** | [ui/components/hero_card.py](ui/components/hero_card.py#L25-L283) | `L25-L283` | Basis: QFrame |
 | `HttpLogEntry` | **Class / Widget** | [core/models.py](core/models.py#L614-L660) | `L614-L660` | Basis:  |
-| `InspectorView` | **Class / Widget** | [ui/views/inspector_view.py](ui/views/inspector_view.py#L32-L275) | `L32-L275` | Basis: QWidget |
+| `InspectorView` | **Class / Widget** | [ui/views/inspector_view.py](ui/views/inspector_view.py#L32-L303) | `L32-L303` | Basis: QWidget |
 | `int_to_mac` | **Function** | [core/pattern_predictor.py](core/pattern_predictor.py#L42-L45) | `L42-L45` | Konvertiert eine 48-Bit-Ganzzahl in eine formatierte MAC-Adresse. |
 | `is_blank_or_black_jpeg` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L40-L61) | `L40-L61` | Erkennt korrupte, leere oder rein schwarze Dummy-Frames zuverlässig. |
 | `is_ip_or_stream_ban` | **Function** | [core/stream_probe.py](core/stream_probe.py#L295-L308) | `L295-L308` | Ermittelt zuverlässig, ob ein HTTP-Statuscode oder Fehlertext auf |
@@ -109,7 +110,7 @@
 | `MacPatternDialog` | **Class / Widget** | [ui/dialogs/mac_pattern_dialog.py](ui/dialogs/mac_pattern_dialog.py#L33-L308) | `L33-L308` | Dialog für die Mustererkennung und Permutations-Generierung. |
 | `MacPatternPredictor` | **Class / Widget** | [core/pattern_predictor.py](core/pattern_predictor.py#L48-L197) | `L48-L197` | Analysiert MAC-Treffer auf wiederkehrende Muster und generiert |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
-| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L106-L3121) | `L106-L3121` | Basis: QMainWindow |
+| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L107-L3129) | `L107-L3129` | Basis: QMainWindow |
 | `MultiPortalScanScheduler` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L58-L596) | `L58-L596` | Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans mit intelligenter |
 | `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L29-L653) | `L29-L653` | Verwaltet die Integration mit NordVPN unter Windows. |
 | `normalize_mac` | **Function** | [core/pattern_predictor.py](core/pattern_predictor.py#L26-L31) | `L26-L31` | Bereinigt und formatiert eine MAC-Adresse nach XX:XX:XX:XX:XX:XX. |
@@ -132,7 +133,7 @@
 | `save_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L136-L144) | `L136-L144` | def save_thumb(key, data) |
 | `ScanAccount` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L24-L58) | `L24-L58` | Repräsentiert einen einzelnen gescannten MAC-Account eines Portals. |
 | `ScanHost` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L62-L85) | `L62-L85` | Repräsentiert einen Host / ein Portal mit allen zugehörigen Logins. |
-| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L87-L1466) | `L87-L1466` | Basis: QWidget |
+| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L87-L1477) | `L87-L1477` | Basis: QWidget |
 | `ScanRepository` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L88-L264) | `L88-L264` | Verwaltet das Einlesen, Filtern und Cachen aller Scan-Dateien aus 'mac_scans/'. |
 | `ScanResult` | **Class / Widget** | [core/models.py](core/models.py#L600-L610) | `L600-L610` | Basis:  |
 | `ScanRotationMode` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L21-L55) | `L21-L55` | Konstanten für Multi-Portal Rotations- und Scan-Modi. |
@@ -141,7 +142,7 @@
 | `SettingsView` | **Class / Widget** | [ui/views/settings_view.py](ui/views/settings_view.py#L45-L968) | `L45-L968` | Basis: QWidget |
 | `SidebarWidget` | **Class / Widget** | [ui/components/sidebar.py](ui/components/sidebar.py#L32-L453) | `L32-L453` | Basis: QFrame |
 | `StalkerPortalChecker` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L629-L839) | `L629-L839` | Multi-threaded Stalker Portal Prüf-Engine. |
-| `StbClient` | **Class / Widget** | [clients/stb_client.py](clients/stb_client.py#L151-L203) | `L151-L203` | Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging |
+| `StbClient` | **Class / Widget** | [clients/stb_client.py](clients/stb_client.py#L258-L310) | `L258-L310` | Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging |
 | `StreamBufferProxy` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L590-L634) | `L590-L634` | Basis:  |
 | `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L578-L596) | `L578-L596` | Basis:  |
 | `TestAntiBanShieldLogic` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L141-L196) | `L141-L196` | Tests für die Anti-Ban Erkennung und den 45s-Cooldown. |
@@ -150,7 +151,7 @@
 | `TestMacDatabaseVpnLocation` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L113-L138) | `L113-L138` | Tests für Speicherung und Auslesen von VPN-Standorten in MacDatabase. |
 | `TestMacPatternPredictor` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L21-L110) | `L21-L110` | Tests für MacPatternPredictor Analyse und Permutationen. |
 | `TestPatternPredictorUiIntegration` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L199-L281) | `L199-L281` | Tests für UI-Integration und Signalübergabe des Pattern-Prädiktors. |
-| `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L26-L532) | `L26-L532` | Basis: unittest.TestCase |
+| `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L26-L609) | `L26-L609` | Basis: unittest.TestCase |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
 | `TestScanScheduler` | **Class / Widget** | [tests/test_scan_scheduler.py](tests/test_scan_scheduler.py#L13-L474) | `L13-L474` | Basis: unittest.TestCase |
 | `TestScanSchedulerExpireHandling` | **Class / Widget** | [tests/test_expire_validation.py](tests/test_expire_validation.py#L232-L293) | `L232-L293` | Tests für MultiPortalScanScheduler mit 0000000 / ungültigen Ablaufdaten. |
@@ -187,22 +188,23 @@
 
 ---
 
-### 📄 [`clients/stb_client.py`](clients/stb_client.py) (374 Zeilen)
+### 📄 [`clients/stb_client.py`](clients/stb_client.py) (481 Zeilen)
 > Stalker / Ministra STB Client für STB Pro Qt6.
 Erweitert den bewährten StbClient um Live-HTTP-Telemetrie für den interaktiven Protokoll-Inspector
 (inklusive Request-Historie, Header-Capturing und cURL-Export).
 
 #### Klassen & Komponenten
-- **[`StbClient`](clients/stb_client.py#L151-L203)** : *_BaseStbClient* — `L151-L203`
+- **[`StbClient`](clients/stb_client.py#L258-L310)** : *_BaseStbClient* — `L258-L310`
   - *Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging*
   - **Wichtige Methoden:**
-    - [`__init__(portal_url, mac, model, serial_number, device_id, device_id2, signature, user_agent, timeout, normalized_load_url, enable_inspector, verify_ssl, session, connect_timeout, read_timeout, device_id_mode)`](clients/stb_client.py#L156) — `L156`
+    - [`__init__(portal_url, mac, model, serial_number, device_id, device_id2, signature, user_agent, timeout, normalized_load_url, enable_inspector, verify_ssl, session, connect_timeout, read_timeout, device_id_mode)`](clients/stb_client.py#L263) — `L263`
 
 #### Modul-Funktionen
 - **[`_attach_inspector_hook(session, enable)`](clients/stb_client.py#L27-L58)** — `L27`
 - **[`_on_response(resp)`](clients/stb_client.py#L31-L56)** — `L31`
 - **[`emit_scanner_connection_error_log(portal_url, mac, error_msg, endpoint, status_code, headers, params, elapsed_ms, sample_interval, sample_frequency)`](clients/stb_client.py#L71-L141)** — `L71` — *Sporadisches / gesampeltes Logging von Verbindungs- und Timeout-Fehlern während des MAC-Scannens*
-- **[`check_mac_account(portal_url, mac, model, device_id, device_id2, serial_number, signature, timeout, normalized_load_url, session, verify_ssl, genre_param, sortby_param, fallback_get_all, device_id_mode, enable_error_log)`](clients/stb_client.py#L206-L374)** — `L206` — *Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarkeit.*
+- **[`emit_scanner_http_log(portal_url, mac, res, endpoint, elapsed_ms, force)`](clients/stb_client.py#L149-L248)** — `L149` — *Kontinuierliches & gesampeltes Logging von MAC-Scanner Requests/Responses in den Inspector.*
+- **[`check_mac_account(portal_url, mac, model, device_id, device_id2, serial_number, signature, timeout, normalized_load_url, session, verify_ssl, genre_param, sortby_param, fallback_get_all, device_id_mode, enable_error_log)`](clients/stb_client.py#L313-L481)** — `L313` — *Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarkeit.*
 
 #### Wichtige Konstanten / Konfigurationen
 - `_APP_DIR` (L11), `_PARENT_DIR` (L12)
@@ -857,31 +859,31 @@ Nutzt Qt Signals für reaktive Status- und Puffer-Updates ohne UI-Blockade.
 
 ---
 
-### 📄 [`ui/main_window.py`](ui/main_window.py) (3123 Zeilen)
+### 📄 [`ui/main_window.py`](ui/main_window.py) (3131 Zeilen)
 > Main Application Window (Orchestrator) for STB Pro v6.0 Qt6 Edition.
 Coordinates Sidebar, TopNavigationBar, LiveTVView, VODView, ScannerView, InspectorView, ConsoleView,
 LibVLC Hardware Player, External Player Runner, Fullscreen HUD Overlay, PiP Mini-Player,
 Multi-Thread MAC Scanner, Parallel Category Validator, and all 7 Dialogs.
 
 #### Klassen & Komponenten
-- **[`MainWindow`](ui/main_window.py#L106-L3121)** : *QMainWindow* — `L106-L3121`
+- **[`MainWindow`](ui/main_window.py#L107-L3129)** : *QMainWindow* — `L107-L3129`
   - **Signals**: `_val_progress_sig`, `_val_finished_sig`, `_val_thumb_progress_sig`, `_val_thumb_finished_sig`, `_epg_loaded_sig`, `_probe_done_sig`, `_preview_ready_sig`
   - **Wichtige Methoden:**
-    - [`__init__()`](ui/main_window.py#L116) — `L116`
-    - [`_build_ui()`](ui/main_window.py#L215) — `L215`
-    - [`_bind_signals()`](ui/main_window.py#L276) — `L276`
-    - [`_on_buffer_settings_from_view(st)`](ui/main_window.py#L400) — `L400`
-    - [`_on_settings_applied(cfg)`](ui/main_window.py#L405) — `L405`
-    - [`_is_text_input_focused()`](ui/main_window.py#L425) — `L425`
-    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L429) — `L429`
-    - [`_cycle_aspect_ratio()`](ui/main_window.py#L438) — `L438`
-    - [`_setup_shortcuts()`](ui/main_window.py#L443) — `L443`
-    - [`_load_initial_config()`](ui/main_window.py#L466) — `L466`
-    - [`switch_view(view_key)`](ui/main_window.py#L554) — `L554`
-    - [`toggle_sidebar()`](ui/main_window.py#L562) — `L562`
-    - [`toggle_cinema_mode()`](ui/main_window.py#L568) — `L568`
-    - [`toggle_pip_mode()`](ui/main_window.py#L576) — `L576` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
-    - [`toggle_fullscreen()`](ui/main_window.py#L618) — `L618`
+    - [`__init__()`](ui/main_window.py#L117) — `L117`
+    - [`_build_ui()`](ui/main_window.py#L216) — `L216`
+    - [`_bind_signals()`](ui/main_window.py#L277) — `L277`
+    - [`_on_buffer_settings_from_view(st)`](ui/main_window.py#L401) — `L401`
+    - [`_on_settings_applied(cfg)`](ui/main_window.py#L406) — `L406`
+    - [`_is_text_input_focused()`](ui/main_window.py#L426) — `L426`
+    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L430) — `L430`
+    - [`_cycle_aspect_ratio()`](ui/main_window.py#L439) — `L439`
+    - [`_setup_shortcuts()`](ui/main_window.py#L444) — `L444`
+    - [`_load_initial_config()`](ui/main_window.py#L467) — `L467`
+    - [`switch_view(view_key)`](ui/main_window.py#L555) — `L555`
+    - [`toggle_sidebar()`](ui/main_window.py#L563) — `L563`
+    - [`toggle_cinema_mode()`](ui/main_window.py#L569) — `L569`
+    - [`toggle_pip_mode()`](ui/main_window.py#L577) — `L577` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
+    - [`toggle_fullscreen()`](ui/main_window.py#L619) — `L619`
     - *... und 96 weitere Hilfsmethoden.*
 
 ---
@@ -927,24 +929,24 @@ Features real-time log streaming via Qt Signals, level filtering, keyword search
 
 ---
 
-### 📄 [`ui/views/inspector_view.py`](ui/views/inspector_view.py) (275 Zeilen)
+### 📄 [`ui/views/inspector_view.py`](ui/views/inspector_view.py) (303 Zeilen)
 > Interactive Protocol & HTTP Exchange Inspector View.
 Replaces the static text dump of the legacy Tkinter version with a live, searchable HTTP traffic table,
 JSON pretty-printer, header inspector, 1-click cURL generator, and on-demand Handshake / Endpoint tester.
 
 #### Klassen & Komponenten
-- **[`InspectorView`](ui/views/inspector_view.py#L32-L275)** : *QWidget* — `L32-L275`
+- **[`InspectorView`](ui/views/inspector_view.py#L32-L303)** : *QWidget* — `L32-L303`
   - **Signals**: `handshake_test_requested`, `profile_dump_requested`
   - **Wichtige Methoden:**
     - [`__init__(parent)`](ui/views/inspector_view.py#L36) — `L36`
-    - [`add_http_entry(entry)`](ui/views/inspector_view.py#L165) — `L165`
-    - [`_matches(entry)`](ui/views/inspector_view.py#L177) — `L177`
-    - [`_refresh_table()`](ui/views/inspector_view.py#L188) — `L188`
-    - [`_append_row(entry)`](ui/views/inspector_view.py#L196) — `L196`
-    - [`_on_row_selected()`](ui/views/inspector_view.py#L227) — `L227`
-    - [`set_summary_report(text, switch_tab)`](ui/views/inspector_view.py#L260) — `L260`
-    - [`_copy_curl()`](ui/views/inspector_view.py#L265) — `L265`
-    - [`clear_entries()`](ui/views/inspector_view.py#L268) — `L268`
+    - [`add_http_entry(entry)`](ui/views/inspector_view.py#L169) — `L169`
+    - [`_matches(entry)`](ui/views/inspector_view.py#L187) — `L187`
+    - [`_refresh_table()`](ui/views/inspector_view.py#L198) — `L198`
+    - [`_append_row(entry)`](ui/views/inspector_view.py#L217) — `L217`
+    - [`_on_row_selected()`](ui/views/inspector_view.py#L255) — `L255`
+    - [`set_summary_report(text, switch_tab)`](ui/views/inspector_view.py#L288) — `L288`
+    - [`_copy_curl()`](ui/views/inspector_view.py#L293) — `L293`
+    - [`clear_entries()`](ui/views/inspector_view.py#L296) — `L296`
 
 ---
 
@@ -996,7 +998,7 @@ VOD/Catchup Seekbar, Audio/Subtitle/Aspect/Speed Controls, Multi-Thread Category
 
 ---
 
-### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (1466 Zeilen)
+### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (1477 Zeilen)
 > Multi-MAC Scanner & Pentest Generator View.
 Features 22 OUI Vendor Presets, custom wildcard masks (XX:XX:XX), sequential & random generation,
 adaptive WAF/429 Throttle Controller integration, live CPS (Checks/sec) & ETA telemetry,
@@ -1006,24 +1008,24 @@ filterable hit table, and 1-click profile adoption.
 - **[`_PortalCheckerSignals`](ui/views/scanner_view.py#L80-L84)** : *QObject* — `L80-L84`
   - *Thread-sichere Qt-Signals für Hintergrund-Prüfungen der Stalker-Portale.*
   - **Signals**: `result_received`, `progress_updated`, `finished`
-- **[`ScannerView`](ui/views/scanner_view.py#L87-L1466)** : *QWidget* — `L87-L1466`
+- **[`ScannerView`](ui/views/scanner_view.py#L87-L1477)** : *QWidget* — `L87-L1477`
   - **Signals**: `start_scan_requested`, `stop_scan_requested`, `pause_scan_requested`, `resume_scan_requested`, `scan_settings_updated`, `apply_mac_requested`, `prepend_db_macs_requested`, `pattern_analysis_requested`, `scan_exported`
   - **Wichtige Methoden:**
     - [`__init__(parent)`](ui/views/scanner_view.py#L98) — `L98`
-    - [`set_portal_url(url)`](ui/views/scanner_view.py#L586) — `L586`
-    - [`_on_oui_selected(text)`](ui/views/scanner_view.py#L590) — `L590`
-    - [`generate_macs()`](ui/views/scanner_view.py#L597) — `L597`
-    - [`prepend_macs(macs)`](ui/views/scanner_view.py#L636) — `L636`
-    - [`get_candidate_macs()`](ui/views/scanner_view.py#L647) — `L647`
-    - [`clear_candidates()`](ui/views/scanner_view.py#L652) — `L652`
-    - [`_update_queue_count()`](ui/views/scanner_view.py#L656) — `L656`
-    - [`_import_from_file()`](ui/views/scanner_view.py#L660) — `L660`
-    - [`_import_from_folder()`](ui/views/scanner_view.py#L674) — `L674`
-    - [`_import_from_clipboard()`](ui/views/scanner_view.py#L721) — `L721`
-    - [`_deduplicate_list()`](ui/views/scanner_view.py#L727) — `L727`
-    - [`_on_start_clicked()`](ui/views/scanner_view.py#L737) — `L737`
-    - [`get_scan_threads()`](ui/views/scanner_view.py#L779) — `L779`
-    - [`get_scan_delay()`](ui/views/scanner_view.py#L782) — `L782`
+    - [`set_portal_url(url)`](ui/views/scanner_view.py#L587) — `L587`
+    - [`_on_oui_selected(text)`](ui/views/scanner_view.py#L591) — `L591`
+    - [`generate_macs()`](ui/views/scanner_view.py#L598) — `L598`
+    - [`prepend_macs(macs)`](ui/views/scanner_view.py#L637) — `L637`
+    - [`get_candidate_macs()`](ui/views/scanner_view.py#L648) — `L648`
+    - [`clear_candidates()`](ui/views/scanner_view.py#L653) — `L653`
+    - [`_update_queue_count()`](ui/views/scanner_view.py#L657) — `L657`
+    - [`_import_from_file()`](ui/views/scanner_view.py#L661) — `L661`
+    - [`_import_from_folder()`](ui/views/scanner_view.py#L675) — `L675`
+    - [`_import_from_clipboard()`](ui/views/scanner_view.py#L722) — `L722`
+    - [`_deduplicate_list()`](ui/views/scanner_view.py#L728) — `L728`
+    - [`_on_start_clicked()`](ui/views/scanner_view.py#L738) — `L738`
+    - [`get_scan_threads()`](ui/views/scanner_view.py#L780) — `L780`
+    - [`get_scan_delay()`](ui/views/scanner_view.py#L783) — `L783`
     - *... und 39 weitere Hilfsmethoden.*
 
 #### Wichtige Konstanten / Konfigurationen
@@ -1485,9 +1487,9 @@ Anti-Ban VPN-Shield und erweiterte Delays.
 
 ---
 
-### 📄 [`tests/test_portal_checker.py`](tests/test_portal_checker.py) (536 Zeilen)
+### 📄 [`tests/test_portal_checker.py`](tests/test_portal_checker.py) (613 Zeilen)
 #### Klassen & Komponenten
-- **[`TestPortalChecker`](tests/test_portal_checker.py#L26-L532)** : *unittest.TestCase* — `L26-L532`
+- **[`TestPortalChecker`](tests/test_portal_checker.py#L26-L609)** : *unittest.TestCase* — `L26-L609`
   - **Wichtige Methoden:**
     - [`test_01_normalize_portal_url()`](tests/test_portal_checker.py#L27) — `L27`
     - [`test_02_load_and_save_portal_list()`](tests/test_portal_checker.py#L34) — `L34`
@@ -1504,7 +1506,7 @@ Anti-Ban VPN-Shield und erweiterte Delays.
     - [`test_13_scanner_view_import_portals_from_folder()`](tests/test_portal_checker.py#L355) — `L355` *(Testet den Ordner-Import von Portal-URLs im ScannerView.)*
     - [`test_14_rejects_php_page_with_images_and_phpsessid()`](tests/test_portal_checker.py#L377) — `L377` *(Verifiziert, dass generische PHP-Seiten mit PHPSESSID und Bildern/Wörtern wie 'image' nicht als Stalker erkannt werden.)*
     - [`test_15_rejects_generic_json_apis_with_tokens_or_unauthorized()`](tests/test_portal_checker.py#L395) — `L395` *(Verifiziert, dass generische REST-APIs (z. B. OAuth Tokens oder 401 Unauthorized) nicht als Stalker fehlklassifiziert werden.)*
-    - *... und 5 weitere Hilfsmethoden.*
+    - *... und 7 weitere Hilfsmethoden.*
 
 ---
 

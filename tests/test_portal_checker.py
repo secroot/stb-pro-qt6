@@ -531,6 +531,83 @@ class TestPortalChecker(unittest.TestCase):
         for exp in expected_portals:
             self.assertIn(exp, extracted)
 
+    def test_19_scanner_all_sorting_disabled_and_autoscroll(self):
+        """Verifiziert, dass der ALL-Filter im Scanner keine Sortierung hat und neueste Treffer unten anfügt."""
+        from PySide6.QtWidgets import QApplication
+        app = QApplication.instance() or QApplication([])
+        from ui.views.scanner_view import ScannerView
+
+        sv = ScannerView()
+        try:
+            # 1. Standard ALL-Modus muss Sorting deaktiviert haben
+            self.assertEqual(sv._filter_mode, "ALL")
+            self.assertFalse(sv.table.isSortingEnabled())
+            self.assertTrue(sv.chk_autoscroll.isChecked())
+
+            # 2. Ergebnisse hinzufügen
+            sv.add_scan_result({"mac": "00:1A:79:00:00:01", "portal_url": "http://p1.com", "tag": "invalid", "channels": 0})
+            sv.add_scan_result({"mac": "00:1A:79:00:00:02", "portal_url": "http://p1.com", "tag": "hot", "channels": 150, "expire": "2027-01-01"})
+            sv.add_scan_result({"mac": "00:1A:79:00:00:03", "portal_url": "http://p1.com", "tag": "invalid", "channels": 0})
+
+            # Reihenfolge in ALL: Letzter Eintrag ist unten
+            self.assertEqual(sv.table.rowCount(), 3)
+            self.assertFalse(sv.table.isSortingEnabled())
+            last_it = sv.table.item(2, 0)
+            self.assertIsNotNone(last_it)
+            self.assertEqual(last_it.text(), "00:1A:79:00:00:03")
+
+            # HOT Zähler muss 1 sein
+            self.assertEqual(sv._hot_results_count, 1)
+            self.assertIn("HOT (1)", sv._filter_btns["HOT"].text())
+
+            # 3. Wechsel auf HOT aktiviert Sortierung
+            sv._set_result_filter("HOT")
+            self.assertEqual(sv.table.rowCount(), 1)
+            self.assertTrue(sv.table.isSortingEnabled())
+
+            # 4. Wechsel zurück auf ALL deaktiviert Sortierung wieder
+            sv._set_result_filter("ALL")
+            self.assertEqual(sv.table.rowCount(), 3)
+            self.assertFalse(sv.table.isSortingEnabled())
+        finally:
+            sv.close()
+
+    def test_20_inspector_trimming_and_scanner_http_log(self):
+        """Verifiziert das Logging von Scan-Traffic in den Inspector und das Tabellen-Trimming."""
+        from PySide6.QtWidgets import QApplication
+        app = QApplication.instance() or QApplication([])
+        from ui.views.inspector_view import InspectorView
+        from clients.stb_client import emit_scanner_http_log
+        from core.signals import event_bus
+
+        insp = InspectorView()
+        event_bus.http_Exchange_logged.connect(insp.add_http_entry)
+        try:
+            self.assertFalse(insp.table.isSortingEnabled())
+            self.assertTrue(insp.chk_autoscroll.isChecked())
+
+            # HOT Hits werden immer direkt geloggt
+            emit_scanner_http_log(
+                portal_url="http://test-portal.org",
+                mac="00:1A:79:11:22:33",
+                res={"tag": "hot", "valid": True, "channels": 42, "expire": "2028-01-01", "token": "tok123"},
+                force=True,
+            )
+            self.assertGreaterEqual(len(insp._entries), 1)
+            self.assertEqual(insp.table.rowCount(), len(insp._filtered_entries))
+            last_entry = insp._entries[-1]
+            self.assertEqual(last_entry.status_code, 200)
+            self.assertIn("HOT HIT", last_entry.response_preview)
+
+            # Trimming-Test: Über 500 Einträge dürfen die Tabelle und _entries nicht sprengen
+            for i in range(520):
+                insp.add_http_entry(last_entry)
+
+            self.assertLessEqual(len(insp._entries), 500)
+            self.assertLessEqual(insp.table.rowCount(), 500)
+        finally:
+            insp.close()
+
 
 if __name__ == "__main__":
     unittest.main()
