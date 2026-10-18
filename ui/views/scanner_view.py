@@ -46,6 +46,7 @@ from core.portal_checker import (
     normalize_portal_url,
     save_reachable_portals_file,
 )
+from core.scan_scheduler import ScanRotationMode
 from core.signals import event_bus
 
 OUI_VENDOR_PRESETS = [
@@ -376,7 +377,23 @@ class ScannerView(QWidget):
 
         crow0.addWidget(QLabel("Modus:"))
         self.combo_rotation_mode = QComboBox()
-        self.combo_rotation_mode.addItems(["Round-Robin (Verteilt)", "Sweep (Alle Portale)", "Failover bei Fehler"])
+        self.combo_rotation_mode.addItems([
+            "Hot-Spot Affinity (Bei Hit fokussieren)",
+            "Round-Robin (Verteilt)",
+            "Smart Adaptive (Hit-Rate gewichtet)",
+            "Failover bei Fehler (Auto-Switch)",
+            "Sweep (Alle Portale)",
+            "Sweep (Stopp bei erstem Hit)",
+        ])
+        self.combo_rotation_mode.setToolTip(
+            "Intelligente Scanning-Modi für Multi-Portal-Tests:\n"
+            "• Hot-Spot Affinity: Fokussiert nach einem Treffer (>0 Kanäle) die nächsten MACs auf das erfolgreiche Portal.\n"
+            "• Round-Robin: Gleichmäßige zyklische Verteilung aller MACs.\n"
+            "• Smart Adaptive: Bewertet Portale dynamisch nach Hit-Rate und priorisiert die besten Hosts.\n"
+            "• Failover: Bleibt auf Primär-Portal, wechselt bei 3 Fehlern/Timeouts automatisch zum nächsten.\n"
+            "• Sweep (Alle): Jede MAC wird gegen ausnahmslos alle Portale geprüft.\n"
+            "• Sweep (Stopp bei Hit): Prüft Portale, bricht für eine gefundene MAC aber sofort ab."
+        )
         crow0.addWidget(self.combo_rotation_mode)
 
         crow0.addStretch(1)
@@ -708,12 +725,7 @@ class ScannerView(QWidget):
         is_rotation = self.chk_portal_rotation.isChecked() or self.combo_portal_selector.currentIndex() == 1
         rotation_portals = list(self._reachable_portals) if is_rotation else []
         rot_mode_raw = self.combo_rotation_mode.currentText()
-        if "Sweep" in rot_mode_raw:
-            rot_mode = "sweep"
-        elif "Failover" in rot_mode_raw:
-            rot_mode = "failover"
-        else:
-            rot_mode = "round_robin"
+        rot_mode = ScanRotationMode.from_ui_label(rot_mode_raw)
 
         if is_rotation:
             if not rotation_portals:

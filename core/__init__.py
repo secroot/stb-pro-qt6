@@ -15,6 +15,7 @@ from core.models import (
 )
 from core.signals import event_bus, worker_pool
 from core.vpn_manager import vpn_manager, NordVpnManager
+from core.scan_scheduler import ScanRotationMode, MultiPortalScanScheduler
 
 __all__ = [
     "Channel",
@@ -30,4 +31,6 @@ __all__ = [
     "worker_pool",
     "vpn_manager",
     "NordVpnManager",
+    "ScanRotationMode",
+    "MultiPortalScanScheduler",
 ]

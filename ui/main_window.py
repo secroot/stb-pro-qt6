@@ -63,6 +63,7 @@ from core.preview_grabber import (
 )
 from core.recorder import Recorder
 from core.scan_repository import ScanRepository, ScanHost, ScanAccount
+from core.scan_scheduler import MultiPortalScanScheduler, ScanRotationMode
 from core.signals import event_bus, worker_pool
 from core.stream_buffer import BufferSettings
 from core.stream_probe import probe_stream
@@ -2413,37 +2414,29 @@ class MainWindow(QMainWindow):
             if not clean_rotation_portals:
                 use_rotation = False
 
+        hot_burst = int(self.config_mgr.get("scan_hot_spot_burst", 15))
+        fo_thresh = int(self.config_mgr.get("scan_failover_threshold", 3))
+        target_portals = clean_rotation_portals if use_rotation else [portal_url]
+
+        scheduler = MultiPortalScanScheduler(
+            portals=target_portals,
+            macs=unique_macs,
+            mode=rotation_mode,
+            hot_spot_burst=hot_burst,
+            failover_threshold=fo_thresh,
+            on_log=lambda msg: event_bus.log_message.emit(msg),
+        )
+        cur_done, total = scheduler.get_progress()
+
         if use_rotation:
-            if rotation_mode == "sweep":
-                # Sweep: Jede MAC wird gegen JEDES erreichbare Portal geprüft
-                work_items: List[Tuple[str, str]] = []
-                for m in unique_macs:
-                    for p in clean_rotation_portals:
-                        work_items.append((m, p))
-                total = len(work_items)
-                event_bus.log_message.emit(
-                    f"[🔄] Starte Multi-Portal Sweep-Scan ({len(unique_macs)} MACs × {len(clean_rotation_portals)} Portale = {total} Checks, {threads} Threads, Modell {model}) ..."
-                )
-            else:
-                # Round-Robin: MACs werden über die erreichbaren Portale rotiert
-                work_items = [
-                    (m, clean_rotation_portals[idx % len(clean_rotation_portals)])
-                    for idx, m in enumerate(unique_macs)
-                ]
-                total = len(work_items)
-                event_bus.log_message.emit(
-                    f"[🔄] Starte Multi-Portal Round-Robin Scan ({total} MACs auf {len(clean_rotation_portals)} Portalen rotiert, {threads} Threads, Modell {model}) ..."
-                )
+            mode_desc = ScanRotationMode.describe(rotation_mode)
+            event_bus.log_message.emit(
+                f"[🔄] Starte Multi-Portal Scan ({total} Checks auf {len(clean_rotation_portals)} Portalen, Modus: {mode_desc}, {threads} Threads, Modell {model}) ..."
+            )
         else:
-            work_items = [(m, portal_url) for m in unique_macs]
-            total = len(work_items)
             event_bus.log_message.emit(
                 f"[🎯] Starte Multi-MAC Scan auf {portal_url} ({total} MACs, {threads} Threads, Modell {model}) ..."
             )
-
-        work_q: queue.Queue[Tuple[str, str]] = queue.Queue()
-        for item in work_items:
-            work_q.put(item)
 
         # ⚡ PREFLIGHT ENDPOINT ERMITTLUNG:
         # Falls der Stalker load_url Endpoint noch unbekannt ist, ermitteln wir ihn einmalig vorab.
@@ -2479,15 +2472,12 @@ class MainWindow(QMainWindow):
                 pass
 
         def _coordinator():
-            done = 0
-            in_flight = 0
             active_workers = 0
-            conclusive_macs = set()
             retry_counts = collections.defaultdict(int)
             lock = threading.Lock()
 
             def _worker():
-                nonlocal done, in_flight, active_workers
+                nonlocal active_workers
                 with lock:
                     active_workers += 1
 
@@ -2524,19 +2514,18 @@ class MainWindow(QMainWindow):
                                 active_workers -= 1
                                 return
 
-                        # 2. Prüfe ob Warteschlange komplett leer und keine Worker mehr aktiv sind
-                        with lock:
-                            if work_q.empty() and in_flight == 0:
+                        # 2. Prüfe ob Scheduler erschöpft ist
+                        if scheduler.is_exhausted():
+                            break
+
+                        item = scheduler.get_next_work_item()
+                        if item is None:
+                            if scheduler.is_exhausted():
                                 break
-                        try:
-                            raw_item = work_q.get(timeout=0.15)
-                            mac, cur_portal = raw_item if isinstance(raw_item, tuple) else (raw_item, portal_url)
-                        except queue.Empty:
+                            time.sleep(0.05)
                             continue
 
-                        with lock:
-                            in_flight += 1
-
+                        mac, cur_portal = item
                         item_key = f"{cur_portal}|{mac}"
                         norm_target = cur_portal.strip().rstrip("/")
                         cached_target_ep = cached_eps.get(norm_target)
@@ -2547,6 +2536,7 @@ class MainWindow(QMainWindow):
                                     stop_check=lambda: not self._scan_stop_ev.is_set() and self._scan_pause_ev.is_set()
                                 )
                             if self._scan_stop_ev.is_set():
+                                scheduler.release_in_flight()
                                 continue
 
                             res = check_mac_account(
@@ -2630,9 +2620,9 @@ class MainWindow(QMainWindow):
                             if scan_auto_requeue and is_transient and retries < scan_max_retries and not self._scan_stop_ev.is_set():
                                 retries += 1
                                 retry_counts[item_key] = retries
-                                work_q.put((mac, cur_portal))
-                                rem_q = work_q.qsize()
                                 reason_txt = "Kanal-Timeout" if (has_ch_error or active_date_missing_channels) else (stat_str or "Timeout/503/429")
+                                scheduler.requeue_item(cur_portal, mac, reason=reason_txt)
+                                rem_q = scheduler.get_queue_size()
                                 event_bus.log_message.emit(
                                     f"[⏳ Requeue] {mac} @ {cur_portal} ({reason_txt}) -> hinten angestellt (Retry #{retries}/{scan_max_retries}, Warteschlange: {rem_q})."
                                 )
@@ -2650,19 +2640,15 @@ class MainWindow(QMainWindow):
                             else:
                                 res["tag"] = "invalid"
 
-                            with lock:
-                                if item_key not in conclusive_macs:
-                                    conclusive_macs.add(item_key)
-                                    done += 1
-                                cur_done = done
+                            scheduler.report_result(cur_portal, mac, res)
+                            cur_done, cur_total = scheduler.get_progress()
 
                             event_bus.scan_result_received.emit(res)
-                            event_bus.scan_progress_updated.emit(cur_done, total)
+                            event_bus.scan_progress_updated.emit(cur_done, cur_total)
 
-                        finally:
-                            with lock:
-                                in_flight -= 1
-                            work_q.task_done()
+                        except Exception:
+                            scheduler.release_in_flight()
+
                 finally:
                     with lock:
                         active_workers = max(0, active_workers - 1)
@@ -2684,12 +2670,13 @@ class MainWindow(QMainWindow):
 
             while not self._scan_stop_ev.is_set():
                 with lock:
-                    if work_q.empty() and in_flight == 0 and active_workers == 0:
+                    if scheduler.is_exhausted() and active_workers == 0:
                         break
                 time.sleep(0.15)
 
+            final_done, final_total = scheduler.get_progress()
             event_bus.scan_state_changed.emit(False)
-            event_bus.log_message.emit(f"[+] MAC-Scan beendet ({done}/{total} MACs abgeschlossen).")
+            event_bus.log_message.emit(f"[+] MAC-Scan beendet ({final_done}/{final_total} Checks abgeschlossen).")
 
         threading.Thread(target=_coordinator, daemon=True).start()
 

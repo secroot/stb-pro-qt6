@@ -35,7 +35,7 @@
 | `_normalize_stb_model` | **Function** | [ui/dialogs/profile_dialog.py](ui/dialogs/profile_dialog.py#L34-L41) | `L34-L41` | def _normalize_stb_model(model_str) |
 | `_on_response` | **Function** | [clients/stb_client.py](clients/stb_client.py#L31-L56) | `L31-L56` | def _on_response(resp) |
 | `_parse_json` | **Function** | [core/stream_probe.py](core/stream_probe.py#L549-L570) | `L549-L570` | def _parse_json(parsed) |
-| `_PortalCheckerSignals` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L79-L83) | `L79-L83` | Thread-sichere Qt-Signals für Hintergrund-Prüfungen der Stalker-Portale. |
+| `_PortalCheckerSignals` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L80-L84) | `L80-L84` | Thread-sichere Qt-Signals für Hintergrund-Prüfungen der Stalker-Portale. |
 | `_safe_emit` | **Function** | [core/vpn_manager.py](core/vpn_manager.py#L21-L26) | `L21-L26` | Sicheres Emitten von Qt-Signalen aus Hintergrund-Threads. |
 | `_Session` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L70-L553) | `L70-L553` | Basis:  |
 | `_TopHudBar` | **Class / Widget** | [player/osd_overlay.py](player/osd_overlay.py#L16-L81) | `L16-L81` | Basis: QWidget |
@@ -102,7 +102,8 @@
 | `MacDatabase` | **Class / Widget** | [core/mac_database.py](core/mac_database.py#L26-L238) | `L26-L238` | Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern. |
 | `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L31-L211) | `L31-L211` | Basis: QDialog |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
-| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L95-L3006) | `L95-L3006` | Basis: QMainWindow |
+| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L96-L2993) | `L96-L2993` | Basis: QMainWindow |
+| `MultiPortalScanScheduler` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L56-L382) | `L56-L382` | Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans. |
 | `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L29-L653) | `L29-L653` | Verwaltet die Integration mit NordVPN unter Windows. |
 | `normalize_portal_url` | **Function** | [core/portal_checker.py](core/portal_checker.py#L202-L219) | `L202-L219` | Normalisiert eine Portal-URL sauber (Protokoll, Leerzeichen, Format). |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
@@ -123,9 +124,10 @@
 | `save_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L136-L144) | `L136-L144` | def save_thumb(key, data) |
 | `ScanAccount` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L24-L58) | `L24-L58` | Repräsentiert einen einzelnen gescannten MAC-Account eines Portals. |
 | `ScanHost` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L62-L85) | `L62-L85` | Repräsentiert einen Host / ein Portal mit allen zugehörigen Logins. |
-| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L86-L1366) | `L86-L1366` | Basis: QWidget |
+| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L87-L1378) | `L87-L1378` | Basis: QWidget |
 | `ScanRepository` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L88-L264) | `L88-L264` | Verwaltet das Einlesen, Filtern und Cachen aller Scan-Dateien aus 'mac_scans/'. |
 | `ScanResult` | **Class / Widget** | [core/models.py](core/models.py#L478-L488) | `L478-L488` | Basis:  |
+| `ScanRotationMode` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L19-L53) | `L19-L53` | Konstanten für Multi-Portal Rotations- und Scan-Modi. |
 | `ScanThrottleController` | **Class / Widget** | [clients/throttle.py](clients/throttle.py#L11-L69) | `L11-L69` | Basis:  |
 | `SeriesBrowserDialog` | **Class / Widget** | [ui/dialogs/series_dialog.py](ui/dialogs/series_dialog.py#L26-L163) | `L26-L163` | Basis: QDialog |
 | `SettingsView` | **Class / Widget** | [ui/views/settings_view.py](ui/views/settings_view.py#L45-L968) | `L45-L968` | Basis: QWidget |
@@ -136,6 +138,7 @@
 | `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L456-L474) | `L456-L474` | Basis:  |
 | `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L26-L486) | `L26-L486` | Basis: unittest.TestCase |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
+| `TestScanScheduler` | **Class / Widget** | [tests/test_scan_scheduler.py](tests/test_scan_scheduler.py#L13-L367) | `L13-L367` | Basis: unittest.TestCase |
 | `TestSettingsAndSidebar` | **Class / Widget** | [tests/test_settings_and_sidebar.py](tests/test_settings_and_sidebar.py#L25-L301) | `L25-L301` | Basis: unittest.TestCase |
 | `TestUIAndEngine` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L90-L840) | `L90-L840` | Basis: unittest.TestCase |
 | `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L330) | `L15-L330` | Basis: unittest.TestCase |
@@ -225,7 +228,7 @@ Mit automatischer HTTP-Telemetrie für den Protokoll-Inspector sowie Serien-API-
 
 ## 📦 Core (Business Logic, Cache & DB)
 
-### 📄 [`core/__init__.py`](core/__init__.py) (33 Zeilen)
+### 📄 [`core/__init__.py`](core/__init__.py) (36 Zeilen)
 > Core-Paket für STB Pro Qt6.
 Enthält Datenmodelle, Event-Bus, Persistenz, Stream-Puffer, Probing und Recording.
 
@@ -541,6 +544,40 @@ und generiert dynamisch Host- und Login-Auswahlen für Stalker-Portale.
 
 ---
 
+### 📄 [`core/scan_scheduler.py`](core/scan_scheduler.py) (382 Zeilen)
+> Multi-Portal Scan Scheduler für STB Pro Qt6.
+Bietet intelligente Verteilungsmodi für Multi-Portal MAC-Scans:
+- HOT_SPOT: Hot-Spot Affinity (Fokus bei Hit: bei einem Treffer nachfolgende MACs auf diesem Portal prüfen)
+- ROUND_ROBIN: Klassische zyklische Verteilung aller MACs über alle erreichbaren Portale
+- ADAPTIVE: Dynamische Hit-Rate-Gewichtung (Multi-Armed Bandit / epsilon-greedy)
+- FAILOVER: Primäres Portal aktiv; automatischer Wechsel zum nächsten Portal bei 3 aufeinanderfolgenden Fehlern
+- SWEEP: Jede MAC gegen alle Portale prüfen (vollständige Matrix)
+- SWEEP_EARLY_EXIT: Sweep mit Abbruch sobald eine MAC auf einem Portal erfolgreich verifiziert wurde
+
+#### Klassen & Komponenten
+- **[`ScanRotationMode`](core/scan_scheduler.py#L19-L53)** — `L19-L53`
+  - *Konstanten für Multi-Portal Rotations- und Scan-Modi.*
+  - **Wichtige Methoden:**
+    - [`describe(cls, mode)`](core/scan_scheduler.py#L29) — `L29`
+    - [`from_ui_label(cls, label)`](core/scan_scheduler.py#L41) — `L41`
+- **[`MultiPortalScanScheduler`](core/scan_scheduler.py#L56-L382)** — `L56-L382`
+  - *Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans.*
+  - **Wichtige Methoden:**
+    - [`__init__(portals, macs, mode, hot_spot_burst, failover_threshold, on_log)`](core/scan_scheduler.py#L62) — `L62`
+    - [`_log(msg)`](core/scan_scheduler.py#L133) — `L133`
+    - [`get_next_work_item()`](core/scan_scheduler.py#L140) — `L140` *(Gibt das nächste (MAC, Portal)-Tupel thread-sicher zurück.)*
+    - [`_select_portal_for_mac(mac)`](core/scan_scheduler.py#L171) — `L171`
+    - [`_weighted_portal_choice()`](core/scan_scheduler.py#L208) — `L208`
+    - [`report_result(portal_url, mac, result)`](core/scan_scheduler.py#L221) — `L221` *(Aktualisiert Metriken, Treffer, Burst-Quotas und Failover-Zustände thread-sicher.)*
+    - [`requeue_item(portal_url, mac, reason)`](core/scan_scheduler.py#L334) — `L334` *(Stellt ein Work-Item bei transientem Fehler thread-sicher erneut an.)*
+    - [`release_in_flight()`](core/scan_scheduler.py#L350) — `L350` *(Reduziert in_flight falls ein Worker unerwartet abbricht.)*
+    - [`is_exhausted()`](core/scan_scheduler.py#L355) — `L355` *(Prüft, ob alle Items verarbeitet wurden und keine mehr in Bearbeitung sind.)*
+    - [`get_progress()`](core/scan_scheduler.py#L362) — `L362` *(Gibt (effektive_fertige_checks, gesamt_checks) zurück.)*
+    - [`get_queue_size()`](core/scan_scheduler.py#L368) — `L368` *(Gibt die Anzahl der noch wartenden Items zurück.)*
+    - [`get_active_portal()`](core/scan_scheduler.py#L375) — `L375` *(Gibt das aktuell bevorzugte Portal zurück (für Status-Anzeigen).)*
+
+---
+
 ### 📄 [`core/signals.py`](core/signals.py) (117 Zeilen)
 > Reaktiver Qt6 Event-Bus & Asynchroner QThreadPool-Worker.
 Ersetzt das langsame Tkinter after()-Polling durch echte Qt Signals & Slots.
@@ -774,31 +811,31 @@ Nutzt Qt Signals für reaktive Status- und Puffer-Updates ohne UI-Blockade.
 
 ---
 
-### 📄 [`ui/main_window.py`](ui/main_window.py) (3008 Zeilen)
+### 📄 [`ui/main_window.py`](ui/main_window.py) (2995 Zeilen)
 > Main Application Window (Orchestrator) for STB Pro v6.0 Qt6 Edition.
 Coordinates Sidebar, TopNavigationBar, LiveTVView, VODView, ScannerView, InspectorView, ConsoleView,
 LibVLC Hardware Player, External Player Runner, Fullscreen HUD Overlay, PiP Mini-Player,
 Multi-Thread MAC Scanner, Parallel Category Validator, and all 7 Dialogs.
 
 #### Klassen & Komponenten
-- **[`MainWindow`](ui/main_window.py#L95-L3006)** : *QMainWindow* — `L95-L3006`
+- **[`MainWindow`](ui/main_window.py#L96-L2993)** : *QMainWindow* — `L96-L2993`
   - **Signals**: `_val_progress_sig`, `_val_finished_sig`, `_val_thumb_progress_sig`, `_val_thumb_finished_sig`, `_epg_loaded_sig`, `_probe_done_sig`, `_preview_ready_sig`
   - **Wichtige Methoden:**
-    - [`__init__()`](ui/main_window.py#L105) — `L105`
-    - [`_build_ui()`](ui/main_window.py#L204) — `L204`
-    - [`_bind_signals()`](ui/main_window.py#L265) — `L265`
-    - [`_on_buffer_settings_from_view(st)`](ui/main_window.py#L388) — `L388`
-    - [`_on_settings_applied(cfg)`](ui/main_window.py#L393) — `L393`
-    - [`_is_text_input_focused()`](ui/main_window.py#L413) — `L413`
-    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L417) — `L417`
-    - [`_cycle_aspect_ratio()`](ui/main_window.py#L426) — `L426`
-    - [`_setup_shortcuts()`](ui/main_window.py#L431) — `L431`
-    - [`_load_initial_config()`](ui/main_window.py#L454) — `L454`
-    - [`switch_view(view_key)`](ui/main_window.py#L542) — `L542`
-    - [`toggle_sidebar()`](ui/main_window.py#L550) — `L550`
-    - [`toggle_cinema_mode()`](ui/main_window.py#L556) — `L556`
-    - [`toggle_pip_mode()`](ui/main_window.py#L564) — `L564` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
-    - [`toggle_fullscreen()`](ui/main_window.py#L606) — `L606`
+    - [`__init__()`](ui/main_window.py#L106) — `L106`
+    - [`_build_ui()`](ui/main_window.py#L205) — `L205`
+    - [`_bind_signals()`](ui/main_window.py#L266) — `L266`
+    - [`_on_buffer_settings_from_view(st)`](ui/main_window.py#L389) — `L389`
+    - [`_on_settings_applied(cfg)`](ui/main_window.py#L394) — `L394`
+    - [`_is_text_input_focused()`](ui/main_window.py#L414) — `L414`
+    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L418) — `L418`
+    - [`_cycle_aspect_ratio()`](ui/main_window.py#L427) — `L427`
+    - [`_setup_shortcuts()`](ui/main_window.py#L432) — `L432`
+    - [`_load_initial_config()`](ui/main_window.py#L455) — `L455`
+    - [`switch_view(view_key)`](ui/main_window.py#L543) — `L543`
+    - [`toggle_sidebar()`](ui/main_window.py#L551) — `L551`
+    - [`toggle_cinema_mode()`](ui/main_window.py#L557) — `L557`
+    - [`toggle_pip_mode()`](ui/main_window.py#L565) — `L565` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
+    - [`toggle_fullscreen()`](ui/main_window.py#L607) — `L607`
     - *... und 95 weitere Hilfsmethoden.*
 
 ---
@@ -913,38 +950,38 @@ VOD/Catchup Seekbar, Audio/Subtitle/Aspect/Speed Controls, Multi-Thread Category
 
 ---
 
-### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (1366 Zeilen)
+### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (1378 Zeilen)
 > Multi-MAC Scanner & Pentest Generator View.
 Features 22 OUI Vendor Presets, custom wildcard masks (XX:XX:XX), sequential & random generation,
 adaptive WAF/429 Throttle Controller integration, live CPS (Checks/sec) & ETA telemetry,
 filterable hit table, and 1-click profile adoption.
 
 #### Klassen & Komponenten
-- **[`_PortalCheckerSignals`](ui/views/scanner_view.py#L79-L83)** : *QObject* — `L79-L83`
+- **[`_PortalCheckerSignals`](ui/views/scanner_view.py#L80-L84)** : *QObject* — `L80-L84`
   - *Thread-sichere Qt-Signals für Hintergrund-Prüfungen der Stalker-Portale.*
   - **Signals**: `result_received`, `progress_updated`, `finished`
-- **[`ScannerView`](ui/views/scanner_view.py#L86-L1366)** : *QWidget* — `L86-L1366`
+- **[`ScannerView`](ui/views/scanner_view.py#L87-L1378)** : *QWidget* — `L87-L1378`
   - **Signals**: `start_scan_requested`, `stop_scan_requested`, `pause_scan_requested`, `resume_scan_requested`, `scan_settings_updated`, `apply_mac_requested`, `prepend_db_macs_requested`, `scan_exported`
   - **Wichtige Methoden:**
-    - [`__init__(parent)`](ui/views/scanner_view.py#L96) — `L96`
-    - [`set_portal_url(url)`](ui/views/scanner_view.py#L551) — `L551`
-    - [`_on_oui_selected(text)`](ui/views/scanner_view.py#L555) — `L555`
-    - [`generate_macs()`](ui/views/scanner_view.py#L562) — `L562`
-    - [`prepend_macs(macs)`](ui/views/scanner_view.py#L601) — `L601`
-    - [`get_candidate_macs()`](ui/views/scanner_view.py#L612) — `L612`
-    - [`clear_candidates()`](ui/views/scanner_view.py#L617) — `L617`
-    - [`_update_queue_count()`](ui/views/scanner_view.py#L621) — `L621`
-    - [`_import_from_file()`](ui/views/scanner_view.py#L625) — `L625`
-    - [`_import_from_folder()`](ui/views/scanner_view.py#L639) — `L639`
-    - [`_import_from_clipboard()`](ui/views/scanner_view.py#L686) — `L686`
-    - [`_deduplicate_list()`](ui/views/scanner_view.py#L692) — `L692`
-    - [`_on_start_clicked()`](ui/views/scanner_view.py#L702) — `L702`
-    - [`get_scan_threads()`](ui/views/scanner_view.py#L749) — `L749`
-    - [`get_scan_delay()`](ui/views/scanner_view.py#L752) — `L752`
+    - [`__init__(parent)`](ui/views/scanner_view.py#L97) — `L97`
+    - [`set_portal_url(url)`](ui/views/scanner_view.py#L568) — `L568`
+    - [`_on_oui_selected(text)`](ui/views/scanner_view.py#L572) — `L572`
+    - [`generate_macs()`](ui/views/scanner_view.py#L579) — `L579`
+    - [`prepend_macs(macs)`](ui/views/scanner_view.py#L618) — `L618`
+    - [`get_candidate_macs()`](ui/views/scanner_view.py#L629) — `L629`
+    - [`clear_candidates()`](ui/views/scanner_view.py#L634) — `L634`
+    - [`_update_queue_count()`](ui/views/scanner_view.py#L638) — `L638`
+    - [`_import_from_file()`](ui/views/scanner_view.py#L642) — `L642`
+    - [`_import_from_folder()`](ui/views/scanner_view.py#L656) — `L656`
+    - [`_import_from_clipboard()`](ui/views/scanner_view.py#L703) — `L703`
+    - [`_deduplicate_list()`](ui/views/scanner_view.py#L709) — `L709`
+    - [`_on_start_clicked()`](ui/views/scanner_view.py#L719) — `L719`
+    - [`get_scan_threads()`](ui/views/scanner_view.py#L761) — `L761`
+    - [`get_scan_delay()`](ui/views/scanner_view.py#L764) — `L764`
     - *... und 37 weitere Hilfsmethoden.*
 
 #### Wichtige Konstanten / Konfigurationen
-- `OUI_VENDOR_PRESETS` (L51), `MAC_REGEX` (L76)
+- `OUI_VENDOR_PRESETS` (L52), `MAC_REGEX` (L77)
 
 ---
 
@@ -1351,6 +1388,24 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
     - [`test_01_repo_loads_known_hosts()`](tests/test_scan_profiles.py#L14) — `L14`
     - [`test_02_host_accounts_parsed_and_sorted_by_channels()`](tests/test_scan_profiles.py#L22) — `L22`
     - [`test_03_create_profile_from_scan()`](tests/test_scan_profiles.py#L35) — `L35`
+
+---
+
+### 📄 [`tests/test_scan_scheduler.py`](tests/test_scan_scheduler.py) (371 Zeilen)
+#### Klassen & Komponenten
+- **[`TestScanScheduler`](tests/test_scan_scheduler.py#L13-L367)** : *unittest.TestCase* — `L13-L367`
+  - **Wichtige Methoden:**
+    - [`setUp()`](tests/test_scan_scheduler.py#L14) — `L14`
+    - [`test_01_mode_labels_and_descriptions()`](tests/test_scan_scheduler.py#L22) — `L22`
+    - [`test_02_round_robin_distribution()`](tests/test_scan_scheduler.py#L34) — `L34`
+    - [`test_03_hot_spot_affinity_focus_and_recovery()`](tests/test_scan_scheduler.py#L63) — `L63`
+    - [`test_04_hot_spot_burst_extension_and_error_abort()`](tests/test_scan_scheduler.py#L110) — `L110`
+    - [`test_05_adaptive_scoring_and_weights()`](tests/test_scan_scheduler.py#L141) — `L141`
+    - [`test_06_failover_automatic_switch()`](tests/test_scan_scheduler.py#L162) — `L162`
+    - [`test_07_sweep_exhaustive_matrix()`](tests/test_scan_scheduler.py#L196) — `L196`
+    - [`test_08_sweep_early_exit_on_first_hit()`](tests/test_scan_scheduler.py#L217) — `L217`
+    - [`test_09_multithreaded_concurrency()`](tests/test_scan_scheduler.py#L262) — `L262` *(Testet threadsichere Abarbeitung mit 8 parallelen Worker-Threads.)*
+    - [`test_10_main_window_start_mac_scan_hot_spot_integration()`](tests/test_scan_scheduler.py#L311) — `L311`
 
 ---
 
