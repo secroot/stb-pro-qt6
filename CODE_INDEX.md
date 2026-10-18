@@ -41,7 +41,7 @@
 | `_TopHudBar` | **Class / Widget** | [player/osd_overlay.py](player/osd_overlay.py#L16-L81) | `L16-L81` | Basis: QWidget |
 | `_WorkerSignals` | **Class / Widget** | [core/signals.py](core/signals.py#L31-L33) | `L31-L33` | Basis: QObject |
 | `AppEventBus` | **Class / Widget** | [core/signals.py](core/signals.py#L10-L28) | `L10-L28` | Zentraler Signal-Bus für die gesamte Applikation. |
-| `apply_obsidian_theme` | **Function** | [ui/theme.py](ui/theme.py#L492-L526) | `L492-L526` | Apply dark QPalette and Obsidian Cyber-Cinema QSS stylesheet with dynamic UI scaling. |
+| `apply_obsidian_theme` | **Function** | [ui/theme.py](ui/theme.py#L511-L547) | `L511-L547` | Apply dark QPalette and Obsidian Cyber-Cinema QSS stylesheet with dynamic UI scaling. |
 | `AppState` | **Class / Widget** | [core/models.py](core/models.py#L663-L685) | `L663-L685` | Zentraler Laufzeit-Zustand der Anwendung. |
 | `AsyncWorkerPool` | **Class / Widget** | [core/signals.py](core/signals.py#L67-L112) | `L67-L112` | Hochperformanter Thread-Pool auf Basis von Qt QThreadPool. |
 | `BufferConfigDialog` | **Class / Widget** | [ui/dialogs/buffer_dialog.py](ui/dialogs/buffer_dialog.py#L23-L169) | `L23-L169` | Basis: QDialog |
@@ -99,7 +99,7 @@
 | `Job` | **Class / Widget** | [core/recorder.py](core/recorder.py#L56-L118) | `L56-L118` | Basis:  |
 | `JobsDialog` | **Class / Widget** | [ui/dialogs/jobs_dialog.py](ui/dialogs/jobs_dialog.py#L25-L138) | `L25-L138` | Basis: QDialog |
 | `JsonViewerDialog` | **Class / Widget** | [ui/dialogs/json_viewer_dialog.py](ui/dialogs/json_viewer_dialog.py#L27-L119) | `L27-L119` | Basis: QDialog |
-| `LiveTVView` | **Class / Widget** | [ui/views/live_tv_view.py](ui/views/live_tv_view.py#L155-L1199) | `L155-L1199` | Basis: QWidget |
+| `LiveTVView` | **Class / Widget** | [ui/views/live_tv_view.py](ui/views/live_tv_view.py#L155-L1197) | `L155-L1197` | Basis: QWidget |
 | `load_cached_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L120-L133) | `L120-L133` | def load_cached_thumb(key) |
 | `load_portal_list` | **Function** | [core/portal_checker.py](core/portal_checker.py#L348-L376) | `L348-L376` | Liest eine Stalker-Portal-Datei (.txt) ein, bereinigt Kommentare und |
 | `LogoCache` | **Class / Widget** | [core/logo_cache.py](core/logo_cache.py#L22-L151) | `L22-L151` | Lädt Kanal-Logos und VOD-Poster im Hintergrund als QImage (Thread-sicher!) |
@@ -133,14 +133,14 @@
 | `save_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L136-L144) | `L136-L144` | def save_thumb(key, data) |
 | `ScanAccount` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L24-L58) | `L24-L58` | Repräsentiert einen einzelnen gescannten MAC-Account eines Portals. |
 | `ScanHost` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L62-L85) | `L62-L85` | Repräsentiert einen Host / ein Portal mit allen zugehörigen Logins. |
-| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L87-L1477) | `L87-L1477` | Basis: QWidget |
+| `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L87-L1490) | `L87-L1490` | Basis: QWidget |
 | `ScanRepository` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L88-L264) | `L88-L264` | Verwaltet das Einlesen, Filtern und Cachen aller Scan-Dateien aus 'mac_scans/'. |
 | `ScanResult` | **Class / Widget** | [core/models.py](core/models.py#L600-L610) | `L600-L610` | Basis:  |
 | `ScanRotationMode` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L21-L55) | `L21-L55` | Konstanten für Multi-Portal Rotations- und Scan-Modi. |
 | `ScanThrottleController` | **Class / Widget** | [clients/throttle.py](clients/throttle.py#L11-L69) | `L11-L69` | Basis:  |
 | `SeriesBrowserDialog` | **Class / Widget** | [ui/dialogs/series_dialog.py](ui/dialogs/series_dialog.py#L26-L170) | `L26-L170` | Basis: QDialog |
 | `SettingsView` | **Class / Widget** | [ui/views/settings_view.py](ui/views/settings_view.py#L45-L968) | `L45-L968` | Basis: QWidget |
-| `SidebarWidget` | **Class / Widget** | [ui/components/sidebar.py](ui/components/sidebar.py#L32-L453) | `L32-L453` | Basis: QFrame |
+| `SidebarWidget` | **Class / Widget** | [ui/components/sidebar.py](ui/components/sidebar.py#L32-L450) | `L32-L450` | Basis: QFrame |
 | `StalkerPortalChecker` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L629-L839) | `L629-L839` | Multi-threaded Stalker Portal Prüf-Engine. |
 | `StbClient` | **Class / Widget** | [clients/stb_client.py](clients/stb_client.py#L258-L310) | `L258-L310` | Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging |
 | `StreamBufferProxy` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L590-L634) | `L590-L634` | Basis:  |
@@ -888,7 +888,7 @@ Multi-Thread MAC Scanner, Parallel Category Validator, and all 7 Dialogs.
 
 ---
 
-### 📄 [`ui/theme.py`](ui/theme.py) (526 Zeilen)
+### 📄 [`ui/theme.py`](ui/theme.py) (547 Zeilen)
 > Obsidian Cyber-Cinema Design System & Qt6 Stylesheet (QSS).
 Provides color tokens, font families, and global dark stylesheet for PySide6.
 
@@ -897,7 +897,7 @@ Provides color tokens, font families, and global dark stylesheet for PySide6.
   - *Design tokens matching and refining the Obsidian Cyber-Cinema palette.*
 
 #### Modul-Funktionen
-- **[`apply_obsidian_theme(app, scale_factor)`](ui/theme.py#L492-L526)** — `L492` — *Apply dark QPalette and Obsidian Cyber-Cinema QSS stylesheet with dynamic UI scaling.*
+- **[`apply_obsidian_theme(app, scale_factor)`](ui/theme.py#L511-L547)** — `L511` — *Apply dark QPalette and Obsidian Cyber-Cinema QSS stylesheet with dynamic UI scaling.*
 
 #### Wichtige Konstanten / Konfigurationen
 - `GLOBAL_QSS` (L46)
@@ -950,7 +950,7 @@ JSON pretty-printer, header inspector, 1-click cURL generator, and on-demand Han
 
 ---
 
-### 📄 [`ui/views/live_tv_view.py`](ui/views/live_tv_view.py) (1200 Zeilen)
+### 📄 [`ui/views/live_tv_view.py`](ui/views/live_tv_view.py) (1198 Zeilen)
 > Live TV Split-Workspace View for STB Pro Qt6.
 Combines the GPU-virtualized Channel List (QListView + ChannelListModel + ChannelFilterProxyModel + ChannelCardDelegate)
 with the Hero Banner, Native Video Surface (LibVLC HWND + FFmpeg Standbild-Preview),
@@ -976,29 +976,29 @@ VOD/Catchup Seekbar, Audio/Subtitle/Aspect/Speed Controls, Multi-Thread Category
     - [`_rescale()`](ui/views/live_tv_view.py#L132) — `L132`
     - [`resizeEvent(event)`](ui/views/live_tv_view.py#L145) — `L145`
     - [`mouseDoubleClickEvent(event)`](ui/views/live_tv_view.py#L149) — `L149`
-- **[`LiveTVView`](ui/views/live_tv_view.py#L155-L1199)** : *QWidget* — `L155-L1199`
+- **[`LiveTVView`](ui/views/live_tv_view.py#L155-L1197)** : *QWidget* — `L155-L1197`
   - **Signals**: `channel_selected`, `channel_play_requested`, `favorite_toggled`, `probe_channel_requested`, `copy_url_requested`, `record_channel_requested`, `export_m3u_requested`, `raw_json_requested`, `epg_guide_requested`, `validate_category_requested`, `fetch_group_thumbnails_requested`, `stop_validation_requested`, `prev_channel_requested`, `next_channel_requested`, `play_pause_requested`, `stop_requested`, `mute_toggled`, `volume_changed`, `aspect_ratio_changed`, `playback_speed_changed`, `audio_track_selected`, `subtitle_track_selected`, `seek_position_requested`, `seek_relative_requested`, `snapshot_requested`, `external_player_requested`, `cinema_mode_requested`, `pip_mode_requested`, `fullscreen_requested`, `video_mouse_moved`
   - **Wichtige Methoden:**
     - [`__init__(logo_cache, parent)`](ui/views/live_tv_view.py#L192) — `L192`
-    - [`get_video_hwnd()`](ui/views/live_tv_view.py#L634) — `L634`
-    - [`set_channels(channels, genre_map, favorites, recent_ids)`](ui/views/live_tv_view.py#L637) — `L637`
-    - [`set_playing_channel(channel)`](ui/views/live_tv_view.py#L659) — `L659`
-    - [`update_favorites(favorites)`](ui/views/live_tv_view.py#L670) — `L670`
-    - [`update_recent(recent_ids)`](ui/views/live_tv_view.py#L676) — `L676`
-    - [`update_epg(ch_id, programs)`](ui/views/live_tv_view.py#L680) — `L680`
-    - [`update_probe_telemetry(probe)`](ui/views/live_tv_view.py#L686) — `L686`
-    - [`update_live_telemetry(telemetry)`](ui/views/live_tv_view.py#L698) — `L698`
-    - [`update_player_state(state)`](ui/views/live_tv_view.py#L778) — `L778`
-    - [`set_preview_pixmap(pixmap, badge_text)`](ui/views/live_tv_view.py#L788) — `L788` *(Displays a Standbild preview thumbnail overlay when no live stream is actively playing.)*
-    - [`set_preview_jpeg(jpeg_bytes, badge_text)`](ui/views/live_tv_view.py#L798) — `L798` *(Loads JPEG bytes into a QPixmap and displays the preview overlay.)*
-    - [`clear_preview()`](ui/views/live_tv_view.py#L808) — `L808` *(Hides the preview thumbnail overlay and restores the native video surface.)*
-    - [`update_seek_ui(is_seekable, current_ms, total_ms)`](ui/views/live_tv_view.py#L815) — `L815`
-    - [`update_tracks_ui(audio_tracks, sub_tracks)`](ui/views/live_tv_view.py#L833) — `L833`
+    - [`get_video_hwnd()`](ui/views/live_tv_view.py#L632) — `L632`
+    - [`set_channels(channels, genre_map, favorites, recent_ids)`](ui/views/live_tv_view.py#L635) — `L635`
+    - [`set_playing_channel(channel)`](ui/views/live_tv_view.py#L657) — `L657`
+    - [`update_favorites(favorites)`](ui/views/live_tv_view.py#L668) — `L668`
+    - [`update_recent(recent_ids)`](ui/views/live_tv_view.py#L674) — `L674`
+    - [`update_epg(ch_id, programs)`](ui/views/live_tv_view.py#L678) — `L678`
+    - [`update_probe_telemetry(probe)`](ui/views/live_tv_view.py#L684) — `L684`
+    - [`update_live_telemetry(telemetry)`](ui/views/live_tv_view.py#L696) — `L696`
+    - [`update_player_state(state)`](ui/views/live_tv_view.py#L776) — `L776`
+    - [`set_preview_pixmap(pixmap, badge_text)`](ui/views/live_tv_view.py#L786) — `L786` *(Displays a Standbild preview thumbnail overlay when no live stream is actively playing.)*
+    - [`set_preview_jpeg(jpeg_bytes, badge_text)`](ui/views/live_tv_view.py#L796) — `L796` *(Loads JPEG bytes into a QPixmap and displays the preview overlay.)*
+    - [`clear_preview()`](ui/views/live_tv_view.py#L806) — `L806` *(Hides the preview thumbnail overlay and restores the native video surface.)*
+    - [`update_seek_ui(is_seekable, current_ms, total_ms)`](ui/views/live_tv_view.py#L813) — `L813`
+    - [`update_tracks_ui(audio_tracks, sub_tracks)`](ui/views/live_tv_view.py#L831) — `L831`
     - *... und 35 weitere Hilfsmethoden.*
 
 ---
 
-### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (1477 Zeilen)
+### 📄 [`ui/views/scanner_view.py`](ui/views/scanner_view.py) (1490 Zeilen)
 > Multi-MAC Scanner & Pentest Generator View.
 Features 22 OUI Vendor Presets, custom wildcard masks (XX:XX:XX), sequential & random generation,
 adaptive WAF/429 Throttle Controller integration, live CPS (Checks/sec) & ETA telemetry,
@@ -1008,24 +1008,24 @@ filterable hit table, and 1-click profile adoption.
 - **[`_PortalCheckerSignals`](ui/views/scanner_view.py#L80-L84)** : *QObject* — `L80-L84`
   - *Thread-sichere Qt-Signals für Hintergrund-Prüfungen der Stalker-Portale.*
   - **Signals**: `result_received`, `progress_updated`, `finished`
-- **[`ScannerView`](ui/views/scanner_view.py#L87-L1477)** : *QWidget* — `L87-L1477`
+- **[`ScannerView`](ui/views/scanner_view.py#L87-L1490)** : *QWidget* — `L87-L1490`
   - **Signals**: `start_scan_requested`, `stop_scan_requested`, `pause_scan_requested`, `resume_scan_requested`, `scan_settings_updated`, `apply_mac_requested`, `prepend_db_macs_requested`, `pattern_analysis_requested`, `scan_exported`
   - **Wichtige Methoden:**
     - [`__init__(parent)`](ui/views/scanner_view.py#L98) — `L98`
-    - [`set_portal_url(url)`](ui/views/scanner_view.py#L587) — `L587`
-    - [`_on_oui_selected(text)`](ui/views/scanner_view.py#L591) — `L591`
-    - [`generate_macs()`](ui/views/scanner_view.py#L598) — `L598`
-    - [`prepend_macs(macs)`](ui/views/scanner_view.py#L637) — `L637`
-    - [`get_candidate_macs()`](ui/views/scanner_view.py#L648) — `L648`
-    - [`clear_candidates()`](ui/views/scanner_view.py#L653) — `L653`
-    - [`_update_queue_count()`](ui/views/scanner_view.py#L657) — `L657`
-    - [`_import_from_file()`](ui/views/scanner_view.py#L661) — `L661`
-    - [`_import_from_folder()`](ui/views/scanner_view.py#L675) — `L675`
-    - [`_import_from_clipboard()`](ui/views/scanner_view.py#L722) — `L722`
-    - [`_deduplicate_list()`](ui/views/scanner_view.py#L728) — `L728`
-    - [`_on_start_clicked()`](ui/views/scanner_view.py#L738) — `L738`
-    - [`get_scan_threads()`](ui/views/scanner_view.py#L780) — `L780`
-    - [`get_scan_delay()`](ui/views/scanner_view.py#L783) — `L783`
+    - [`set_portal_url(url)`](ui/views/scanner_view.py#L600) — `L600`
+    - [`_on_oui_selected(text)`](ui/views/scanner_view.py#L604) — `L604`
+    - [`generate_macs()`](ui/views/scanner_view.py#L611) — `L611`
+    - [`prepend_macs(macs)`](ui/views/scanner_view.py#L650) — `L650`
+    - [`get_candidate_macs()`](ui/views/scanner_view.py#L661) — `L661`
+    - [`clear_candidates()`](ui/views/scanner_view.py#L666) — `L666`
+    - [`_update_queue_count()`](ui/views/scanner_view.py#L670) — `L670`
+    - [`_import_from_file()`](ui/views/scanner_view.py#L674) — `L674`
+    - [`_import_from_folder()`](ui/views/scanner_view.py#L688) — `L688`
+    - [`_import_from_clipboard()`](ui/views/scanner_view.py#L735) — `L735`
+    - [`_deduplicate_list()`](ui/views/scanner_view.py#L741) — `L741`
+    - [`_on_start_clicked()`](ui/views/scanner_view.py#L751) — `L751`
+    - [`get_scan_threads()`](ui/views/scanner_view.py#L793) — `L793`
+    - [`get_scan_delay()`](ui/views/scanner_view.py#L796) — `L796`
     - *... und 39 weitere Hilfsmethoden.*
 
 #### Wichtige Konstanten / Konfigurationen
@@ -1133,31 +1133,31 @@ and Quick Action Buttons (Favorite, Probe Stream, Copy URL, Export M3U, Fullscre
 
 ---
 
-### 📄 [`ui/components/sidebar.py`](ui/components/sidebar.py) (453 Zeilen)
+### 📄 [`ui/components/sidebar.py`](ui/components/sidebar.py) (450 Zeilen)
 > Collapsible Left Sidebar Widget.
 Manages Scan-Profiles & Hosts from 'mac_scans/' (Host selection, MAC login selection, Live Hit details),
 Quick Connection override, Player Engine selection, Prebuffer preset, Timeout, UI Scaling,
 and Connect/Disconnect action.
 
 #### Klassen & Komponenten
-- **[`SidebarWidget`](ui/components/sidebar.py#L32-L453)** : *QFrame* — `L32-L453`
+- **[`SidebarWidget`](ui/components/sidebar.py#L32-L450)** : *QFrame* — `L32-L450`
   - **Signals**: `host_selected`, `account_selected`, `profile_selected`, `reload_scans_requested`, `connect_requested`, `disconnect_requested`, `quick_fields_changed`, `player_engine_changed`, `prebuffer_preset_changed`, `timeout_changed`, `ui_scale_changed`, `mac_db_requested`
   - **Wichtige Methoden:**
     - [`__init__(parent)`](ui/components/sidebar.py#L46) — `L46`
-    - [`load_scan_repository(repo, default_host, default_mac)`](ui/components/sidebar.py#L285) — `L285` *(Lädt alle Hosts und Logins aus dem Scan-Repository in die Comboboxen.)*
-    - [`_on_host_index_changed(index)`](ui/components/sidebar.py#L316) — `L316`
-    - [`_populate_logins_for_host(host, target_mac)`](ui/components/sidebar.py#L326) — `L326`
-    - [`_on_login_index_changed(index)`](ui/components/sidebar.py#L352) — `L352`
-    - [`_apply_account_details(acc, host)`](ui/components/sidebar.py#L364) — `L364`
-    - [`_clear_account_details()`](ui/components/sidebar.py#L378) — `L378`
-    - [`get_selected_account()`](ui/components/sidebar.py#L385) — `L385`
-    - [`get_selected_host()`](ui/components/sidebar.py#L388) — `L388`
-    - [`_open_scans_folder()`](ui/components/sidebar.py#L391) — `L391`
-    - [`load_profiles(profiles, active_name)`](ui/components/sidebar.py#L407) — `L407` *(Fallback für Abwärtskompatibilität.)*
-    - [`display_profile(profile)`](ui/components/sidebar.py#L411) — `L411`
-    - [`set_connected_state(connected, busy)`](ui/components/sidebar.py#L418) — `L418`
-    - [`_emit_quick_fields()`](ui/components/sidebar.py#L433) — `L433`
-    - [`_on_timeout_combo(text)`](ui/components/sidebar.py#L441) — `L441`
+    - [`load_scan_repository(repo, default_host, default_mac)`](ui/components/sidebar.py#L282) — `L282` *(Lädt alle Hosts und Logins aus dem Scan-Repository in die Comboboxen.)*
+    - [`_on_host_index_changed(index)`](ui/components/sidebar.py#L313) — `L313`
+    - [`_populate_logins_for_host(host, target_mac)`](ui/components/sidebar.py#L323) — `L323`
+    - [`_on_login_index_changed(index)`](ui/components/sidebar.py#L349) — `L349`
+    - [`_apply_account_details(acc, host)`](ui/components/sidebar.py#L361) — `L361`
+    - [`_clear_account_details()`](ui/components/sidebar.py#L375) — `L375`
+    - [`get_selected_account()`](ui/components/sidebar.py#L382) — `L382`
+    - [`get_selected_host()`](ui/components/sidebar.py#L385) — `L385`
+    - [`_open_scans_folder()`](ui/components/sidebar.py#L388) — `L388`
+    - [`load_profiles(profiles, active_name)`](ui/components/sidebar.py#L404) — `L404` *(Fallback für Abwärtskompatibilität.)*
+    - [`display_profile(profile)`](ui/components/sidebar.py#L408) — `L408`
+    - [`set_connected_state(connected, busy)`](ui/components/sidebar.py#L415) — `L415`
+    - [`_emit_quick_fields()`](ui/components/sidebar.py#L430) — `L430`
+    - [`_on_timeout_combo(text)`](ui/components/sidebar.py#L438) — `L438`
     - *... und 1 weitere Hilfsmethoden.*
 
 ---

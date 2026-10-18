@@ -60,7 +60,7 @@ class TopNavigationBar(QFrame):
         self._nav_buttons: Dict[str, QPushButton] = {}
         nav_items = [
             ("live", "📺 Live TV"),
-            ("vod", "🎬 VOD & Serien"),
+            ("vod", "🎬 VOD && Serien"),
             ("scanner", "🎯 MAC Scanner"),
             ("inspector", "🔬 Inspector"),
             ("console", "🖥 Konsole"),
@@ -139,7 +139,7 @@ class TopNavigationBar(QFrame):
         row2.addStretch(1)
 
         # Shortcut Infos: Rechts neben / links vor den Jobs-Button geschoben
-        self.lbl_hotkeys_hint = QLabel("⌨ Shortcuts: Leertaste: Play/Pause  •  F11: Vollbild  •  F2: Favorit  •  M: Stumm  •  A: Format  •  T: Kino  •  P: PiP")
+        self.lbl_hotkeys_hint = QLabel("⌨ F11: Vollbild  •  Leertaste: Pause  •  T: Kino  •  P: PiP")
         self.lbl_hotkeys_hint.setStyleSheet("color: #64748B; font-size: 10px; font-weight: 500; padding-right: 6px;")
         row2.addWidget(self.lbl_hotkeys_hint)
 

@@ -144,21 +144,21 @@ class ScannerView(QWidget):
         gen_lay.setSpacing(8)
 
         row1 = QHBoxLayout()
-        lbl_gen = QLabel("🎲 MULTI-MAC GENERATOR &LISTEN-IMPORT")
+        lbl_gen = QLabel("🎲 Multi-MAC Generator")
         lbl_gen.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
         lbl_gen.setStyleSheet("color: #818CF8;")
         row1.addWidget(lbl_gen)
         row1.addStretch(1)
 
-        row1.addWidget(QLabel("Vendor OUI:"))
+        row1.addWidget(QLabel("Vendor:"))
         self.combo_oui = QComboBox()
         self.combo_oui.addItems(OUI_VENDOR_PRESETS)
         self.combo_oui.currentTextChanged.connect(self._on_oui_selected)
         row1.addWidget(self.combo_oui)
 
-        row1.addWidget(QLabel("Präfix / Maske:"))
+        row1.addWidget(QLabel("Maske:"))
         self.entry_mask = QLineEdit("00:1A:79:XX:XX:XX")
-        self.entry_mask.setFixedWidth(155)
+        self.entry_mask.setFixedWidth(135)
         self.entry_mask.setToolTip("Nutze X als Hex-Wildcard, z.B. 00:1A:79:A2:XX:XX")
         row1.addWidget(self.entry_mask)
 
@@ -181,35 +181,41 @@ class ScannerView(QWidget):
         gen_lay.addLayout(row1)
 
         row2 = QHBoxLayout()
-        btn_prepend_db = QPushButton("⭐ Bekannte DB-MACs voranstellen")
+        row2.setSpacing(6)
+        btn_prepend_db = QPushButton("⭐ DB-Vorrat")
+        btn_prepend_db.setToolTip("Bekannte MACs aus der Datenbank voranstellen")
         btn_prepend_db.clicked.connect(self.prepend_db_macs_requested.emit)
         row2.addWidget(btn_prepend_db)
 
-        btn_patterns = QPushButton("🧠 MAC-Muster analysieren")
-        btn_patterns.setStyleSheet("color: #38BDF8; font-weight: bold;")
+        btn_patterns = QPushButton("🧠 Muster-Analyse")
+        btn_patterns.setStyleSheet("color: #38BDF8; font-weight: 500;")
         btn_patterns.setToolTip("Analysiert bekannte Treffer auf Muster/Reihen (z.B. B5-Reihe) und generiert Permutationen")
         btn_patterns.clicked.connect(self.pattern_analysis_requested.emit)
         row2.addWidget(btn_patterns)
 
-        btn_import_file = QPushButton("📂 Aus Datei (.txt/.csv)")
+        btn_import_file = QPushButton("📂 Datei (.txt)")
+        btn_import_file.setToolTip("MACs aus Text- oder CSV-Datei importieren")
         btn_import_file.clicked.connect(self._import_from_file)
         row2.addWidget(btn_import_file)
 
-        btn_import_folder = QPushButton("📁 Ordner extrahieren (.txt)")
+        btn_import_folder = QPushButton("📁 Ordner (.txt)")
         btn_import_folder.setToolTip("Durchsucht alle .txt-Dateien eines Ordners rekursiv nach MACs und fügt sie dedupliziert hinzu")
         btn_import_folder.clicked.connect(self._import_from_folder)
         row2.addWidget(btn_import_folder)
 
-        btn_import_clip = QPushButton("📋 Aus Zwischenablage extrahieren")
+        btn_import_clip = QPushButton("📋 Zwischenablage")
+        btn_import_clip.setToolTip("MAC-Adressen aus der Zwischenablage extrahieren")
         btn_import_clip.clicked.connect(self._import_from_clipboard)
         row2.addWidget(btn_import_clip)
 
-        btn_dedup = QPushButton("🧹 Bereinigen & Dedup")
+        btn_dedup = QPushButton("🧹 Bereinigen")
+        btn_dedup.setToolTip("Duplikate entfernen und ungültige Zeilen bereinigen")
         btn_dedup.clicked.connect(self._deduplicate_list)
         row2.addWidget(btn_dedup)
 
         row2.addStretch(1)
-        btn_clear_macs = QPushButton("🗑 Liste leeren")
+        btn_clear_macs = QPushButton("🗑 Leeren")
+        btn_clear_macs.setToolTip("Kandidatenliste leeren")
         btn_clear_macs.clicked.connect(self.clear_candidates)
         row2.addWidget(btn_clear_macs)
         gen_lay.addLayout(row2)
@@ -225,7 +231,7 @@ class ScannerView(QWidget):
 
         # Header Bar
         p_head = QHBoxLayout()
-        lbl_p_title = QLabel("🌐 STALKER PORTAL-CHECKER & ROTATIONS-POOL")
+        lbl_p_title = QLabel("🌐 Stalker Portal-Checker && Rotations-Pool")
         lbl_p_title.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
         lbl_p_title.setStyleSheet("color: #38BDF8;")
         p_head.addWidget(lbl_p_title)
@@ -306,13 +312,15 @@ class ScannerView(QWidget):
 
         # Drawer Row 2: Actions & Filter Pills
         drow2 = QHBoxLayout()
-        self.btn_save_reachable = QPushButton("💾 Erreichbare speichern (reachable_portals.txt)")
-        self.btn_save_reachable.setStyleSheet("font-weight: bold; color: #10B981;")
+        self.btn_save_reachable = QPushButton("💾 Erreichbare speichern")
+        self.btn_save_reachable.setStyleSheet("font-weight: 500; color: #10B981;")
+        self.btn_save_reachable.setToolTip("Speichert alle erreichbaren Portale in reachable_portals.txt")
         self.btn_save_reachable.clicked.connect(self._save_reachable_portals_clicked)
         drow2.addWidget(self.btn_save_reachable)
 
-        self.btn_adopt_rotation = QPushButton("➕ In Scanner-Rotation übernehmen")
-        self.btn_adopt_rotation.setStyleSheet("font-weight: bold; color: #38BDF8;")
+        self.btn_adopt_rotation = QPushButton("➕ In Rotation übernehmen")
+        self.btn_adopt_rotation.setStyleSheet("font-weight: 500; color: #38BDF8;")
+        self.btn_adopt_rotation.setToolTip("Übernimmt erreichbare Portale in den aktiven Scanner-Rotationspool")
         self.btn_adopt_rotation.clicked.connect(self._adopt_to_rotation_clicked)
         drow2.addWidget(self.btn_adopt_rotation)
 
@@ -326,7 +334,8 @@ class ScannerView(QWidget):
             drow2.addWidget(pb)
             self._portal_filter_btns[key] = pb
 
-        btn_clear_ptable = QPushButton("🗑 Liste leeren")
+        btn_clear_ptable = QPushButton("🗑 Leeren")
+        btn_clear_ptable.setToolTip("Geprüfte Portalliste leeren")
         btn_clear_ptable.clicked.connect(self._clear_portal_results)
         drow2.addWidget(btn_clear_ptable)
         drawer_lay.addLayout(drow2)
@@ -379,26 +388,26 @@ class ScannerView(QWidget):
 
         # Rotation & Portal Selector Row
         crow0 = QHBoxLayout()
-        crow0.addWidget(QLabel("🎯 Ziel-Portal / Rotation:"))
+        crow0.addWidget(QLabel("🎯 Portal / Rotation:"))
         self.combo_portal_selector = QComboBox()
-        self.combo_portal_selector.setMinimumWidth(260)
+        self.combo_portal_selector.setMinimumWidth(200)
         self.combo_portal_selector.currentIndexChanged.connect(self._on_portal_selector_changed)
         crow0.addWidget(self.combo_portal_selector)
 
         self.chk_portal_rotation = QCheckBox("🔄 Rotation aktiv")
-        self.chk_portal_rotation.setStyleSheet("color: #38BDF8; font-weight: bold;")
+        self.chk_portal_rotation.setStyleSheet("color: #38BDF8; font-weight: 500;")
         self.chk_portal_rotation.toggled.connect(self._on_rotation_toggled)
         crow0.addWidget(self.chk_portal_rotation)
 
         crow0.addWidget(QLabel("Modus:"))
         self.combo_rotation_mode = QComboBox()
         self.combo_rotation_mode.addItems([
-            "Hot-Spot Affinity (Bei Hit fokussieren)",
+            "Hot-Spot Affinity",
             "Round-Robin (Verteilt)",
-            "Smart Adaptive (Hit-Rate gewichtet)",
-            "Failover bei Fehler (Auto-Switch)",
+            "Smart Adaptive",
+            "Failover Auto-Switch",
             "Sweep (Alle Portale)",
-            "Sweep (Stopp bei erstem Hit)",
+            "Sweep (Stopp bei Hit)",
         ])
         self.combo_rotation_mode.setToolTip(
             "Intelligente Scanning-Modi für Multi-Portal-Tests:\n"
@@ -421,12 +430,14 @@ class ScannerView(QWidget):
 
         # Scan Controls Row
         crow1 = QHBoxLayout()
+        crow1.setSpacing(6)
         crow1.addWidget(QLabel("Manuelle URL:"))
         self.entry_portal = QLineEdit()
         self.entry_portal.setPlaceholderText("http://example-portal.com/c/")
+        self.entry_portal.setMinimumWidth(180)
         crow1.addWidget(self.entry_portal, 1)
 
-        crow1.addWidget(QLabel("Geräte-Emulation:"))
+        crow1.addWidget(QLabel("Gerät:"))
         self.combo_model = QComboBox()
         self.combo_model.addItems(list(STB_PRESETS.keys()))
         crow1.addWidget(self.combo_model)
@@ -449,21 +460,21 @@ class ScannerView(QWidget):
         self.combo_delay.currentIndexChanged.connect(self._on_settings_changed_live)
         crow1.addWidget(self.combo_delay)
 
-        self.btn_start = QPushButton("🚀 SCAN STARTEN")
+        self.btn_start = QPushButton("🚀 Scan starten")
         self.btn_start.setObjectName("SuccessButton")
-        self.btn_start.setFixedHeight(34)
+        self.btn_start.setFixedHeight(30)
         self.btn_start.clicked.connect(self._on_start_clicked)
         crow1.addWidget(self.btn_start)
 
         self.btn_pause = QPushButton("⏸ PAUSE")
-        self.btn_pause.setFixedHeight(34)
+        self.btn_pause.setFixedHeight(30)
         self.btn_pause.setEnabled(False)
         self.btn_pause.clicked.connect(self._on_pause_clicked)
         crow1.addWidget(self.btn_pause)
 
-        self.btn_stop = QPushButton("⏹ STOPPEN")
+        self.btn_stop = QPushButton("⏹ Stopp")
         self.btn_stop.setObjectName("DangerButton")
-        self.btn_stop.setFixedHeight(34)
+        self.btn_stop.setFixedHeight(30)
         self.btn_stop.setEnabled(False)
         self.btn_stop.clicked.connect(self.stop_scan_requested.emit)
         crow1.addWidget(self.btn_stop)
@@ -546,11 +557,13 @@ class ScannerView(QWidget):
         self.chk_autoscroll.setChecked(True)
         f_row.addWidget(self.chk_autoscroll)
 
-        btn_export = QPushButton("💾 Treffer exportieren")
+        btn_export = QPushButton("💾 Exportieren")
+        btn_export.setToolTip("Gefundene HOT-Treffer als .txt exportieren")
         btn_export.clicked.connect(self._export_hits)
         f_row.addWidget(btn_export)
 
-        btn_clear_res = QPushButton("🗑 Ergebnisse leeren")
+        btn_clear_res = QPushButton("🗑 Leeren")
+        btn_clear_res.setToolTip("Ergebnisse leeren")
         btn_clear_res.clicked.connect(self.clear_results)
         f_row.addWidget(btn_clear_res)
         res_lay.addLayout(f_row)
@@ -1412,16 +1425,16 @@ class ScannerView(QWidget):
         cur_txt = self.combo_portal_selector.currentText()
         self.combo_portal_selector.blockSignals(True)
         self.combo_portal_selector.clear()
-        self.combo_portal_selector.addItem("✏ Manuelles Ziel-Portal (unten eingeben)")
+        self.combo_portal_selector.addItem("✏ Manuelles Portal (unten)")
         count = len(self._reachable_portals)
         if count > 0:
-            self.combo_portal_selector.addItem(f"🔄 Alle {count} erreichbaren Portale rotieren")
+            self.combo_portal_selector.addItem(f"🔄 {count} Portale in Rotation")
             for u in self._reachable_portals:
                 parsed = urlparse(u)
                 label = f"🟢 {parsed.netloc}{parsed.path}"
                 self.combo_portal_selector.addItem(label, u)
         else:
-            self.combo_portal_selector.addItem("🔄 Keine erreichbaren Portale (bitte erst prüfen)")
+            self.combo_portal_selector.addItem("🔄 Keine Portale (bitte prüfen)")
         self.combo_portal_selector.blockSignals(False)
 
         idx = self.combo_portal_selector.findText(cur_txt)

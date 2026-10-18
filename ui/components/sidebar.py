@@ -47,7 +47,7 @@ class SidebarWidget(QFrame):
         super().__init__(parent)
         self.setObjectName("Sidebar")
         self.setMinimumWidth(260)
-        self.setMaximumWidth(440)
+        self.setMaximumWidth(450)
         self._is_connected = False
         self._updating = False
         self._scan_repo: Optional[ScanRepository] = None
@@ -115,13 +115,13 @@ class SidebarWidget(QFrame):
         self.combo_logins.currentIndexChanged.connect(self._on_login_index_changed)
         prof_lay.addWidget(self.combo_logins)
 
-        # 3. Account-Details Info-Karte (kompakt 2 Zeilen)
+        # 3. Account-Details Info-Karte
         self.info_card = QFrame()
         self.info_card.setStyleSheet(
             "background-color: #0B1120; border: 1px solid #1E293B; border-radius: 6px;"
         )
         info_lay = QVBoxLayout(self.info_card)
-        info_lay.setContentsMargins(6, 3, 6, 3)
+        info_lay.setContentsMargins(6, 4, 6, 4)
         info_lay.setSpacing(2)
 
         row_a = QHBoxLayout()
@@ -135,16 +135,13 @@ class SidebarWidget(QFrame):
         row_a.addWidget(self.lbl_acc_channels)
         info_lay.addLayout(row_a)
 
-        row_b = QHBoxLayout()
-        row_b.setContentsMargins(0, 0, 0, 0)
-        self.lbl_acc_expire = QLabel("-")
+        self.lbl_acc_expire = QLabel("Ablauf: -")
         self.lbl_acc_expire.setStyleSheet("color: #CBD5E1; font-size: 10px;")
-        self.lbl_acc_scandate = QLabel("-")
+        info_lay.addWidget(self.lbl_acc_expire)
+
+        self.lbl_acc_scandate = QLabel("Scan: -")
         self.lbl_acc_scandate.setStyleSheet("color: #64748B; font-size: 10px;")
-        row_b.addWidget(self.lbl_acc_expire)
-        row_b.addStretch(1)
-        row_b.addWidget(self.lbl_acc_scandate)
-        info_lay.addLayout(row_b)
+        info_lay.addWidget(self.lbl_acc_scandate)
 
         prof_lay.addWidget(self.info_card)
 
@@ -366,8 +363,8 @@ class SidebarWidget(QFrame):
         self.lbl_acc_status.setText(f"🟢 {acc.status or 'Aktiv'}")
         ch_formatted = f"{acc.channels:,} Kanäle".replace(",", ".") if acc.channels > 0 else "0 Kanäle"
         self.lbl_acc_channels.setText(ch_formatted)
-        self.lbl_acc_expire.setText(acc.expire or "-")
-        self.lbl_acc_scandate.setText(acc.scandate or "-")
+        self.lbl_acc_expire.setText(f"Ablauf: {acc.expire or '-'}")
+        self.lbl_acc_scandate.setText(f"Scan: {acc.scandate or '-'}")
 
         # Schnellverbindungs-Eingaben automatisch synchronisieren
         self._updating = True
@@ -379,8 +376,8 @@ class SidebarWidget(QFrame):
         self._current_account = None
         self.lbl_acc_status.setText("⚪ Keine Daten")
         self.lbl_acc_channels.setText("0 Kanäle")
-        self.lbl_acc_expire.setText("-")
-        self.lbl_acc_scandate.setText("-")
+        self.lbl_acc_expire.setText("Ablauf: -")
+        self.lbl_acc_scandate.setText("Scan: -")
 
     def get_selected_account(self) -> Optional[ScanAccount]:
         return self._current_account

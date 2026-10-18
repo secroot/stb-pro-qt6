@@ -95,13 +95,16 @@ QPushButton {{
     color: {ThemeColors.TEXT_PRIMARY};
     border: 1px solid {ThemeColors.BORDER};
     border-radius: 6px;
-    padding: 4px 10px;
-    font-weight: 600;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 500;
 }}
 
 QPushButton#IconButton, QPushButton[compact="true"] {{
     padding: 2px 4px;
-    min-width: 24px;
+    font-size: 10px;
+    font-weight: 500;
+    min-width: 26px;
 }}
 
 QPushButton#SidebarToggle {{
@@ -109,9 +112,9 @@ QPushButton#SidebarToggle {{
     color: #CBD5E1;
     border: 1px solid #1E293B;
     border-radius: 6px;
-    padding: 2px 10px;
+    padding: 2px 8px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 500;
 }}
 
 QPushButton#SidebarToggle:hover {{
@@ -151,6 +154,9 @@ QPushButton#PrimaryButton {{
     background-color: {ThemeColors.ACCENT};
     color: #FFFFFF;
     border: 1px solid {ThemeColors.ACCENT_HOVER};
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
 }}
 
 QPushButton#PrimaryButton:hover {{
@@ -162,6 +168,9 @@ QPushButton#SuccessButton {{
     background-color: #059669;
     color: #FFFFFF;
     border: 1px solid {ThemeColors.SUCCESS};
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
 }}
 
 QPushButton#SuccessButton:hover {{
@@ -172,6 +181,9 @@ QPushButton#DangerButton {{
     background-color: #B91C1C;
     color: #FFFFFF;
     border: 1px solid {ThemeColors.DANGER};
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
 }}
 
 QPushButton#DangerButton:hover {{
@@ -182,6 +194,9 @@ QPushButton#WarningButton {{
     background-color: #B45309;
     color: #FFFFFF;
     border: 1px solid {ThemeColors.WARNING};
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
 }}
 
 QPushButton#WarningButton:hover {{
@@ -192,9 +207,10 @@ QPushButton#NavPill {{
     background-color: transparent;
     color: {ThemeColors.TEXT_SECONDARY};
     border: 1px solid transparent;
-    border-radius: 7px;
-    padding: 5px 11px;
-    font-weight: 600;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 500;
 }}
 
 QPushButton#NavPill:hover {{
@@ -206,6 +222,7 @@ QPushButton#NavPill[active="true"] {{
     background-color: {ThemeColors.ACCENT};
     color: #FFFFFF;
     border: 1px solid {ThemeColors.ACCENT_GLOW};
+    font-weight: 600;
 }}
 
 QPushButton#FilterPill {{
@@ -213,9 +230,9 @@ QPushButton#FilterPill {{
     color: {ThemeColors.TEXT_SECONDARY};
     border: 1px solid {ThemeColors.BORDER};
     border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 12px;
-    font-weight: 600;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 500;
 }}
 
 QPushButton#FilterPill:hover {{
@@ -235,7 +252,8 @@ QLineEdit, QPlainTextEdit, QTextEdit, QSpinBox, QDoubleSpinBox {{
     color: {ThemeColors.TEXT_PRIMARY};
     border: 1px solid {ThemeColors.BORDER};
     border-radius: 6px;
-    padding: 4px 8px;
+    padding: 3px 6px;
+    font-size: 11px;
 }}
 
 QLineEdit:focus, QPlainTextEdit:focus, QTextEdit:focus, QSpinBox:focus {{
@@ -248,7 +266,8 @@ QComboBox {{
     color: {ThemeColors.TEXT_PRIMARY};
     border: 1px solid {ThemeColors.BORDER};
     border-radius: 6px;
-    padding: 4px 8px;
+    padding: 3px 6px;
+    font-size: 11px;
     min-height: 20px;
 }}
 
@@ -510,9 +529,10 @@ def apply_obsidian_theme(app: QApplication, scale_factor: float = 1.0):
     app.setPalette(palette)
 
     sf = max(0.85, min(1.35, float(scale_factor)))
-    base_px = max(11, min(18, int(round(13 * sf))))
-    med_px = max(10, min(16, int(round(12 * sf))))
-    sm_px = max(9, min(15, int(round(11 * sf))))
+    base_px = max(11, min(16, int(round(12.5 * sf))))
+    med_px = max(10, min(14, int(round(11 * sf))))
+    sm_px = max(9, min(13, int(round(10.5 * sf))))
+    xs_px = max(8, min(12, int(round(9.5 * sf))))
 
     font = QFont("Segoe UI")
     font.setPixelSize(base_px)
@@ -522,5 +542,6 @@ def apply_obsidian_theme(app: QApplication, scale_factor: float = 1.0):
         GLOBAL_QSS.replace("font-size: 13px;", f"font-size: {base_px}px;")
         .replace("font-size: 12px;", f"font-size: {med_px}px;")
         .replace("font-size: 11px;", f"font-size: {sm_px}px;")
+        .replace("font-size: 10px;", f"font-size: {xs_px}px;")
     )
     app.setStyleSheet(qss)

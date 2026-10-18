@@ -257,7 +257,7 @@ class MainWindow(QMainWindow):
         self.body_splitter.addWidget(self.stack)
         self.body_splitter.setStretchFactor(0, 0)
         self.body_splitter.setStretchFactor(1, 1)
-        self.body_splitter.setSizes([285, 1255])
+        self.body_splitter.setSizes([260, 1280])
         root_lay.addWidget(self.body_splitter, 1)
 
         # Fullscreen HUD Overlay
