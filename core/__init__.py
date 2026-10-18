@@ -18,6 +18,12 @@ from core.signals import event_bus, worker_pool
 from core.vpn_manager import vpn_manager, NordVpnManager
 from core.scan_scheduler import ScanRotationMode, MultiPortalScanScheduler
 from core.pattern_predictor import MacPatternPredictor, MacClusterPattern
+from core.category_parser import (
+    calculate_days_until_expire,
+    detect_category_tags,
+    calculate_hit_rate,
+    format_hit_rate,
+)
 
 __all__ = [
     "Channel",
@@ -38,4 +44,8 @@ __all__ = [
     "MultiPortalScanScheduler",
     "MacPatternPredictor",
     "MacClusterPattern",
+    "calculate_days_until_expire",
+    "detect_category_tags",
+    "calculate_hit_rate",
+    "format_hit_rate",
 ]

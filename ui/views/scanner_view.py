@@ -30,13 +30,21 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSpinBox,
     QSplitter,
+    QStackedWidget,
     QTableWidget,
     QTableWidgetItem,
+    QTreeWidget,
+    QTreeWidgetItem,
     QVBoxLayout,
     QWidget,
 )
 
 from clients.stb_client import STB_PRESETS
+from core.category_parser import (
+    calculate_days_until_expire,
+    calculate_hit_rate,
+    format_hit_rate,
+)
 from core.portal_checker import (
     PortalCheckResult,
     StalkerPortalChecker,
@@ -109,6 +117,10 @@ class ScannerView(QWidget):
         self._smoothed_cps: float = 0.0
         self._smoothed_eta: Optional[float] = None
         self._smoothed_portal_eta: Optional[float] = None
+
+        # Baumansicht (Host-Gruppierung) für HOT Treffer
+        self._tree_host_items: Dict[str, QTreeWidgetItem] = {}
+        self._tree_host_hits: Dict[str, List[Dict[str, Any]]] = {}
 
         # Stalker Portal Checker & Rotations-Pool Attribute
         self._portal_checker = StalkerPortalChecker()
@@ -489,7 +501,7 @@ class ScannerView(QWidget):
         self.progress.setTextVisible(False)
         crow2.addWidget(self.progress, 1)
 
-        self.lbl_telemetry = QLabel("Bereit  |  0 / 0 geprüft  |  🔥 0 Hot  |  ⚡ 0.0 CPS  |  ETA: —")
+        self.lbl_telemetry = QLabel("Bereit  |  0 / 0 geprüft  |  🎯 Hit-Rate: 0.0% (0 Hits)  |  ⚡ 0.0 CPS  |  ETA: —")
         self.lbl_telemetry.setStyleSheet("color: #38BDF8; font-size: 11px; font-weight: bold;")
         crow2.addWidget(self.lbl_telemetry)
 
@@ -568,7 +580,10 @@ class ScannerView(QWidget):
         f_row.addWidget(btn_clear_res)
         res_lay.addLayout(f_row)
 
-        # Results Table
+        # Results Stack: QTableWidget für ALL/OK/ERR, QTreeWidget für HOT
+        self.results_stack = QStackedWidget()
+
+        # Results Table (ALL, OK, ERR)
         self.table = QTableWidget(0, 6)
         self.table.setHorizontalHeaderLabels(["MAC-Adresse", "Portal", "Status", "Ablaufdatum", "Kanäle", "Token / Info"])
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
@@ -584,7 +599,27 @@ class ScannerView(QWidget):
         hdr.setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents)
         hdr.setSectionResizeMode(5, QHeaderView.ResizeMode.Stretch)
         self.table.cellDoubleClicked.connect(self._on_row_double_clicked)
-        res_lay.addWidget(self.table, 1)
+        self.results_stack.addWidget(self.table)
+
+        # HOT Hits Tree Widget (Host-Gruppierung, ausklappbar)
+        self.hot_tree = QTreeWidget()
+        self.hot_tree.setColumnCount(5)
+        self.hot_tree.setHeaderLabels(["MAC-Adresse / Host", "Ablaufdatum", "Kanäle", "Bouquet / Tags", "Token / Info"])
+        self.hot_tree.setAnimated(True)
+        self.hot_tree.setIndentation(22)
+        self.hot_tree.setSelectionMode(QTreeWidget.SelectionMode.SingleSelection)
+        self.hot_tree.setEditTriggers(QTreeWidget.EditTrigger.NoEditTriggers)
+        tree_hdr = self.hot_tree.header()
+        tree_hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+        tree_hdr.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
+        tree_hdr.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
+        tree_hdr.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
+        tree_hdr.setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
+        self.hot_tree.itemClicked.connect(self._on_tree_item_clicked)
+        self.hot_tree.itemDoubleClicked.connect(self._on_tree_item_double_clicked)
+        self.results_stack.addWidget(self.hot_tree)
+
+        res_lay.addWidget(self.results_stack, 1)
 
         lbl_hint = QLabel("💡 Tipp: Doppelklick auf einen Treffer übernimmt die MAC sofort in das aktive Profil und verbindet.")
         lbl_hint.setStyleSheet("color: #64748B; font-size: 11px;")
@@ -825,6 +860,11 @@ class ScannerView(QWidget):
             self._is_paused = False
             self.btn_pause.setText("⏸ PAUSE")
             self.btn_pause.setStyleSheet("")
+            if self._done_count > 0:
+                hit_rate = calculate_hit_rate(self._hot_results_count, self._done_count)
+                self.lbl_telemetry.setText(
+                    f"{self._done_count} / {self._total_to_scan} geprüft  |  🎯 Hit-Rate: {hit_rate:.1f}% ({self._hot_results_count} Hits)  |  ⚡ 0.0 CPS  |  ETA: 00:00"
+                )
 
     def add_scan_result(self, res: Dict[str, Any]):
         is_hot = (res.get("tag") == "hot" and int(res.get("channels") or 0) > 0)
@@ -833,9 +873,15 @@ class ScannerView(QWidget):
             self._filter_btns["HOT"].setText(f"HOT ({self._hot_results_count})")
 
         self._results.append(res)
+
+        if is_hot:
+            child = self._append_hot_tree_row(res)
+            if self._filter_mode == "HOT" and self.chk_autoscroll.isChecked():
+                self.hot_tree.scrollToItem(child)
+
         if self._matches_filter(res):
             self._append_row(res)
-            if self.chk_autoscroll.isChecked():
+            if self._filter_mode != "HOT" and self.chk_autoscroll.isChecked():
                 self.table.scrollToBottom()
 
         if res.get("rate_limited"):
@@ -920,9 +966,10 @@ class ScannerView(QWidget):
         self._last_telemetry_visual_ts = now
 
         hot_cnt = self._hot_results_count
+        hit_rate = calculate_hit_rate(hot_cnt, done)
         pause_txt = " [⏸ PAUSIERT]" if self._is_paused else ""
         self.lbl_telemetry.setText(
-            f"{done} / {total} geprüft{pause_txt}  |  🔥 {hot_cnt} Hot  |  ⚡ {cps:.1f} CPS  |  ETA: {eta_str}"
+            f"{done} / {total} geprüft{pause_txt}  |  🎯 Hit-Rate: {hit_rate:.1f}% ({hot_cnt} Hits)  |  ⚡ {cps:.1f} CPS  |  ETA: {eta_str}"
         )
 
     def _matches_filter(self, res: Dict[str, Any]) -> bool:
@@ -943,7 +990,13 @@ class ScannerView(QWidget):
             btn.setProperty("active", "true" if k == mode else "false")
             btn.style().unpolish(btn)
             btn.style().polish(btn)
+
         self._rebuild_table()
+        if mode == "HOT":
+            self.results_stack.setCurrentWidget(self.hot_tree)
+            self._rebuild_hot_tree()
+        else:
+            self.results_stack.setCurrentWidget(self.table)
 
     def _update_filter_badges(self):
         self._hot_results_count = sum(1 for r in self._results if r.get("tag") == "hot" and int(r.get("channels") or 0) > 0)
@@ -1046,6 +1099,126 @@ class ScannerView(QWidget):
             if mac and url:
                 self.apply_mac_requested.emit(url, mac, model)
 
+    def _extract_res_hostname(self, res: Dict[str, Any]) -> str:
+        raw_url = str(res.get("portal_url") or self.entry_portal.text() or "").strip()
+        if not raw_url:
+            return "Unbekannt"
+        parsed = urlparse(raw_url if "://" in raw_url else f"http://{raw_url}")
+        if parsed.port and parsed.port not in (80, 443):
+            return parsed.netloc or raw_url
+        return parsed.hostname or parsed.netloc or raw_url
+
+    def _rebuild_hot_tree(self):
+        """Erstellt die Host-gruppierte Baumansicht für alle HOT-Treffer neu."""
+        self.hot_tree.clear()
+        self._tree_host_items.clear()
+        self._tree_host_hits.clear()
+
+        hot_hits = [r for r in self._results if r.get("tag") == "hot" and int(r.get("channels") or 0) > 0]
+        for r in hot_hits:
+            self._append_hot_tree_row(r)
+
+        if self.chk_autoscroll.isChecked() and self.hot_tree.topLevelItemCount() > 0:
+            last_top = self.hot_tree.topLevelItem(self.hot_tree.topLevelItemCount() - 1)
+            if last_top.childCount() > 0:
+                self.hot_tree.scrollToItem(last_top.child(last_top.childCount() - 1))
+            else:
+                self.hot_tree.scrollToItem(last_top)
+
+    def _append_hot_tree_row(self, res: Dict[str, Any]) -> QTreeWidgetItem:
+        """Fügt einen HOT-Treffer dynamisch in die Host-Kategorie der Baumansicht ein."""
+        host = self._extract_res_hostname(res)
+        if host not in self._tree_host_items:
+            parent = QTreeWidgetItem(self.hot_tree)
+            parent.setFont(0, QFont("Segoe UI", 10, QFont.Weight.Bold))
+            parent.setForeground(0, QColor("#38BDF8"))
+            parent.setBackground(0, QColor("#1E293B"))
+            for c in range(1, 5):
+                parent.setBackground(c, QColor("#1E293B"))
+            parent.setExpanded(True)
+            self._tree_host_items[host] = parent
+            self._tree_host_hits[host] = []
+        else:
+            parent = self._tree_host_items[host]
+
+        self._tree_host_hits[host].append(res)
+        hit_count = len(self._tree_host_hits[host])
+        parent.setText(0, f"[{host}] | [{hit_count} Hot Hits]")
+
+        child = QTreeWidgetItem(parent)
+        mac = str(res.get("mac", ""))
+        child.setText(0, mac)
+        child.setData(0, Qt.ItemDataRole.UserRole, res)
+        child.setFont(0, QFont("Consolas", 10, QFont.Weight.Bold))
+        child.setForeground(0, QColor("#10B981"))
+
+        # Ablaufdatum + Countdown in Tagen
+        expire_val = str(res.get("expire") or "-").strip()
+        countdown = calculate_days_until_expire(expire_val)
+        if countdown:
+            if expire_val.lower() in ("unlimited", "unbegrenzt", "lifetime", "never", "dauerhaft", "permanent"):
+                child.setText(1, "Unbegrenzt")
+                child.setForeground(1, QColor("#10B981"))
+            else:
+                child.setText(1, f"{expire_val} ({countdown})")
+                if countdown.startswith("abgelaufen"):
+                    child.setForeground(1, QColor("#EF4444"))
+                elif countdown == "heute":
+                    child.setForeground(1, QColor("#F59E0B"))
+                else:
+                    child.setForeground(1, QColor("#38BDF8"))
+        else:
+            child.setText(1, expire_val if expire_val else "—")
+            child.setForeground(1, QColor("#94A3B8"))
+
+        # Senderanzahl
+        ch_cnt = int(res.get("channels") or 0)
+        ch_txt = f"{ch_cnt} Kanal" if ch_cnt == 1 else f"{ch_cnt} Kanäle"
+        child.setText(2, ch_txt)
+        child.setForeground(2, QColor("#10B981"))
+        child.setFont(2, QFont("Segoe UI", 9, QFont.Weight.Bold))
+
+        # Bouquet / Kategorie Tags
+        tags = res.get("tags") or []
+        if tags:
+            child.setText(3, " ".join(tags))
+            child.setForeground(3, QColor("#F59E0B"))
+            child.setFont(3, QFont("Segoe UI", 9, QFont.Weight.Bold))
+        else:
+            child.setText(3, "—")
+            child.setForeground(3, QColor("#64748B"))
+
+        # Token / Info / VPN
+        tok = str(res.get("token") or "")
+        loc = str(res.get("vpn_location") or res.get("proxy_location") or "")
+        info_bits = []
+        if loc:
+            info_bits.append(f"VPN: {loc}")
+        if tok:
+            info_bits.append(f"Token: {tok[:16]}…")
+        child.setText(4, "  |  ".join(info_bits) if info_bits else (tok or "—"))
+        child.setForeground(4, QColor("#94A3B8"))
+
+        return child
+
+    def _on_tree_item_clicked(self, item: QTreeWidgetItem, _column: int):
+        """Klappt beim einfachen Klick auf einen Host-Header die Kategorie dynamisch auf oder zu."""
+        res = item.data(0, Qt.ItemDataRole.UserRole)
+        if not isinstance(res, dict):
+            item.setExpanded(not item.isExpanded())
+
+    def _on_tree_item_double_clicked(self, item: QTreeWidgetItem, _column: int):
+        """Übernimmt den MAC-Account bei Doppelklick im Tree und verbindet sofort."""
+        res = item.data(0, Qt.ItemDataRole.UserRole)
+        if isinstance(res, dict):
+            mac = str(res.get("mac") or "")
+            url = str(res.get("portal_url") or self.entry_portal.text() or "").strip()
+            model = self.combo_model.currentText()
+            if mac and url:
+                self.apply_mac_requested.emit(url, mac, model)
+        else:
+            item.setExpanded(not item.isExpanded())
+
     def _export_hits(self):
         hits = [r for r in self._results if r.get("tag") == "hot" and int(r.get("channels") or 0) > 0]
         if not hits:
@@ -1082,17 +1255,20 @@ class ScannerView(QWidget):
                     p_mac = str(r.get("mac") or "").strip()
                     p_expire = str(r.get("expire") or "-").strip()
                     p_channels = str(r.get("channels") or "0").strip()
-                    block = (
-                        f"{sep}\n"
-                        f"Portal: {p_url}\n"
-                        f"Status: {p_status}\n"
-                        f"Mac: {p_mac}\n"
-                        f"Scandate: {now_str}\n"
-                        f"Expire: {p_expire}\n"
-                        f"Channels: {p_channels}\n"
-                        f"{sep}"
-                    )
-                    blocks.append(block)
+                    p_tags = " ".join(r.get("tags") or [])
+                    block_lines = [
+                        sep,
+                        f"Portal: {p_url}",
+                        f"Status: {p_status}",
+                        f"Mac: {p_mac}",
+                        f"Scandate: {now_str}",
+                        f"Expire: {p_expire}",
+                        f"Channels: {p_channels}",
+                    ]
+                    if p_tags:
+                        block_lines.append(f"Categories: {p_tags}")
+                    block_lines.append(sep)
+                    blocks.append("\n".join(block_lines))
 
                 content = "\n\n".join(blocks) + "\n"
                 with open(path, "w", encoding="utf-8") as f:
@@ -1108,7 +1284,11 @@ class ScannerView(QWidget):
         self._results.clear()
         self._hot_results_count = 0
         self.table.setRowCount(0)
+        self.hot_tree.clear()
+        self._tree_host_items.clear()
+        self._tree_host_hits.clear()
         self._update_filter_badges()
+        self.lbl_telemetry.setText("Bereit  |  0 / 0 geprüft  |  🎯 Hit-Rate: 0.0% (0 Hits)  |  ⚡ 0.0 CPS  |  ETA: —")
 
     # ── STALKER PORTAL-CHECKER & ROTATIONS-POOL METHODEN ──
 

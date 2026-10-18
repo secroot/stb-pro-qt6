@@ -74,6 +74,7 @@ from core.preview_grabber import (
 from core.recorder import Recorder
 from core.scan_repository import ScanRepository, ScanHost, ScanAccount
 from core.scan_scheduler import MultiPortalScanScheduler, ScanRotationMode
+from core.category_parser import calculate_hit_rate, detect_category_tags
 from core.signals import event_bus, worker_pool
 from core.stream_buffer import BufferSettings
 from core.stream_probe import probe_stream
@@ -2487,6 +2488,8 @@ class MainWindow(QMainWindow):
             active_workers = 0
             retry_counts = collections.defaultdict(int)
             lock = threading.Lock()
+            portal_genres_cache: Dict[str, List[Any]] = {}
+            hot_hits_count = 0
 
             # Anti-Ban Tracking (VPN-Rotation bei >30 Verbindungsfehlern in 5s nach früheren Hits)
             hosts_with_hits: Set[str] = set()
@@ -2496,7 +2499,7 @@ class MainWindow(QMainWindow):
             vpn_rotation_lock = threading.Lock()
 
             def _worker():
-                nonlocal active_workers
+                nonlocal active_workers, hot_hits_count
                 with lock:
                     active_workers += 1
 
@@ -2571,6 +2574,7 @@ class MainWindow(QMainWindow):
                                 sortby_param=scan_sortby,
                                 fallback_get_all=scan_fallback,
                                 device_id_mode=dev_mode,
+                                portal_genres_cache=portal_genres_cache,
                             )
                             res["portal_url"] = cur_portal
 
@@ -2724,15 +2728,20 @@ class MainWindow(QMainWindow):
                             is_valid_exp = is_valid_expire_date(res.get("expire"))
                             if res.get("valid") and ch_cnt > 0 and is_valid_exp:
                                 res["tag"] = "hot"
+                                with lock:
+                                    hot_hits_count += 1
                                 hosts_with_hits.add(norm_host)
                                 loc = active_vpn_locations.get(norm_host) or getattr(vpn_manager, "_last_known_country", "") or ""
                                 if loc:
                                     res["vpn_location"] = loc
                                     res["proxy_location"] = loc
+                                if not res.get("tags"):
+                                    res["tags"] = detect_category_tags(portal_genres_cache.get(cur_portal.strip().rstrip("/"), []))
                                 self.mac_db.save_found_mac(cur_portal, res)
                                 loc_txt = f" | VPN: {loc}" if loc else ""
+                                tags_txt = f" | {' '.join(res['tags'])}" if res.get("tags") else ""
                                 event_bus.log_message.emit(
-                                    f"[🔥 HIT] {res['mac']} | {ch_cnt} Kanäle | Exp: {res.get('expire')}{loc_txt} ({cur_portal})"
+                                    f"[🔥 HIT] {res['mac']} | {ch_cnt} Kanäle | Exp: {res.get('expire')}{tags_txt}{loc_txt} ({cur_portal})"
                                 )
                             elif res.get("valid"):
                                 res["tag"] = "valid"
@@ -2789,7 +2798,10 @@ class MainWindow(QMainWindow):
 
             final_done, final_total = scheduler.get_progress()
             event_bus.scan_state_changed.emit(False)
-            event_bus.log_message.emit(f"[+] MAC-Scan beendet ({final_done}/{final_total} Checks abgeschlossen).")
+            hit_rate = calculate_hit_rate(hot_hits_count, final_done)
+            event_bus.log_message.emit(
+                f"[+] MAC-Scan beendet ({final_done}/{final_total} Checks abgeschlossen | Hit-Rate: {hit_rate:.1f}%)."
+            )
 
         threading.Thread(target=_coordinator, daemon=True).start()
 

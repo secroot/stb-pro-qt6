@@ -117,6 +117,7 @@ class MacDatabase:
                 "token": str(res.get("token", "")),
                 "model": str(res.get("model") or (existing or {}).get("model") or "MAG 250"),
                 "vpn_location": vpn_loc,
+                "tags": list(res.get("tags") or (existing or {}).get("tags") or []),
                 "first_seen": first_seen,
                 "last_seen": now_str,
             }

@@ -5,7 +5,12 @@ Erweitert den bewährten StbClient um Live-HTTP-Telemetrie für den interaktiven
 """
 import os
 import sys
-from typing import Optional, Dict, Any
+import threading
+from typing import Optional, Dict, Any, List
+
+# Cache für Portal-Kategorien / Genres während MAC-Scans (Portal-URL -> Liste von Genres)
+_SCAN_GENRES_CACHE: Dict[str, List[Any]] = {}
+_SCAN_GENRES_LOCK = threading.Lock()
 
 # Füge Parent-Verzeichnis für den Basis-StbClient hinzu, sodass jegliche Protokoll-Updates sofort greifen
 _APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -327,6 +332,8 @@ def check_mac_account(
     fallback_get_all: bool = True,
     device_id_mode: Optional[str] = None,
     enable_error_log: bool = False,
+    portal_genres_cache: Optional[Dict[str, List[Any]]] = None,
+    fetch_genres: bool = True,
 ) -> Dict[str, Any]:
     """Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarkeit."""
     import time
@@ -342,6 +349,7 @@ def check_mac_account(
         "blocked": None,
         "expire": None,
         "channels": 0,
+        "tags": [],
         "error": None,
         "load_url": normalized_load_url,
     }
@@ -396,6 +404,7 @@ def check_mac_account(
 
         # Schnelle Kanalanzahl-Ermittlung via paginiertem Endpoint get_ordered_list
         ch_timeout = (min(3.0, float(timeout)), min(6.0, float(timeout)))
+        last_channel_response = None
         for att in range(2):
             try:
                 res_ord = client._request(
@@ -404,6 +413,7 @@ def check_mac_account(
                     extra_params={"genre": genre_param, "sortby": sortby_param, "p": "1"},
                     timeout_override=ch_timeout,
                 )
+                last_channel_response = res_ord
                 if isinstance(res_ord, dict) and res_ord.get("total_items") is not None:
                     res["channels"] = int(res_ord["total_items"])
                 elif isinstance(res_ord, dict) and "data" in res_ord and isinstance(res_ord["data"], (list, dict)):
@@ -417,6 +427,7 @@ def check_mac_account(
                 # Fallback: get_all_channels nur falls get_ordered_list 0 liefert und Fallback aktiv ist
                 if fallback_get_all:
                     res_ch = client._request("get_all_channels", req_type="itv", timeout_override=ch_timeout)
+                    last_channel_response = res_ch
                     if isinstance(res_ch, dict) and res_ch.get("total_items") is not None:
                         res["channels"] = int(res_ch["total_items"])
                     elif isinstance(res_ch, dict) and "data" in res_ch:
@@ -449,6 +460,49 @@ def check_mac_account(
                 res["expire"] = _dt.datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M")
             except Exception:
                 pass
+
+        # Bouquet / Kategorie Tag-Erkennung (nur einmalig pro Portal abfragen & cachen)
+        if fetch_genres and res.get("valid") and res.get("channels", 0) > 0:
+            target_cache = portal_genres_cache if portal_genres_cache is not None else _SCAN_GENRES_CACHE
+            norm_p_key = portal_url.strip().rstrip("/")
+            with _SCAN_GENRES_LOCK:
+                cached_genres = target_cache.get(norm_p_key)
+            if cached_genres is None:
+                with _SCAN_GENRES_LOCK:
+                    cached_genres = target_cache.get(norm_p_key)
+                    if cached_genres is None:
+                        # Reserviere Key, um doppelte Abfragen durch parallele Worker zu verhindern
+                        target_cache[norm_p_key] = []
+                        need_query = True
+                    else:
+                        need_query = False
+                if need_query:
+                    try:
+                        fetched = client.get_genres()
+                        if not fetched:
+                            # Fallback: Genre- und Sendernamen aus den ersten Kanälen extrahieren
+                            curr_ord = last_channel_response
+                            if isinstance(curr_ord, dict) and "data" in curr_ord and isinstance(curr_ord["data"], list):
+                                fetched = []
+                                for ch in curr_ord["data"][:50]:
+                                    if isinstance(ch, dict):
+                                        for field in ("group_title", "category_name", "genre_name", "name", "alias"):
+                                            v = ch.get(field)
+                                            if v and isinstance(v, str):
+                                                fetched.append(v)
+                                        if ch.get("censored") in (1, "1", True):
+                                            fetched.append({"censored": 1})
+                        with _SCAN_GENRES_LOCK:
+                            target_cache[norm_p_key] = fetched or []
+                    except Exception:
+                        with _SCAN_GENRES_LOCK:
+                            target_cache[norm_p_key] = []
+
+            with _SCAN_GENRES_LOCK:
+                genres_for_tags = list(target_cache.get(norm_p_key, []))
+
+            from core.category_parser import detect_category_tags
+            res["tags"] = detect_category_tags(genres_for_tags)
 
     except PermissionError as pe:
         res["status"] = "Ungültig / Nicht autorisiert"
