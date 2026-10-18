@@ -522,8 +522,8 @@ class TestScannerViewHitRateAndHotTree(unittest.TestCase):
         tags_both = detect_category_tags(categories=["DE: Das Erste", "18+ Adult TV"], vod_categories=[{"id": 2, "title": "Erotic Movies"}])
         self.assertEqual(tags_both, [GERMAN_TAG, RESTRICTED_TV_TAG, RESTRICTED_VOD_TAG])
 
-    def test_21_vod_portal_caching_in_check_mac_account(self):
-        """Verifiziert, dass VOD-Kategorien im Scanner genau einmalig pro Portal abgefragt und gecacht werden."""
+    def test_21_account_bouquet_isolation_and_tag_accuracy(self):
+        """Verifiziert, dass unterschiedliche MAC-Accounts auf demselben Portal isoliert getaggt werden."""
         from clients.stb_client import check_mac_account
         mock_client = MagicMock()
         mock_client.format_mac = lambda m: m
@@ -531,31 +531,37 @@ class TestScannerViewHitRateAndHotTree(unittest.TestCase):
         mock_client.get_token.return_value = "token123"
         mock_client.get_profile.return_value = {"blocked": "0", "expire_billing_date": "2027-01-01"}
         mock_client.get_account_info.return_value = {}
+        mock_client._request.return_value = {"total_items": 10, "data": []}
+
+        # MAC 1 hat VOD 18+ im Paket
         mock_client.get_genres.return_value = [{"id": 1, "title": "DE: Regional"}]
         mock_client.get_vod_categories.return_value = [{"id": 99, "title": "Mature Lounge"}]
-        mock_client._request.return_value = {"total_items": 10, "data": []}
 
         local_cache = {}
         with patch("clients.stb_client.StbClient", return_value=mock_client):
-            # 1. Check
             res1 = check_mac_account(
                 portal_url="http://vodtest.tv/c",
                 mac="00:1A:79:AA:BB:01",
                 portal_genres_cache=local_cache,
             )
-            # 2. Check (selbes Portal, andere MAC)
+
+            # MAC 2 hat kein 18+ gebucht (nur normales TV & VOD)
+            mock_client.get_genres.return_value = [{"id": 2, "title": "DE: Sport"}]
+            mock_client.get_vod_categories.return_value = [{"id": 10, "title": "Action Cinema"}]
+
             res2 = check_mac_account(
                 portal_url="http://vodtest.tv/c",
                 mac="00:1A:79:AA:BB:02",
                 portal_genres_cache=local_cache,
             )
 
-            self.assertEqual(mock_client.get_vod_categories.call_count, 1)
-            self.assertEqual(mock_client.get_genres.call_count, 1)
+            # Verifikation: MAC 1 hat [18+ VOD], MAC 2 darf NICHT mit [18+ VOD] kontaminiert werden!
             self.assertIn(GERMAN_TAG, res1.get("tags", []))
             self.assertIn(RESTRICTED_VOD_TAG, res1.get("tags", []))
-            self.assertNotIn(RESTRICTED_TV_TAG, res1.get("tags", []))
-            self.assertEqual(res1.get("tags"), res2.get("tags"))
+
+            self.assertIn(GERMAN_TAG, res2.get("tags", []))
+            self.assertNotIn(RESTRICTED_VOD_TAG, res2.get("tags", []))
+            self.assertNotIn(RESTRICTED_TV_TAG, res2.get("tags", []))
 
 
 if __name__ == "__main__":

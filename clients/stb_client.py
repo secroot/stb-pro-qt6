@@ -461,69 +461,33 @@ def check_mac_account(
             except Exception:
                 pass
 
-        # Bouquet / Kategorie Tag-Erkennung (nur einmalig pro Portal abfragen & cachen)
+        # Bouquet / Kategorie Tag-Erkennung (wird spezifisch pro validem MAC-Account abgefragt,
+        # da Stalker-Genres und VOD-Pakete pro Benutzer-Abonnement/Tarif variieren!)
         if fetch_genres and res.get("valid") and res.get("channels", 0) > 0:
-            target_cache = portal_genres_cache if portal_genres_cache is not None else _SCAN_GENRES_CACHE
-            norm_p_key = portal_url.strip().rstrip("/")
-            vod_p_key = f"{norm_p_key}#vod"
+            genres_for_tags = []
+            try:
+                genres_for_tags = client.get_genres() or []
+                if not genres_for_tags:
+                    # Fallback: Genre- und Sendernamen aus den ersten Kanälen extrahieren
+                    curr_ord = last_channel_response
+                    if isinstance(curr_ord, dict) and "data" in curr_ord and isinstance(curr_ord["data"], list):
+                        genres_for_tags = []
+                        for ch in curr_ord["data"][:50]:
+                            if isinstance(ch, dict):
+                                for field in ("group_title", "category_name", "genre_name", "alias", "name", "title"):
+                                    v = ch.get(field)
+                                    if v and isinstance(v, str):
+                                        genres_for_tags.append(v)
+                                if ch.get("censored") in (1, "1", True):
+                                    genres_for_tags.append({"censored": 1})
+            except Exception:
+                genres_for_tags = []
 
-            # 1. Live-TV Genres (einmalig pro Portal)
-            with _SCAN_GENRES_LOCK:
-                cached_genres = target_cache.get(norm_p_key)
-            if cached_genres is None:
-                with _SCAN_GENRES_LOCK:
-                    cached_genres = target_cache.get(norm_p_key)
-                    if cached_genres is None:
-                        # Reserviere Key, um doppelte Abfragen durch parallele Worker zu verhindern
-                        target_cache[norm_p_key] = []
-                        need_query = True
-                    else:
-                        need_query = False
-                if need_query:
-                    try:
-                        fetched = client.get_genres()
-                        if not fetched:
-                            # Fallback: Genre- und Sendernamen aus den ersten Kanälen extrahieren
-                            curr_ord = last_channel_response
-                            if isinstance(curr_ord, dict) and "data" in curr_ord and isinstance(curr_ord["data"], list):
-                                fetched = []
-                                for ch in curr_ord["data"][:50]:
-                                    if isinstance(ch, dict):
-                                        for field in ("group_title", "category_name", "genre_name", "alias", "name", "title"):
-                                            v = ch.get(field)
-                                            if v and isinstance(v, str):
-                                                fetched.append(v)
-                                        if ch.get("censored") in (1, "1", True):
-                                            fetched.append({"censored": 1})
-                        with _SCAN_GENRES_LOCK:
-                            target_cache[norm_p_key] = fetched or []
-                    except Exception:
-                        with _SCAN_GENRES_LOCK:
-                            target_cache[norm_p_key] = []
-
-            # 2. VOD-Kategorien (einmalig pro Portal für [18+ VOD] Erkennung)
-            with _SCAN_GENRES_LOCK:
-                cached_vod = target_cache.get(vod_p_key)
-            if cached_vod is None:
-                with _SCAN_GENRES_LOCK:
-                    cached_vod = target_cache.get(vod_p_key)
-                    if cached_vod is None:
-                        target_cache[vod_p_key] = []
-                        need_query_vod = True
-                    else:
-                        need_query_vod = False
-                if need_query_vod:
-                    try:
-                        fetched_vod = client.get_vod_categories()
-                        with _SCAN_GENRES_LOCK:
-                            target_cache[vod_p_key] = fetched_vod or []
-                    except Exception:
-                        with _SCAN_GENRES_LOCK:
-                            target_cache[vod_p_key] = []
-
-            with _SCAN_GENRES_LOCK:
-                genres_for_tags = list(target_cache.get(norm_p_key, []))
-                vod_genres_for_tags = list(target_cache.get(vod_p_key, []))
+            vod_genres_for_tags = []
+            try:
+                vod_genres_for_tags = client.get_vod_categories() or []
+            except Exception:
+                vod_genres_for_tags = []
 
             from core.category_parser import detect_category_tags
             res["tags"] = detect_category_tags(
@@ -531,6 +495,13 @@ def check_mac_account(
                 vod_categories=vod_genres_for_tags,
                 distinguish_media=True,
             )
+
+            if portal_genres_cache is not None:
+                norm_p_key = portal_url.strip().rstrip("/")
+                target_key = f"{norm_p_key}:{res['mac']}"
+                with _SCAN_GENRES_LOCK:
+                    portal_genres_cache[target_key] = genres_for_tags
+                    portal_genres_cache[f"{target_key}#vod"] = vod_genres_for_tags
 
     except PermissionError as pe:
         res["status"] = "Ungültig / Nicht autorisiert"

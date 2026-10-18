@@ -2735,13 +2735,8 @@ class MainWindow(QMainWindow):
                                 if loc:
                                     res["vpn_location"] = loc
                                     res["proxy_location"] = loc
-                                if not res.get("tags"):
-                                    p_norm = cur_portal.strip().rstrip("/")
-                                    res["tags"] = detect_category_tags(
-                                        categories=portal_genres_cache.get(p_norm, []),
-                                        vod_categories=portal_genres_cache.get(f"{p_norm}#vod", []),
-                                        distinguish_media=True,
-                                    )
+                                if "tags" not in res:
+                                    res["tags"] = []
                                 self.mac_db.save_found_mac(cur_portal, res)
                                 loc_txt = f" | VPN: {loc}" if loc else ""
                                 tags_txt = f" | {' '.join(res['tags'])}" if res.get("tags") else ""

@@ -56,7 +56,7 @@
 | `ChannelFilterProxyModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L213-L281) | `L213-L281` | Zero-allocation filter proxy supporting Category, Search, Favorites, Recent, HD/4K, and De... |
 | `ChannelListModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L51-L210) | `L51-L210` | High-performance backing model for 50,000+ Live TV channels. |
 | `ChannelRoles` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L33-L48) | `L33-L48` | Basis:  |
-| `check_mac_account` | **Function** | [clients/stb_client.py](clients/stb_client.py#L318-L563) | `L318-L563` | Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarke... |
+| `check_mac_account` | **Function** | [clients/stb_client.py](clients/stb_client.py#L318-L534) | `L318-L534` | Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarke... |
 | `check_single_portal` | **Function** | [core/portal_checker.py](core/portal_checker.py#L482-L626) | `L482-L626` | Prüft einen einzelnen Portal-Host rigoros auf echte Stalker/Ministra-Erreichbarkeit, |
 | `ConfigManager` | **Class / Widget** | [core/config_manager.py](core/config_manager.py#L60-L334) | `L60-L334` | Verwaltet Profile, Live-/VOD-Favoriten, Verlauf, Player-Pfade und UI-Einstellungen. |
 | `ConsoleView` | **Class / Widget** | [ui/views/console_view.py](ui/views/console_view.py#L26-L156) | `L26-L156` | Basis: QWidget |
@@ -118,7 +118,7 @@
 | `MacPatternDialog` | **Class / Widget** | [ui/dialogs/mac_pattern_dialog.py](ui/dialogs/mac_pattern_dialog.py#L33-L308) | `L33-L308` | Dialog für die Mustererkennung und Permutations-Generierung. |
 | `MacPatternPredictor` | **Class / Widget** | [core/pattern_predictor.py](core/pattern_predictor.py#L48-L197) | `L48-L197` | Analysiert MAC-Treffer auf wiederkehrende Muster und generiert |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
-| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L108-L3153) | `L108-L3153` | Basis: QMainWindow |
+| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L108-L3148) | `L108-L3148` | Basis: QMainWindow |
 | `MultiPortalScanScheduler` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L58-L664) | `L58-L664` | Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans mit intelligenter |
 | `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L29-L653) | `L29-L653` | Verwaltet die Integration mit NordVPN unter Windows. |
 | `normalize_mac` | **Function** | [core/pattern_predictor.py](core/pattern_predictor.py#L26-L31) | `L26-L31` | Bereinigt und formatiert eine MAC-Adresse nach XX:XX:XX:XX:XX:XX. |
@@ -162,7 +162,7 @@
 | `TestMacPatternPredictor` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L21-L110) | `L21-L110` | Tests für MacPatternPredictor Analyse und Permutationen. |
 | `TestPatternPredictorUiIntegration` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L199-L281) | `L199-L281` | Tests für UI-Integration und Signalübergabe des Pattern-Prädiktors. |
 | `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L26-L609) | `L26-L609` | Basis: unittest.TestCase |
-| `TestScannerViewHitRateAndHotTree` | **Class / Widget** | [tests/test_category_tagger_and_hitrate.py](tests/test_category_tagger_and_hitrate.py#L172-L558) | `L172-L558` | Testet die Integration der Hit-Rate und der ausklappbaren Baumansicht in ScannerView. |
+| `TestScannerViewHitRateAndHotTree` | **Class / Widget** | [tests/test_category_tagger_and_hitrate.py](tests/test_category_tagger_and_hitrate.py#L172-L564) | `L172-L564` | Testet die Integration der Hit-Rate und der ausklappbaren Baumansicht in ScannerView. |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
 | `TestScanScheduler` | **Class / Widget** | [tests/test_scan_scheduler.py](tests/test_scan_scheduler.py#L13-L514) | `L13-L514` | Basis: unittest.TestCase |
 | `TestScanSchedulerExpireHandling` | **Class / Widget** | [tests/test_expire_validation.py](tests/test_expire_validation.py#L232-L293) | `L232-L293` | Tests für MultiPortalScanScheduler mit 0000000 / ungültigen Ablaufdaten. |
@@ -199,7 +199,7 @@
 
 ---
 
-### 📄 [`clients/stb_client.py`](clients/stb_client.py) (563 Zeilen)
+### 📄 [`clients/stb_client.py`](clients/stb_client.py) (534 Zeilen)
 > Stalker / Ministra STB Client für STB Pro Qt6.
 Erweitert den bewährten StbClient um Live-HTTP-Telemetrie für den interaktiven Protokoll-Inspector
 (inklusive Request-Historie, Header-Capturing und cURL-Export).
@@ -215,7 +215,7 @@ Erweitert den bewährten StbClient um Live-HTTP-Telemetrie für den interaktiven
 - **[`_on_response(resp)`](clients/stb_client.py#L36-L61)** — `L36`
 - **[`emit_scanner_connection_error_log(portal_url, mac, error_msg, endpoint, status_code, headers, params, elapsed_ms, sample_interval, sample_frequency)`](clients/stb_client.py#L76-L146)** — `L76` — *Sporadisches / gesampeltes Logging von Verbindungs- und Timeout-Fehlern während des MAC-Scannens*
 - **[`emit_scanner_http_log(portal_url, mac, res, endpoint, elapsed_ms, force)`](clients/stb_client.py#L154-L253)** — `L154` — *Kontinuierliches & gesampeltes Logging von MAC-Scanner Requests/Responses in den Inspector.*
-- **[`check_mac_account(portal_url, mac, model, device_id, device_id2, serial_number, signature, timeout, normalized_load_url, session, verify_ssl, genre_param, sortby_param, fallback_get_all, device_id_mode, enable_error_log, portal_genres_cache, fetch_genres)`](clients/stb_client.py#L318-L563)** — `L318` — *Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarkeit.*
+- **[`check_mac_account(portal_url, mac, model, device_id, device_id2, serial_number, signature, timeout, normalized_load_url, session, verify_ssl, genre_param, sortby_param, fallback_get_all, device_id_mode, enable_error_log, portal_genres_cache, fetch_genres)`](clients/stb_client.py#L318-L534)** — `L318` — *Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarkeit.*
 
 #### Wichtige Konstanten / Konfigurationen
 - `_SCAN_GENRES_LOCK` (L13), `_APP_DIR` (L16), `_PARENT_DIR` (L17)
@@ -891,14 +891,14 @@ Nutzt Qt Signals für reaktive Status- und Puffer-Updates ohne UI-Blockade.
 
 ---
 
-### 📄 [`ui/main_window.py`](ui/main_window.py) (3155 Zeilen)
+### 📄 [`ui/main_window.py`](ui/main_window.py) (3150 Zeilen)
 > Main Application Window (Orchestrator) for STB Pro v6.0 Qt6 Edition.
 Coordinates Sidebar, TopNavigationBar, LiveTVView, VODView, ScannerView, InspectorView, ConsoleView,
 LibVLC Hardware Player, External Player Runner, Fullscreen HUD Overlay, PiP Mini-Player,
 Multi-Thread MAC Scanner, Parallel Category Validator, and all 7 Dialogs.
 
 #### Klassen & Komponenten
-- **[`MainWindow`](ui/main_window.py#L108-L3153)** : *QMainWindow* — `L108-L3153`
+- **[`MainWindow`](ui/main_window.py#L108-L3148)** : *QMainWindow* — `L108-L3148`
   - **Signals**: `_val_progress_sig`, `_val_finished_sig`, `_val_thumb_progress_sig`, `_val_thumb_finished_sig`, `_epg_loaded_sig`, `_probe_done_sig`, `_preview_ready_sig`
   - **Wichtige Methoden:**
     - [`__init__()`](ui/main_window.py#L118) — `L118`
@@ -1459,7 +1459,7 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
 ### 📄 [`tests/probe_multi_hosts.py`](tests/probe_multi_hosts.py) (134 Zeilen)
 ---
 
-### 📄 [`tests/test_category_tagger_and_hitrate.py`](tests/test_category_tagger_and_hitrate.py) (562 Zeilen)
+### 📄 [`tests/test_category_tagger_and_hitrate.py`](tests/test_category_tagger_and_hitrate.py) (568 Zeilen)
 > Unit-Tests für Bouquet-Kategorie-Parsing, Ablauf-Countdowns, Hit-Rate und HOT-Tree-Integration.
 
 #### Klassen & Komponenten
@@ -1473,7 +1473,7 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
     - [`test_05_detect_category_tags_restricted()`](tests/test_category_tagger_and_hitrate.py#L119) — `L119` *(Verifiziert die Erkennung von altersbeschränkten / 18+ Bouquets mit sicheren Begriffen.)*
     - [`test_06_detect_category_tags_dict_and_list_structures()`](tests/test_category_tagger_and_hitrate.py#L147) — `L147` *(Testet die Übergabe von Ministra / Stalker Genre-Listen und Dictionaries.)*
     - [`test_07_hit_rate_calculations()`](tests/test_category_tagger_and_hitrate.py#L160) — `L160` *(Testet die Prozentberechnung der Hit-Rate.)*
-- **[`TestScannerViewHitRateAndHotTree`](tests/test_category_tagger_and_hitrate.py#L172-L558)** : *unittest.TestCase* — `L172-L558`
+- **[`TestScannerViewHitRateAndHotTree`](tests/test_category_tagger_and_hitrate.py#L172-L564)** : *unittest.TestCase* — `L172-L564`
   - *Testet die Integration der Hit-Rate und der ausklappbaren Baumansicht in ScannerView.*
   - **Wichtige Methoden:**
     - [`setUp()`](tests/test_category_tagger_and_hitrate.py#L175) — `L175`
