@@ -345,21 +345,31 @@ class TestScannerViewHitRateAndHotTree(unittest.TestCase):
                 os.remove(temp_path)
 
     def test_13_german_regional_bouquet_variations(self):
-        """Testet erweiterte deutsche Bouquet-Muster inklusive Klammern, Unterstrichen und Leerzeichen."""
+        """Testet erweiterte deutsche Bouquet-Muster aus realen Stalker-Portalen und verhindert False Positives."""
         positives = [
-            "DE | SKY", "DE | SPORT", "DE|CINEMA", "DE: KINO", "DE - DOKU",
-            "DE / ENTERTAINMENT", "DE_SPORT", "[DE] SKY", "[DE] ENTERTAINMENT",
-            "(DE) CINEMA", "{DE} NEWS", "|DE| SKY SPORT", "GERMANY", "GERMANY FHD",
-            "GERMAN SKY", "GERMAN HD UHD", "GERMAN UHD", "DEUTSCHLAND",
-            "GER | SKY", "[GER] SKY", "GER: SPORT", "DE SKY CINEMA", "DE KINO HD", "DE SPORT 1"
+            # Screenshot 1 (Doppelpunkt-Format)
+            "DE: 7/24 SERIEN", "DE: KIDS", "DE: DOKU / NEWS", "DE: REGIONAL", "DE: SPORT", "DE: DAZN",
+            # Screenshot 2 (Bindestrich-Format)
+            "DE - DEUTSCHLAND", "DE - DEUTSCHE CINEMA", "DE - EAGLE CINEMA", "DE - DOKUMENTATION",
+            # Screenshot 3 (Stern/Symbol-Format)
+            "DE \u2b50 DEUTSCHLAND", "DE \u2b50 HEVC", "DE \u2b50 RAW", "DE \u2b50 UHD", "DE \u2b50 SKY",
+            # Screenshot 4 (Pipe-Format)
+            "DE| GERMANY HEVC", "DE| ALLGEMEIN", "DE| KINDER", "DE| UNTERHALTUNG", "DE| PRIME RAW",
+            # Klammern / Standard
+            "[DE] SKY", "[DE] ENTERTAINMENT", "(DE) CINEMA", "{DE} NEWS", "|DE| SKY SPORT",
+            "GERMANY", "GERMANY FHD", "GERMAN SKY", "GERMAN HD UHD", "GERMAN UHD", "DEUTSCHLAND",
+            "AT - ÖSTERREICH", "CH \u2b50 SWISS", "DE_SPORT", "DE / ENTERTAINMENT",
         ]
         for p in positives:
             tags = detect_category_tags(p)
             self.assertIn(GERMAN_TAG, tags, f"Sollte {GERMAN_TAG} erkennen für: '{p}'")
 
         negatives = [
-            "DELIVERY", "MODELS", "FR | Canal+", "US | HBO", "UK | Sky Sports",
-            "FR | Nouvelles de Paris", "DENTAL", "DECADE", "DEMO"
+            # Spanische / Französische Präpositionen 'de ...' (Waren frühere False Positives!)
+            "DE PELICULAS", "DE MUSICA", "DE CINE", "DE TOUT", "DE NOUVELLES", "DE JONG",
+            "FR: DECOUVERTES", "IT: DECUMANTARY", "ES: CINE", "ES: GENERAL", "FR: ENFANT",
+            "DEPORTES", "DELIVERY", "MODELS", "FR | Canal+", "US | HBO", "UK | Sky Sports",
+            "FR | Nouvelles de Paris", "DENTAL", "DECADE", "DEMO", "CANALES DE ESPANA", "SERIES DE ACCION"
         ]
         for n in negatives:
             tags = detect_category_tags(n)

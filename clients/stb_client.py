@@ -486,7 +486,7 @@ def check_mac_account(
                                 fetched = []
                                 for ch in curr_ord["data"][:50]:
                                     if isinstance(ch, dict):
-                                        for field in ("group_title", "category_name", "genre_name", "name", "alias"):
+                                        for field in ("group_title", "category_name", "genre_name", "alias", "name", "title"):
                                             v = ch.get(field)
                                             if v and isinstance(v, str):
                                                 fetched.append(v)

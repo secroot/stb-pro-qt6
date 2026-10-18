@@ -18,30 +18,40 @@ _KW_HARDCORE = bytes.fromhex("48617264636f7265").decode("ascii")  # H...
 GERMAN_TAG = "[DE]"
 RESTRICTED_TAG = "[18+]"
 
-# Regex für deutsche Regionalbouquets:
-# - Präfixe: 'DE | ...', 'DE|...', 'DE: ...', 'DE - ...', 'DE / ...', 'DE_...', 'DE ...'
-# - Klammern / Begrenzer: '[DE]', '(DE)', '{DE}', '|DE|', '[GER]', '(GER)'
-# - Vollwörter: 'Germany', 'Deutschland', 'German HD UHD', etc.
+# Delimiter: Jedes Trennzeichen (Doppelpunkt, Bindestrich/Gedankenstrich, Pipe, Slash,
+# Unterstrich, Tilde, Hash, Sternchen/Sterne, Emojis, Bullet-Points, Symbole)
+_DELIM_PATTERN = r"(?:[^\w\s]|_)"
+
+# Regex für deutsche Regionalbouquets (DE, AT, CH, GER):
+# - Präfixe mit Delimiter: 'DE: ...', 'DE - ...', 'DE|...', 'DE | ...', 'DE ⭐ ...', 'DE_...', 'DE / ...'
+# - Klammern / Begrenzer: '[DE]', '(DE)', '{DE}', '<DE>', '|DE|', '[GER]', '(GER)', '[AT]', '[CH]'
+# - Vollwörter: 'Germany', 'Deutschland', 'German', 'Deutsche', 'Austria', 'Österreich', 'Swiss', 'Schweiz'
+# - Sender/Bouquets: 'Sky Bundesliga', 'Magenta Sport', 'RTL+ Sender'
+# Wichtig: Spanische/französische Präpositionen wie 'DE PELICULAS', 'DE CINE', 'DE TOUT' werden NICHT gematcht,
+# da nach 'DE' zwingend ein Symbol-Delimiter (:, -, |, ⭐, etc.) oder Klammer folgen muss!
 _GERMAN_REGEX = re.compile(
     r"(?i)(?:"
-    r"^[\s\[(|{<#~_]*(?:de|ger)(?:[\s\]\)|}>#:/\-_|]|$)"
-    r"|[\[(|{<#~|](?:de|ger)[\]\)|}>#~|]"
-    r"|(?:^|[\s\[(|])(?:de|ger)\s*[:|/\-_]"
-    r"|\bgermany\b|\bdeutschland\b|\bgerman\b"
+    r"^[\s\[(|{<#~_]*(?:de|ger|at|ch)\s*" + _DELIM_PATTERN +
+    r"|^[\s]*[\[(|{<](?:de|ger|at|ch)[\])|}>]"
+    r"|\b(?:deutschland|germany|austria|österreich|schweiz|switzerland)\b"
+    r"|\b(?:deutsche[rsn]?|german)\b"
+    r"|\b(?:sky\s*bundesliga|magenta\s*sport|rtl\+\s*sender)\b"
     r")"
 )
 
-# Regex für altersbeschränkte / 18+ Bouquets
+# Regex für altersbeschränkte / 18+ Bouquets:
+# Erkennt 18+, +18, XXX, Erotik, Erotic, Mature, Redlight, Adult (außer Adult Swim / Young Adult), Hardcore (außer Hardcore Pawn), Porn
 _RESTRICTED_REGEX = re.compile(
-    r"(?i)(?:18\s*\+|\+18|\berotik\b|\berotic\b|\bmature\b|\bredlight\b|\bred\s*light\b|"
-    + re.escape(_KW_ADULT)
-    + r"|"
-    + re.escape(_KW_XXX)
-    + r"|"
-    + re.escape(_KW_PORN)
-    + r"|"
-    + re.escape(_KW_HARDCORE)
-    + r")"
+    r"(?i)(?:"
+    r"18\s*\+|\+18"
+    r"|\bxxx\b"
+    r"|\beroti[ck]\b"
+    r"|\bmature\b"
+    r"|\bred\s*light\b"
+    r"|(?<!young\s)\badults?(?!\s*swim)\b"
+    r"|(?<!pawn\s)\bhardcore(?!\s*pawn)\b"
+    r"|\bporn(?:o|hub)?\b"
+    r")"
 )
 
 _COMMON_DATE_FORMATS = (
@@ -220,9 +230,10 @@ def detect_category_tags(categories: Any) -> List[str]:
     has_18 = _has_censored_flag(categories)
 
     for s in cat_strings:
-        if not has_de and _GERMAN_REGEX.search(s):
+        s_norm = s.replace("_", " ")
+        if not has_de and (_GERMAN_REGEX.search(s) or _GERMAN_REGEX.search(s_norm)):
             has_de = True
-        if not has_18 and _RESTRICTED_REGEX.search(s):
+        if not has_18 and (_RESTRICTED_REGEX.search(s) or _RESTRICTED_REGEX.search(s_norm)):
             has_18 = True
         if has_de and has_18:
             break

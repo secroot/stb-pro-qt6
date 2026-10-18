@@ -28,9 +28,9 @@
 | `_BottomHudBar` | **Class / Widget** | [player/osd_overlay.py](player/osd_overlay.py#L84-L194) | `L84-L194` | Basis: QWidget |
 | `_ChannelDrawerOverlay` | **Class / Widget** | [player/osd_overlay.py](player/osd_overlay.py#L197-L275) | `L197-L275` | Basis: QWidget |
 | `_cmd` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L99-L113) | `L99-L113` | def _cmd(url, headers, width, tail) |
-| `_extract_category_strings` | **Function** | [core/category_parser.py](core/category_parser.py#L193-L209) | `L193-L209` | Extrahiert alle textuellen Kategorienamen aus Strings, Dictionaries oder Listen. |
+| `_extract_category_strings` | **Function** | [core/category_parser.py](core/category_parser.py#L203-L219) | `L203-L219` | Extrahiert alle textuellen Kategorienamen aus Strings, Dictionaries oder Listen. |
 | `_Handler` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L556-L587) | `L556-L587` | Basis: BaseHTTPRequestHandler |
-| `_has_censored_flag` | **Function** | [core/category_parser.py](core/category_parser.py#L176-L190) | `L176-L190` | Prüft, ob in den Stalker-Genredaten ein explizites censored/adult-Flag gesetzt ist. |
+| `_has_censored_flag` | **Function** | [core/category_parser.py](core/category_parser.py#L186-L200) | `L186-L200` | Prüft, ob in den Stalker-Genredaten ein explizites censored/adult-Flag gesetzt ist. |
 | `_HLSDetected` | **Class / Widget** | [core/recorder.py](core/recorder.py#L23-L26) | `L23-L26` | Basis: Exception |
 | `_make_ts_packet` | **Function** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L35-L52) | `L35-L52` | Build a valid 188-byte MPEG-TS packet with optional PCR. |
 | `_MockTSHandler` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L55-L90) | `L55-L90` | Basis: BaseHTTPRequestHandler |
@@ -49,8 +49,8 @@
 | `BufferConfigDialog` | **Class / Widget** | [ui/dialogs/buffer_dialog.py](ui/dialogs/buffer_dialog.py#L23-L169) | `L23-L169` | Basis: QDialog |
 | `BufferSettings` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L22-L67) | `L22-L67` | Basis:  |
 | `build_m3u_playlist` | **Function** | [core/m3u_exporter.py](core/m3u_exporter.py#L10-L44) | `L10-L44` | def build_m3u_playlist(channels, user_agent, resolve_url_fn) |
-| `calculate_days_until_expire` | **Function** | [core/category_parser.py](core/category_parser.py#L137-L173) | `L137-L173` | Berechnet die verbleibende Zeit bis zum Ablaufdatum in Tagen. |
-| `calculate_hit_rate` | **Function** | [core/category_parser.py](core/category_parser.py#L238-L242) | `L238-L242` | Berechnet die Trefferquote (Hit-Rate) in Prozent. |
+| `calculate_days_until_expire` | **Function** | [core/category_parser.py](core/category_parser.py#L147-L183) | `L147-L183` | Berechnet die verbleibende Zeit bis zum Ablaufdatum in Tagen. |
+| `calculate_hit_rate` | **Function** | [core/category_parser.py](core/category_parser.py#L249-L253) | `L249-L253` | Berechnet die Trefferquote (Hit-Rate) in Prozent. |
 | `Channel` | **Class / Widget** | [core/models.py](core/models.py#L184-L289) | `L184-L289` | Basis:  |
 | `ChannelCardDelegate` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L284-L580) | `L284-L580` | Custom QPainter delegate rendering sleek, GPU-accelerated channel cards: |
 | `ChannelFilterProxyModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L213-L281) | `L213-L281` | Zero-allocation filter proxy supporting Category, Search, Favorites, Recent, HD/4K, and De... |
@@ -61,7 +61,7 @@
 | `ConfigManager` | **Class / Widget** | [core/config_manager.py](core/config_manager.py#L60-L334) | `L60-L334` | Verwaltet Profile, Live-/VOD-Favoriten, Verlauf, Player-Pfade und UI-Einstellungen. |
 | `ConsoleView` | **Class / Widget** | [ui/views/console_view.py](ui/views/console_view.py#L26-L156) | `L26-L156` | Basis: QWidget |
 | `decode_vlc_fourcc` | **Function** | [player/vlc_controller.py](player/vlc_controller.py#L20-L101) | `L20-L101` | def decode_vlc_fourcc(codec_val) |
-| `detect_category_tags` | **Function** | [core/category_parser.py](core/category_parser.py#L212-L235) | `L212-L235` | Erkennt Region- und Themen-Bouquets aus einer Kategorien- oder Genrelenkung. |
+| `detect_category_tags` | **Function** | [core/category_parser.py](core/category_parser.py#L222-L246) | `L222-L246` | Erkennt Region- und Themen-Bouquets aus einer Kategorien- oder Genrelenkung. |
 | `detect_ffplay_path` | **Function** | [core/config_manager.py](core/config_manager.py#L48-L57) | `L48-L57` | def detect_ffplay_path() |
 | `detect_mpv_path` | **Function** | [core/config_manager.py](core/config_manager.py#L36-L45) | `L36-L45` | def detect_mpv_path() |
 | `detect_quality_tag` | **Function** | [core/models.py](core/models.py#L153-L180) | `L153-L180` | Erkennt den Qualitäts-Tag AUSSCHLIESSLICH anhand von echten Dimensionsdaten in den Metadat... |
@@ -87,7 +87,7 @@
 | `find_ffmpeg` | **Function** | [core/recorder.py](core/recorder.py#L34-L52) | `L34-L52` | def find_ffmpeg() |
 | `find_ffprobe` | **Function** | [core/stream_probe.py](core/stream_probe.py#L17-L31) | `L17-L31` | def find_ffprobe() |
 | `format_codec_name` | **Function** | [core/stream_probe.py](core/stream_probe.py#L69-L85) | `L69-L85` | def format_codec_name(codec) |
-| `format_hit_rate` | **Function** | [core/category_parser.py](core/category_parser.py#L245-L248) | `L245-L248` | Formatiert die Hit-Rate als Prozent-String mit 1 Nachkommastelle. |
+| `format_hit_rate` | **Function** | [core/category_parser.py](core/category_parser.py#L256-L259) | `L256-L259` | Formatiert die Hit-Rate als Prozent-String mit 1 Nachkommastelle. |
 | `format_mac_str` | **Function** | [core/mac_database.py](core/mac_database.py#L21-L25) | `L21-L25` | def format_mac_str(mac) |
 | `format_resolution` | **Function** | [core/stream_probe.py](core/stream_probe.py#L88-L104) | `L88-L104` | def format_resolution(width, height, fps) |
 | `FullscreenOSDOverlay` | **Class / Widget** | [player/osd_overlay.py](player/osd_overlay.py#L278-L396) | `L278-L396` | Koordiniert Top-HUD, Bottom-HUD, Uhrzeit-Timer, Auto-Hide und den Quick-Channel-Drawer. |
@@ -121,7 +121,7 @@
 | `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L29-L653) | `L29-L653` | Verwaltet die Integration mit NordVPN unter Windows. |
 | `normalize_mac` | **Function** | [core/pattern_predictor.py](core/pattern_predictor.py#L26-L31) | `L26-L31` | Bereinigt und formatiert eine MAC-Adresse nach XX:XX:XX:XX:XX:XX. |
 | `normalize_portal_url` | **Function** | [core/portal_checker.py](core/portal_checker.py#L324-L345) | `L324-L345` | Normalisiert eine Portal-URL sauber (Protokoll, Leerzeichen, Format). |
-| `parse_expire_date` | **Function** | [core/category_parser.py](core/category_parser.py#L77-L134) | `L77-L134` | Parst unterschiedliche Datums- und Timestamp-Formate in ein datetime.date Objekt. |
+| `parse_expire_date` | **Function** | [core/category_parser.py](core/category_parser.py#L87-L144) | `L87-L144` | Parst unterschiedliche Datums- und Timestamp-Formate in ein datetime.date Objekt. |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
 | `pcr_bitrate_kbps` | **Function** | [core/stream_probe.py](core/stream_probe.py#L38-L66) | `L38-L66` | Echte Mux-Bitrate aus MPEG-TS-PCR. |
 | `PortalCheckResult` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L34-L93) | `L34-L93` | Repräsentiert das Prüfergebnis eines einzelnen Stalker-Portals. |
@@ -160,7 +160,7 @@
 | `TestMacPatternPredictor` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L21-L110) | `L21-L110` | Tests für MacPatternPredictor Analyse und Permutationen. |
 | `TestPatternPredictorUiIntegration` | **Class / Widget** | [tests/test_pattern_predictor_and_antiban.py](tests/test_pattern_predictor_and_antiban.py#L199-L281) | `L199-L281` | Tests für UI-Integration und Signalübergabe des Pattern-Prädiktors. |
 | `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L26-L609) | `L26-L609` | Basis: unittest.TestCase |
-| `TestScannerViewHitRateAndHotTree` | **Class / Widget** | [tests/test_category_tagger_and_hitrate.py](tests/test_category_tagger_and_hitrate.py#L170-L497) | `L170-L497` | Testet die Integration der Hit-Rate und der ausklappbaren Baumansicht in ScannerView. |
+| `TestScannerViewHitRateAndHotTree` | **Class / Widget** | [tests/test_category_tagger_and_hitrate.py](tests/test_category_tagger_and_hitrate.py#L170-L507) | `L170-L507` | Testet die Integration der Hit-Rate und der ausklappbaren Baumansicht in ScannerView. |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
 | `TestScanScheduler` | **Class / Widget** | [tests/test_scan_scheduler.py](tests/test_scan_scheduler.py#L13-L514) | `L13-L514` | Basis: unittest.TestCase |
 | `TestScanSchedulerExpireHandling` | **Class / Widget** | [tests/test_expire_validation.py](tests/test_expire_validation.py#L232-L293) | `L232-L293` | Tests für MultiPortalScanScheduler mit 0000000 / ungültigen Ablaufdaten. |
@@ -260,22 +260,22 @@ Enthält Datenmodelle, Event-Bus, Persistenz, Stream-Puffer, Probing und Recordi
 
 ---
 
-### 📄 [`core/category_parser.py`](core/category_parser.py) (248 Zeilen)
+### 📄 [`core/category_parser.py`](core/category_parser.py) (259 Zeilen)
 > Bouquet & Category Parser für STB Pro Qt6.
 Analysiert Stalker-Genres und TV-Kategorien auf spezifische Bouquets (z. B. Region DE, 18+),
 berechnet Ablauf-Countdowns in Tagen und ermittelt Scan-Hitrates.
 
 #### Modul-Funktionen
-- **[`parse_expire_date(expire_val)`](core/category_parser.py#L77-L134)** — `L77` — *Parst unterschiedliche Datums- und Timestamp-Formate in ein datetime.date Objekt.*
-- **[`calculate_days_until_expire(expire_str, today)`](core/category_parser.py#L137-L173)** — `L137` — *Berechnet die verbleibende Zeit bis zum Ablaufdatum in Tagen.*
-- **[`_has_censored_flag(categories)`](core/category_parser.py#L176-L190)** — `L176` — *Prüft, ob in den Stalker-Genredaten ein explizites censored/adult-Flag gesetzt ist.*
-- **[`_extract_category_strings(categories)`](core/category_parser.py#L193-L209)** — `L193` — *Extrahiert alle textuellen Kategorienamen aus Strings, Dictionaries oder Listen.*
-- **[`detect_category_tags(categories)`](core/category_parser.py#L212-L235)** — `L212` — *Erkennt Region- und Themen-Bouquets aus einer Kategorien- oder Genrelenkung.*
-- **[`calculate_hit_rate(hot_hits, total_checks)`](core/category_parser.py#L238-L242)** — `L238` — *Berechnet die Trefferquote (Hit-Rate) in Prozent.*
-- **[`format_hit_rate(hot_hits, total_checks)`](core/category_parser.py#L245-L248)** — `L245` — *Formatiert die Hit-Rate als Prozent-String mit 1 Nachkommastelle.*
+- **[`parse_expire_date(expire_val)`](core/category_parser.py#L87-L144)** — `L87` — *Parst unterschiedliche Datums- und Timestamp-Formate in ein datetime.date Objekt.*
+- **[`calculate_days_until_expire(expire_str, today)`](core/category_parser.py#L147-L183)** — `L147` — *Berechnet die verbleibende Zeit bis zum Ablaufdatum in Tagen.*
+- **[`_has_censored_flag(categories)`](core/category_parser.py#L186-L200)** — `L186` — *Prüft, ob in den Stalker-Genredaten ein explizites censored/adult-Flag gesetzt ist.*
+- **[`_extract_category_strings(categories)`](core/category_parser.py#L203-L219)** — `L203` — *Extrahiert alle textuellen Kategorienamen aus Strings, Dictionaries oder Listen.*
+- **[`detect_category_tags(categories)`](core/category_parser.py#L222-L246)** — `L222` — *Erkennt Region- und Themen-Bouquets aus einer Kategorien- oder Genrelenkung.*
+- **[`calculate_hit_rate(hot_hits, total_checks)`](core/category_parser.py#L249-L253)** — `L249` — *Berechnet die Trefferquote (Hit-Rate) in Prozent.*
+- **[`format_hit_rate(hot_hits, total_checks)`](core/category_parser.py#L256-L259)** — `L256` — *Formatiert die Hit-Rate als Prozent-String mit 1 Nachkommastelle.*
 
 #### Wichtige Konstanten / Konfigurationen
-- `_KW_ADULT` (L13), `_KW_XXX` (L14), `_KW_PORN` (L15), `_KW_HARDCORE` (L16), `GERMAN_TAG` (L18), `RESTRICTED_TAG` (L19), `_GERMAN_REGEX` (L25), `_RESTRICTED_REGEX` (L35), `_COMMON_DATE_FORMATS` (L47)
+- `_KW_ADULT` (L13), `_KW_XXX` (L14), `_KW_PORN` (L15), `_KW_HARDCORE` (L16), `GERMAN_TAG` (L18), `RESTRICTED_TAG` (L19), `_DELIM_PATTERN` (L23), `_GERMAN_REGEX` (L32), `_RESTRICTED_REGEX` (L44), `_COMMON_DATE_FORMATS` (L57)
 
 ---
 
@@ -1455,7 +1455,7 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
 ### 📄 [`tests/probe_multi_hosts.py`](tests/probe_multi_hosts.py) (134 Zeilen)
 ---
 
-### 📄 [`tests/test_category_tagger_and_hitrate.py`](tests/test_category_tagger_and_hitrate.py) (501 Zeilen)
+### 📄 [`tests/test_category_tagger_and_hitrate.py`](tests/test_category_tagger_and_hitrate.py) (511 Zeilen)
 > Unit-Tests für Bouquet-Kategorie-Parsing, Ablauf-Countdowns, Hit-Rate und HOT-Tree-Integration.
 
 #### Klassen & Komponenten
@@ -1469,7 +1469,7 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
     - [`test_05_detect_category_tags_restricted()`](tests/test_category_tagger_and_hitrate.py#L117) — `L117` *(Verifiziert die Erkennung von altersbeschränkten / 18+ Bouquets mit sicheren Begriffen.)*
     - [`test_06_detect_category_tags_dict_and_list_structures()`](tests/test_category_tagger_and_hitrate.py#L145) — `L145` *(Testet die Übergabe von Ministra / Stalker Genre-Listen und Dictionaries.)*
     - [`test_07_hit_rate_calculations()`](tests/test_category_tagger_and_hitrate.py#L158) — `L158` *(Testet die Prozentberechnung der Hit-Rate.)*
-- **[`TestScannerViewHitRateAndHotTree`](tests/test_category_tagger_and_hitrate.py#L170-L497)** : *unittest.TestCase* — `L170-L497`
+- **[`TestScannerViewHitRateAndHotTree`](tests/test_category_tagger_and_hitrate.py#L170-L507)** : *unittest.TestCase* — `L170-L507`
   - *Testet die Integration der Hit-Rate und der ausklappbaren Baumansicht in ScannerView.*
   - **Wichtige Methoden:**
     - [`setUp()`](tests/test_category_tagger_and_hitrate.py#L173) — `L173`
@@ -1479,13 +1479,13 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
     - [`test_10_hot_tree_grouping_and_child_items()`](tests/test_category_tagger_and_hitrate.py#L210) — `L210` *(Verifiziert die Host-Gruppierung, Countdown und Tags in der HOT-Baumansicht.)*
     - [`test_11_hot_tree_double_click_emits_apply_mac()`](tests/test_category_tagger_and_hitrate.py#L281) — `L281` *(Verifiziert, dass ein Doppelklick auf ein Kind-Element im HOT-Tree apply_mac_requested auslöst.)*
     - [`test_12_export_hits_includes_categories()`](tests/test_category_tagger_and_hitrate.py#L313) — `L313` *(Verifiziert, dass exportierte Hits die Categories: Zeile enthalten.)*
-    - [`test_13_german_regional_bouquet_variations()`](tests/test_category_tagger_and_hitrate.py#L347) — `L347` *(Testet erweiterte deutsche Bouquet-Muster inklusive Klammern, Unterstrichen und Leerzeichen.)*
-    - [`test_14_censored_flag_and_alias_detection()`](tests/test_category_tagger_and_hitrate.py#L368) — `L368` *(Verifiziert die Erkennung von Stalker censored=1 Flags und Genre-Aliassen.)*
-    - [`test_15_tree_single_click_expands_host_header()`](tests/test_category_tagger_and_hitrate.py#L386) — `L386` *(Verifiziert, dass ein Klick auf den Host-Header den Ast auf- bzw. zuklappt.)*
-    - [`test_16_non_standard_port_isolation()`](tests/test_category_tagger_and_hitrate.py#L416) — `L416` *(Verifiziert, dass Portale mit unterschiedlichen Ports nicht im selben Host zusammenfallen.)*
-    - [`test_17_extended_date_formats()`](tests/test_category_tagger_and_hitrate.py#L445) — `L445` *(Verifiziert das Parsen von europäischen Bindestrich- und Punkt-Datumsformaten.)*
-    - [`test_18_stb_client_channel_fallback_extracts_names_and_tags()`](tests/test_category_tagger_and_hitrate.py#L451) — `L451` *(Verifiziert, dass der Kanal-Fallback in check_mac_account Sendernamen und Tags nicht durch IDs überschreibt.)*
-    - [`test_19_unlimited_expiration_display()`](tests/test_category_tagger_and_hitrate.py#L480) — `L480` *(Verifiziert, dass unbegrenzte Accounts sauber als 'Unbegrenzt' im Baum dargestellt werden.)*
+    - [`test_13_german_regional_bouquet_variations()`](tests/test_category_tagger_and_hitrate.py#L347) — `L347` *(Testet erweiterte deutsche Bouquet-Muster aus realen Stalker-Portalen und verhindert False Positives.)*
+    - [`test_14_censored_flag_and_alias_detection()`](tests/test_category_tagger_and_hitrate.py#L378) — `L378` *(Verifiziert die Erkennung von Stalker censored=1 Flags und Genre-Aliassen.)*
+    - [`test_15_tree_single_click_expands_host_header()`](tests/test_category_tagger_and_hitrate.py#L396) — `L396` *(Verifiziert, dass ein Klick auf den Host-Header den Ast auf- bzw. zuklappt.)*
+    - [`test_16_non_standard_port_isolation()`](tests/test_category_tagger_and_hitrate.py#L426) — `L426` *(Verifiziert, dass Portale mit unterschiedlichen Ports nicht im selben Host zusammenfallen.)*
+    - [`test_17_extended_date_formats()`](tests/test_category_tagger_and_hitrate.py#L455) — `L455` *(Verifiziert das Parsen von europäischen Bindestrich- und Punkt-Datumsformaten.)*
+    - [`test_18_stb_client_channel_fallback_extracts_names_and_tags()`](tests/test_category_tagger_and_hitrate.py#L461) — `L461` *(Verifiziert, dass der Kanal-Fallback in check_mac_account Sendernamen und Tags nicht durch IDs überschreibt.)*
+    - [`test_19_unlimited_expiration_display()`](tests/test_category_tagger_and_hitrate.py#L490) — `L490` *(Verifiziert, dass unbegrenzte Accounts sauber als 'Unbegrenzt' im Baum dargestellt werden.)*
 
 ---
 
