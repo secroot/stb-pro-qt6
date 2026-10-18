@@ -53,7 +53,7 @@
 | `ChannelListModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L51-L210) | `L51-L210` | High-performance backing model for 50,000+ Live TV channels. |
 | `ChannelRoles` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L33-L48) | `L33-L48` | Basis:  |
 | `check_mac_account` | **Function** | [clients/stb_client.py](clients/stb_client.py#L206-L374) | `L206-L374` | Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarke... |
-| `check_single_portal` | **Function** | [core/portal_checker.py](core/portal_checker.py#L351-L495) | `L351-L495` | Prüft einen einzelnen Portal-Host rigoros auf echte Stalker/Ministra-Erreichbarkeit, |
+| `check_single_portal` | **Function** | [core/portal_checker.py](core/portal_checker.py#L482-L626) | `L482-L626` | Prüft einen einzelnen Portal-Host rigoros auf echte Stalker/Ministra-Erreichbarkeit, |
 | `ConfigManager` | **Class / Widget** | [core/config_manager.py](core/config_manager.py#L60-L334) | `L60-L334` | Verwaltet Profile, Live-/VOD-Favoriten, Verlauf, Player-Pfade und UI-Einstellungen. |
 | `ConsoleView` | **Class / Widget** | [ui/views/console_view.py](ui/views/console_view.py#L26-L156) | `L26-L156` | Basis: QWidget |
 | `decode_vlc_fourcc` | **Function** | [player/vlc_controller.py](player/vlc_controller.py#L20-L101) | `L20-L101` | def decode_vlc_fourcc(codec_val) |
@@ -68,8 +68,8 @@
 | `EPGPanel` | **Class / Widget** | [ui/components/epg_panel.py](ui/components/epg_panel.py#L26-L192) | `L26-L192` | Basis: QFrame |
 | `EPGProgram` | **Class / Widget** | [core/models.py](core/models.py#L171-L329) | `L171-L329` | Basis:  |
 | `ExternalPlayerRunner` | **Class / Widget** | [player/external_player.py](player/external_player.py#L11-L124) | `L11-L124` | Basis:  |
-| `extract_portal_urls_from_folder` | **Function** | [core/portal_checker.py](core/portal_checker.py#L166-L199) | `L166-L199` | Durchsucht alle .txt-Dateien eines Ordners rekursiv nach Stalker Portal-URLs. |
-| `extract_portal_urls_from_text` | **Function** | [core/portal_checker.py](core/portal_checker.py#L116-L163) | `L116-L163` | Extrahiert Stalker-Portal-URLs aus einem Textstring (z. B. aus TXT-Listen, Logs, M3U). |
+| `extract_portal_urls_from_folder` | **Function** | [core/portal_checker.py](core/portal_checker.py#L288-L321) | `L288-L321` | Durchsucht alle .txt-Dateien eines Ordners rekursiv nach Stalker Portal-URLs. |
+| `extract_portal_urls_from_text` | **Function** | [core/portal_checker.py](core/portal_checker.py#L214-L285) | `L214-L285` | Extrahiert Stalker-Portal-URLs aus einem Textstring (z. B. aus TXT-Listen, Logs, M3U). |
 | `extract_resolution_from_hls_text` | **Function** | [core/stream_probe.py](core/stream_probe.py#L274-L289) | `L274-L289` | Extrahiert RESOLUTION=WxH direkt aus HLS-Playlists. |
 | `extract_thumbnail_from_ts` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L64-L96) | `L64-L96` | Extrahiert blitzschnell (0.1s) genau ein Frame aus bereits heruntergeladenen MPEG-TS Bytes... |
 | `extract_video_info_from_ts` | **Function** | [core/stream_probe.py](core/stream_probe.py#L211-L271) | `L211-L271` | Scannt MPEG-TS Pakete nach H.264/H.265 SPS in Millisekunden. |
@@ -84,20 +84,21 @@
 | `format_mac_str` | **Function** | [core/mac_database.py](core/mac_database.py#L19-L23) | `L19-L23` | def format_mac_str(mac) |
 | `format_resolution` | **Function** | [core/stream_probe.py](core/stream_probe.py#L88-L104) | `L88-L104` | def format_resolution(width, height, fps) |
 | `FullscreenOSDOverlay` | **Class / Widget** | [player/osd_overlay.py](player/osd_overlay.py#L278-L396) | `L278-L396` | Koordiniert Top-HUD, Bottom-HUD, Uhrzeit-Timer, Auto-Hide und den Quick-Channel-Drawer. |
-| `get_portal_candidate_endpoints` | **Function** | [core/portal_checker.py](core/portal_checker.py#L313-L348) | `L313-L348` | Generiert typische Stalker/Ministra-Endpunkte für Handshake-Probes. |
+| `get_portal_candidate_endpoints` | **Function** | [core/portal_checker.py](core/portal_checker.py#L444-L479) | `L444-L479` | Generiert typische Stalker/Ministra-Endpunkte für Handshake-Probes. |
 | `grab_thumbnail` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L216-L280) | `L216-L280` | High-Performance Standalone Thumbnail Grabber. |
 | `HeroCard` | **Class / Widget** | [ui/components/hero_card.py](ui/components/hero_card.py#L25-L283) | `L25-L283` | Basis: QFrame |
 | `HttpLogEntry` | **Class / Widget** | [core/models.py](core/models.py#L492-L538) | `L492-L538` | Basis:  |
 | `InspectorView` | **Class / Widget** | [ui/views/inspector_view.py](ui/views/inspector_view.py#L32-L262) | `L32-L262` | Basis: QWidget |
 | `is_blank_or_black_jpeg` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L40-L61) | `L40-L61` | Erkennt korrupte, leere oder rein schwarze Dummy-Frames zuverlässig. |
 | `is_ip_or_stream_ban` | **Function** | [core/stream_probe.py](core/stream_probe.py#L295-L308) | `L295-L308` | Ermittelt zuverlässig, ob ein HTTP-Statuscode oder Fehlertext auf |
-| `is_stalker_response` | **Function** | [core/portal_checker.py](core/portal_checker.py#L264-L310) | `L264-L310` | Prüft eine HTTP-Response rigoros auf definitive Stalker / Ministra Signaturen. |
+| `is_stalker_response` | **Function** | [core/portal_checker.py](core/portal_checker.py#L395-L441) | `L395-L441` | Prüft eine HTTP-Response rigoros auf definitive Stalker / Ministra Signaturen. |
+| `is_valid_portal_hostname` | **Function** | [core/portal_checker.py](core/portal_checker.py#L162-L211) | `L162-L211` | Validiert streng, ob ein Hostname eine reale Internet-Domain oder IPv4-Adresse darstellt. |
 | `Job` | **Class / Widget** | [core/recorder.py](core/recorder.py#L56-L118) | `L56-L118` | Basis:  |
 | `JobsDialog` | **Class / Widget** | [ui/dialogs/jobs_dialog.py](ui/dialogs/jobs_dialog.py#L25-L135) | `L25-L135` | Basis: QDialog |
 | `JsonViewerDialog` | **Class / Widget** | [ui/dialogs/json_viewer_dialog.py](ui/dialogs/json_viewer_dialog.py#L27-L119) | `L27-L119` | Basis: QDialog |
 | `LiveTVView` | **Class / Widget** | [ui/views/live_tv_view.py](ui/views/live_tv_view.py#L155-L1199) | `L155-L1199` | Basis: QWidget |
 | `load_cached_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L120-L133) | `L120-L133` | def load_cached_thumb(key) |
-| `load_portal_list` | **Function** | [core/portal_checker.py](core/portal_checker.py#L222-L245) | `L222-L245` | Liest eine Stalker-Portal-Datei (.txt) ein, bereinigt Kommentare und |
+| `load_portal_list` | **Function** | [core/portal_checker.py](core/portal_checker.py#L348-L376) | `L348-L376` | Liest eine Stalker-Portal-Datei (.txt) ein, bereinigt Kommentare und |
 | `LogoCache` | **Class / Widget** | [core/logo_cache.py](core/logo_cache.py#L22-L151) | `L22-L151` | Lädt Kanal-Logos und VOD-Poster im Hintergrund als QImage (Thread-sicher!) |
 | `MacDatabase` | **Class / Widget** | [core/mac_database.py](core/mac_database.py#L26-L238) | `L26-L238` | Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern. |
 | `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L31-L211) | `L31-L211` | Basis: QDialog |
@@ -105,7 +106,7 @@
 | `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L96-L2993) | `L96-L2993` | Basis: QMainWindow |
 | `MultiPortalScanScheduler` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L56-L589) | `L56-L589` | Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans mit intelligenter |
 | `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L29-L653) | `L29-L653` | Verwaltet die Integration mit NordVPN unter Windows. |
-| `normalize_portal_url` | **Function** | [core/portal_checker.py](core/portal_checker.py#L202-L219) | `L202-L219` | Normalisiert eine Portal-URL sauber (Protokoll, Leerzeichen, Format). |
+| `normalize_portal_url` | **Function** | [core/portal_checker.py](core/portal_checker.py#L324-L345) | `L324-L345` | Normalisiert eine Portal-URL sauber (Protokoll, Leerzeichen, Format). |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
 | `pcr_bitrate_kbps` | **Function** | [core/stream_probe.py](core/stream_probe.py#L38-L66) | `L38-L66` | Echte Mux-Bitrate aus MPEG-TS-PCR. |
 | `PortalCheckResult` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L34-L93) | `L34-L93` | Repräsentiert das Prüfergebnis eines einzelnen Stalker-Portals. |
@@ -120,7 +121,7 @@
 | `read_ue` | **Function** | [core/stream_probe.py](core/stream_probe.py#L141-L147) | `L141-L147` | def read_ue() |
 | `Recorder` | **Class / Widget** | [core/recorder.py](core/recorder.py#L121-L435) | `L121-L435` | Basis:  |
 | `safe_name` | **Function** | [core/recorder.py](core/recorder.py#L29-L31) | `L29-L31` | def safe_name(name, maxlen) |
-| `save_reachable_portals_file` | **Function** | [core/portal_checker.py](core/portal_checker.py#L248-L261) | `L248-L261` | Speichert eine Liste erreichbarer Portal-URLs zeilenweise in eine .txt-Datei. |
+| `save_reachable_portals_file` | **Function** | [core/portal_checker.py](core/portal_checker.py#L379-L392) | `L379-L392` | Speichert eine Liste erreichbarer Portal-URLs zeilenweise in eine .txt-Datei. |
 | `save_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L136-L144) | `L136-L144` | def save_thumb(key, data) |
 | `ScanAccount` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L24-L58) | `L24-L58` | Repräsentiert einen einzelnen gescannten MAC-Account eines Portals. |
 | `ScanHost` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L62-L85) | `L62-L85` | Repräsentiert einen Host / ein Portal mit allen zugehörigen Logins. |
@@ -132,11 +133,11 @@
 | `SeriesBrowserDialog` | **Class / Widget** | [ui/dialogs/series_dialog.py](ui/dialogs/series_dialog.py#L26-L163) | `L26-L163` | Basis: QDialog |
 | `SettingsView` | **Class / Widget** | [ui/views/settings_view.py](ui/views/settings_view.py#L45-L968) | `L45-L968` | Basis: QWidget |
 | `SidebarWidget` | **Class / Widget** | [ui/components/sidebar.py](ui/components/sidebar.py#L32-L453) | `L32-L453` | Basis: QFrame |
-| `StalkerPortalChecker` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L498-L704) | `L498-L704` | Multi-threaded Stalker Portal Prüf-Engine. |
+| `StalkerPortalChecker` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L629-L835) | `L629-L835` | Multi-threaded Stalker Portal Prüf-Engine. |
 | `StbClient` | **Class / Widget** | [clients/stb_client.py](clients/stb_client.py#L151-L203) | `L151-L203` | Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging |
 | `StreamBufferProxy` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L590-L634) | `L590-L634` | Basis:  |
 | `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L456-L474) | `L456-L474` | Basis:  |
-| `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L26-L486) | `L26-L486` | Basis: unittest.TestCase |
+| `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L26-L532) | `L26-L532` | Basis: unittest.TestCase |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
 | `TestScanScheduler` | **Class / Widget** | [tests/test_scan_scheduler.py](tests/test_scan_scheduler.py#L13-L474) | `L13-L474` | Basis: unittest.TestCase |
 | `TestSettingsAndSidebar` | **Class / Widget** | [tests/test_settings_and_sidebar.py](tests/test_settings_and_sidebar.py#L25-L301) | `L25-L301` | Basis: unittest.TestCase |
@@ -393,7 +394,7 @@ Strikt typisiert und unabhängig von UI-Komponenten.
 
 ---
 
-### 📄 [`core/portal_checker.py`](core/portal_checker.py) (704 Zeilen)
+### 📄 [`core/portal_checker.py`](core/portal_checker.py) (835 Zeilen)
 > Stalker Portal Erreichbarkeits-Checker & Rotations-Pool.
 Prüft Stalker-Portale aus Listen (z. B. stalker_portals.txt) multi-threaded
 auf Erreichbarkeit, Latenz (Ping), HTTP-Status und Stalker-Signaturen.
@@ -407,30 +408,31 @@ zur automatischen Rotation im MAC-Scanner.
     - [`to_dict()`](core/portal_checker.py#L48) — `L48`
     - [`from_dict(cls, data)`](core/portal_checker.py#L64) — `L64`
     - [`display_status()`](core/portal_checker.py#L79) — `L79`
-- **[`StalkerPortalChecker`](core/portal_checker.py#L498-L704)** — `L498-L704`
+- **[`StalkerPortalChecker`](core/portal_checker.py#L629-L835)** — `L629-L835`
   - *Multi-threaded Stalker Portal Prüf-Engine.*
   - **Wichtige Methoden:**
-    - [`__init__()`](core/portal_checker.py#L504) — `L504`
-    - [`is_running()`](core/portal_checker.py#L528) — `L528`
-    - [`get_results()`](core/portal_checker.py#L531) — `L531`
-    - [`get_reachable_urls()`](core/portal_checker.py#L535) — `L535`
-    - [`stop()`](core/portal_checker.py#L539) — `L539` *(Stoppt die laufende Prüfung sofort.)*
-    - [`pause()`](core/portal_checker.py#L545) — `L545` *(Pausiert die Prüfung.)*
-    - [`resume()`](core/portal_checker.py#L549) — `L549` *(Setzt die Prüfung fort.)*
-    - [`start_check(urls, threads, timeout, verify_ssl)`](core/portal_checker.py#L553) — `L553` *(Startet die asynchrone Multi-Threaded Portalprüfung im Hintergrund.)*
+    - [`__init__()`](core/portal_checker.py#L635) — `L635`
+    - [`is_running()`](core/portal_checker.py#L659) — `L659`
+    - [`get_results()`](core/portal_checker.py#L662) — `L662`
+    - [`get_reachable_urls()`](core/portal_checker.py#L666) — `L666`
+    - [`stop()`](core/portal_checker.py#L670) — `L670` *(Stoppt die laufende Prüfung sofort.)*
+    - [`pause()`](core/portal_checker.py#L676) — `L676` *(Pausiert die Prüfung.)*
+    - [`resume()`](core/portal_checker.py#L680) — `L680` *(Setzt die Prüfung fort.)*
+    - [`start_check(urls, threads, timeout, verify_ssl)`](core/portal_checker.py#L684) — `L684` *(Startet die asynchrone Multi-Threaded Portalprüfung im Hintergrund.)*
 
 #### Modul-Funktionen
-- **[`extract_portal_urls_from_text(content)`](core/portal_checker.py#L116-L163)** — `L116` — *Extrahiert Stalker-Portal-URLs aus einem Textstring (z. B. aus TXT-Listen, Logs, M3U).*
-- **[`extract_portal_urls_from_folder(folder_path, max_file_size)`](core/portal_checker.py#L166-L199)** — `L166` — *Durchsucht alle .txt-Dateien eines Ordners rekursiv nach Stalker Portal-URLs.*
-- **[`normalize_portal_url(raw)`](core/portal_checker.py#L202-L219)** — `L202` — *Normalisiert eine Portal-URL sauber (Protokoll, Leerzeichen, Format).*
-- **[`load_portal_list(file_path)`](core/portal_checker.py#L222-L245)** — `L222` — *Liest eine Stalker-Portal-Datei (.txt) ein, bereinigt Kommentare und*
-- **[`save_reachable_portals_file(file_path, urls)`](core/portal_checker.py#L248-L261)** — `L248` — *Speichert eine Liste erreichbarer Portal-URLs zeilenweise in eine .txt-Datei.*
-- **[`is_stalker_response(r)`](core/portal_checker.py#L264-L310)** — `L264` — *Prüft eine HTTP-Response rigoros auf definitive Stalker / Ministra Signaturen.*
-- **[`get_portal_candidate_endpoints(url)`](core/portal_checker.py#L313-L348)** — `L313` — *Generiert typische Stalker/Ministra-Endpunkte für Handshake-Probes.*
-- **[`check_single_portal(url, timeout, verify_ssl, session)`](core/portal_checker.py#L351-L495)** — `L351` — *Prüft einen einzelnen Portal-Host rigoros auf echte Stalker/Ministra-Erreichbarkeit,*
+- **[`is_valid_portal_hostname(host)`](core/portal_checker.py#L162-L211)** — `L162` — *Validiert streng, ob ein Hostname eine reale Internet-Domain oder IPv4-Adresse darstellt.*
+- **[`extract_portal_urls_from_text(content)`](core/portal_checker.py#L214-L285)** — `L214` — *Extrahiert Stalker-Portal-URLs aus einem Textstring (z. B. aus TXT-Listen, Logs, M3U).*
+- **[`extract_portal_urls_from_folder(folder_path, max_file_size)`](core/portal_checker.py#L288-L321)** — `L288` — *Durchsucht alle .txt-Dateien eines Ordners rekursiv nach Stalker Portal-URLs.*
+- **[`normalize_portal_url(raw)`](core/portal_checker.py#L324-L345)** — `L324` — *Normalisiert eine Portal-URL sauber (Protokoll, Leerzeichen, Format).*
+- **[`load_portal_list(file_path)`](core/portal_checker.py#L348-L376)** — `L348` — *Liest eine Stalker-Portal-Datei (.txt) ein, bereinigt Kommentare und*
+- **[`save_reachable_portals_file(file_path, urls)`](core/portal_checker.py#L379-L392)** — `L379` — *Speichert eine Liste erreichbarer Portal-URLs zeilenweise in eine .txt-Datei.*
+- **[`is_stalker_response(r)`](core/portal_checker.py#L395-L441)** — `L395` — *Prüft eine HTTP-Response rigoros auf definitive Stalker / Ministra Signaturen.*
+- **[`get_portal_candidate_endpoints(url)`](core/portal_checker.py#L444-L479)** — `L444` — *Generiert typische Stalker/Ministra-Endpunkte für Handshake-Probes.*
+- **[`check_single_portal(url, timeout, verify_ssl, session)`](core/portal_checker.py#L482-L626)** — `L482` — *Prüft einen einzelnen Portal-Host rigoros auf echte Stalker/Ministra-Erreichbarkeit,*
 
 #### Wichtige Konstanten / Konfigurationen
-- `DEFAULT_PORTAL_TIMEOUT` (L29), `DEFAULT_CHECKER_THREADS` (L30), `PORTAL_URL_PATTERN` (L96), `EXCLUDED_HOST_SUFFIXES` (L103), `EXCLUDED_EXTENSIONS` (L108)
+- `DEFAULT_PORTAL_TIMEOUT` (L29), `DEFAULT_CHECKER_THREADS` (L30), `VALID_TLDS` (L97), `PORTAL_URL_PATTERN` (L129), `_URL_WITH_SCHEME` (L137), `_LABEL_PREFIXED_URL` (L138), `_BARE_HOST_WITH_PORT` (L139), `_BARE_HOST_WITH_PATH` (L140), `_PORTAL_PREFIXED_HOST` (L141), `EXCLUDED_HOST_SUFFIXES` (L143), `EXCLUDED_EXTENSIONS` (L153)
 
 ---
 
@@ -1361,9 +1363,9 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
 ### 📄 [`tests/probe_multi_hosts.py`](tests/probe_multi_hosts.py) (134 Zeilen)
 ---
 
-### 📄 [`tests/test_portal_checker.py`](tests/test_portal_checker.py) (490 Zeilen)
+### 📄 [`tests/test_portal_checker.py`](tests/test_portal_checker.py) (536 Zeilen)
 #### Klassen & Komponenten
-- **[`TestPortalChecker`](tests/test_portal_checker.py#L26-L486)** : *unittest.TestCase* — `L26-L486`
+- **[`TestPortalChecker`](tests/test_portal_checker.py#L26-L532)** : *unittest.TestCase* — `L26-L532`
   - **Wichtige Methoden:**
     - [`test_01_normalize_portal_url()`](tests/test_portal_checker.py#L27) — `L27`
     - [`test_02_load_and_save_portal_list()`](tests/test_portal_checker.py#L34) — `L34`
@@ -1380,7 +1382,7 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
     - [`test_13_scanner_view_import_portals_from_folder()`](tests/test_portal_checker.py#L355) — `L355` *(Testet den Ordner-Import von Portal-URLs im ScannerView.)*
     - [`test_14_rejects_php_page_with_images_and_phpsessid()`](tests/test_portal_checker.py#L377) — `L377` *(Verifiziert, dass generische PHP-Seiten mit PHPSESSID und Bildern/Wörtern wie 'image' nicht als Stalker erkannt werden.)*
     - [`test_15_rejects_generic_json_apis_with_tokens_or_unauthorized()`](tests/test_portal_checker.py#L395) — `L395` *(Verifiziert, dass generische REST-APIs (z. B. OAuth Tokens oder 401 Unauthorized) nicht als Stalker fehlklassifiziert werden.)*
-    - *... und 4 weitere Hilfsmethoden.*
+    - *... und 5 weitere Hilfsmethoden.*
 
 ---
 

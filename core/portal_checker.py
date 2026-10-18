@@ -93,6 +93,39 @@ class PortalCheckResult:
         return "🔴 Offline"
 
 
+# Vollständige Liste an gültigen IANA TLDs (ccTLDs + gTLDs) zur Vermeidung von False-Positives aus Combo-Listen
+VALID_TLDS = {
+    # 2-stellige ccTLDs (Länder-Domains)
+    "ac", "ad", "ae", "af", "ag", "ai", "al", "am", "ao", "aq", "ar", "as", "at", "au", "aw", "ax", "az",
+    "ba", "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj", "bm", "bn", "bo", "br", "bs", "bt", "bw", "by", "bz",
+    "ca", "cc", "cd", "cf", "cg", "ch", "ci", "ck", "cl", "cm", "cn", "co", "cr", "cu", "cv", "cw", "cx", "cy", "cz",
+    "de", "dj", "dk", "dm", "do", "dz", "ec", "ee", "eg", "er", "es", "et", "eu", "fi", "fj", "fk", "fm", "fo", "fr",
+    "ga", "gb", "gd", "ge", "gf", "gg", "gh", "gi", "gl", "gm", "gn", "gp", "gq", "gr", "gs", "gt", "gu", "gw", "gy",
+    "hk", "hm", "hn", "hr", "ht", "hu", "id", "ie", "il", "im", "in", "io", "iq", "ir", "is", "it",
+    "je", "jm", "jo", "jp", "ke", "kg", "kh", "ki", "km", "kn", "kp", "kr", "kw", "ky", "kz",
+    "la", "lb", "lc", "li", "lk", "lr", "ls", "lt", "lu", "lv", "ly",
+    "ma", "mc", "md", "me", "mf", "mg", "mh", "mk", "ml", "mm", "mn", "mo", "mp", "mq", "mr", "ms", "mt", "mu", "mv", "mw", "mx", "my", "mz",
+    "na", "nc", "ne", "nf", "ng", "ni", "nl", "no", "np", "nr", "nu", "nz",
+    "om", "pa", "pe", "pf", "pg", "ph", "pk", "pl", "pm", "pn", "pr", "ps", "pt", "pw", "py",
+    "qa", "re", "ro", "rs", "ru", "rw", "sa", "sb", "sc", "sd", "se", "sg", "sh", "si", "sk", "sl", "sm", "sn", "so", "sr", "ss", "st", "su", "sv", "sx", "sy", "sz",
+    "tc", "td", "tf", "tg", "th", "tj", "tk", "tl", "tm", "tn", "to", "tr", "tt", "tv", "tw", "tz",
+    "ua", "ug", "uk", "us", "uy", "uz", "va", "vc", "ve", "vg", "vi", "vn", "vu", "wf", "ws", "ye", "yt", "za", "zm", "zw",
+    # gTLDs (Generische und neue Domains, insbesondere für IPTV & Webserver)
+    "com", "net", "org", "info", "biz", "pro", "name", "xyz", "club", "top", "online", "site",
+    "live", "vip", "shop", "one", "cloud", "best", "link", "tech", "space", "store", "fun",
+    "host", "website", "today", "run", "rocks", "casa", "uno", "actor", "homes", "cfd", "guru",
+    "life", "work", "stream", "solutions", "services", "network", "zone", "world", "mobi", "asia",
+    "tel", "cat", "jobs", "travel", "media", "center", "agency", "digital", "expert", "group",
+    "support", "systems", "team", "plus", "video", "click", "app", "dev", "page", "wiki", "news",
+    "gold", "fit", "tube", "pub", "bar", "direct", "icu", "cyou", "sbs", "lol", "monster",
+    "rest", "band", "show", "watch", "global", "express", "company", "city", "community", "cool",
+    "events", "exchange", "guide", "international", "land", "limited", "management", "marketing",
+    "partners", "photography", "photos", "productions", "properties", "rentals", "repair", "report",
+    "reviews", "social", "software", "supplies", "supply", "technology", "tips", "tools", "town",
+    "toys", "training", "university", "vacations", "ventures", "viajes", "villas", "vision", "voyage",
+    "wales", "dance", "fyi", "bio", "cam", "rip", "soy", "arpa"
+}
+
 PORTAL_URL_PATTERN = re.compile(
     r"(?:https?://[^\s<>\"'{}|\\^`]+|"
     r"(?:[a-zA-Z0-9][-a-zA-Z0-9]*\.)+[a-zA-Z]{2,}(?::\d+)?(?:/[^\s<>\"'{}|\\^`]*)?|"
@@ -100,24 +133,90 @@ PORTAL_URL_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
+# Regexes zur zielgerichteten Erkennung echter Portal-Kandidaten
+_URL_WITH_SCHEME = re.compile(r"https?://[^\s<>\"'{}|\\^`]+", re.IGNORECASE)
+_LABEL_PREFIXED_URL = re.compile(r"(?i)(?:portal|host|url|server)\s*[:=]\s*([^\s<>\"'{}|\\^`]+)")
+_BARE_HOST_WITH_PORT = re.compile(r"\b((?:[a-zA-Z0-9][-a-zA-Z0-9]*\.)+[a-zA-Z]{2,}|(?:\d{1,3}\.){3}\d{1,3}):(\d{1,5})(?:/[^\s<>\"'{}|\\^`]*)?")
+_BARE_HOST_WITH_PATH = re.compile(r"\b((?:[a-zA-Z0-9][-a-zA-Z0-9]*\.)+[a-zA-Z]{2,}|(?:\d{1,3}\.){3}\d{1,3})(/(?:c|stalker_portal|portal\.php|server/load\.php|load\.php)[^\s<>\"'{}|\\^`]*)")
+_PORTAL_PREFIXED_HOST = re.compile(r"\b((?:mag|stb|portal|iptv|ott|stream|panel)\.[a-zA-Z0-9][-a-zA-Z0-9]*(?:\.[a-zA-Z0-9][-a-zA-Z0-9]*)*(?::\d{1,5})?(?:/[^\s<>\"'{}|\\^`]*)?)", re.IGNORECASE)
+
 EXCLUDED_HOST_SUFFIXES = (
-    "w3.org", "schema.org", "github.com", "google.com", "microsoft.com",
-    "apple.com", "cloudflare.com", "example.com", "localhost",
+    "w3.org", "schema.org", "github.com", "gitlab.com", "google.com", "google.de",
+    "microsoft.com", "apple.com", "cloudflare.com", "example.com", "localhost",
+    "yahoo.com", "hotmail.com", "outlook.com", "live.com", "gmail.com", "mail.ru",
+    "yandex.ru", "yandex.com", "web.de", "gmx.de", "gmx.net", "t-online.de",
+    "facebook.com", "twitter.com", "x.com", "instagram.com", "youtube.com",
+    "wikipedia.org", "reddit.com", "amazon.com", "netflix.com", "pastebin.com",
+    "t.me", "telegram.org", "discord.com", "discord.gg", "mega.nz", "anonfiles.com"
 )
 
 EXCLUDED_EXTENSIONS = {
     ".txt", ".json", ".log", ".py", ".md", ".exe", ".dll", ".bak",
     ".csv", ".bat", ".sh", ".zip", ".tar", ".gz", ".png", ".jpg",
     ".jpeg", ".gif", ".pdf", ".doc", ".docx", ".xml", ".yml", ".yaml",
-    ".ini", ".cfg", ".conf", ".htm"
+    ".ini", ".cfg", ".conf", ".htm", ".html", ".css", ".js", ".ts",
+    ".m3u", ".m3u8", ".mp4", ".mkv", ".avi", ".mp3"
 }
+
+
+def is_valid_portal_hostname(host: Optional[str]) -> bool:
+    """
+    Validiert streng, ob ein Hostname eine reale Internet-Domain oder IPv4-Adresse darstellt.
+    Verwirft Usernamen aus Combos (z. B. 'lucas.pr', 'jester.bermejo'), Dateinamen und Plattformen.
+    """
+    if not host:
+        return False
+    h = host.strip().lower().rstrip(".")
+    if not h or len(h) > 253:
+        return False
+
+    # Ungültige Steuer- oder Trennzeichen
+    if any(c in h for c in ("@", " ", "/", "\\", ":", "<", ">", "{", "}", "|", "^", "`", "*", "?", "!", "$", "%")):
+        return False
+
+    # Ausschluss bekannter Nicht-Portal-Plattformen / Mailprovider
+    for ex in EXCLUDED_HOST_SUFFIXES:
+        if h == ex or h.endswith("." + ex):
+            return False
+
+    # Prüfe IPv4-Adresse
+    parts = h.split(".")
+    if len(parts) == 4 and all(p.isdigit() for p in parts):
+        try:
+            nums = [int(p) for p in parts]
+            if all(0 <= n <= 255 for n in nums):
+                if nums[0] == 0 or nums[0] == 127:
+                    return False
+                return True
+            return False
+        except ValueError:
+            return False
+
+    # Prüfe Domain-Struktur
+    if len(parts) < 2:
+        return False
+
+    for p in parts:
+        if not p or len(p) > 63 or not re.match(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$", p):
+            return False
+
+    # TLD-Validierung gegen offizielle TLDs
+    tld = parts[-1]
+    if tld not in VALID_TLDS:
+        return False
+
+    if "." + tld in EXCLUDED_EXTENSIONS:
+        return False
+
+    return True
 
 
 def extract_portal_urls_from_text(content: str) -> List[str]:
     """
     Extrahiert Stalker-Portal-URLs aus einem Textstring (z. B. aus TXT-Listen, Logs, M3U).
+    Filtert Combo-Listen (Email:Pass, User:Pass) und Dateinamen zuverlässig heraus.
     Erkennt http(s)-URLs sowie Host:Port-Angaben, Host/Path-Angaben und IPs,
-    ignoriert Dateinamen (z. B. .txt, .json), Kommentare und normalisiert
+    validiert Hostnames über is_valid_portal_hostname und normalisiert
     die URLs dedupliziert über normalize_portal_url.
     """
     if not content:
@@ -126,36 +225,59 @@ def extract_portal_urls_from_text(content: str) -> List[str]:
     found: List[str] = []
     seen = set()
 
-    cleaned_lines = []
     for line in content.splitlines():
         line_s = line.strip()
         if not line_s or line_s.startswith(("#", "//", "/*")):
             continue
-        cleaned_lines.append(line_s)
-    clean_text = "\n".join(cleaned_lines)
 
-    matches = PORTAL_URL_PATTERN.findall(clean_text)
-    for m in matches:
-        raw_u = m.strip().rstrip(".,;:)'\"<>`|")
-        if not raw_u:
+        # 1. Ignoriere Email-Zeilen und Email-Combos ohne explizites HTTP-Schema (z. B. user@domain.com:pass)
+        if "@" in line_s and not line_s.startswith(("http://", "https://")):
             continue
 
-        # Prüfe, ob es sich ohne Scheme um einen Dateinamen handelt (z. B. readme.txt)
-        if not raw_u.startswith(("http://", "https://")):
-            root_part = raw_u.split("/")[0].split(":")[0]
-            _, ext = os.path.splitext(root_part.lower())
-            if ext in EXCLUDED_EXTENSIONS:
+        # 2. Ignoriere reine User:Pass-Combos (z. B. 'jester.bermejo:secret', 'babi.morosoli:1234')
+        if ":" in line_s and not line_s.startswith(("http://", "https://")):
+            parts = line_s.split(":", 1)
+            # Wenn nach dem Doppelpunkt kein numerischer Port folgt und kein Portal-Label vorliegt -> Combo!
+            if not re.match(r"^\d{1,5}(?:/.*)?$", parts[1].strip()) and not parts[0].lower().startswith(("portal", "host", "url", "server")):
                 continue
 
-        norm = normalize_portal_url(raw_u)
-        parsed = urlparse(norm)
-        if parsed.hostname and "." in parsed.hostname:
-            h_lower = parsed.hostname.lower()
-            if any(h_lower.endswith(d) for d in EXCLUDED_HOST_SUFFIXES):
+        candidates: List[str] = []
+        working_line = line_s
+
+        # A. Vollständige HTTP(S)-URLs
+        for m in _URL_WITH_SCHEME.findall(working_line):
+            candidates.append(m)
+            working_line = working_line.replace(m, " ")
+
+        # B. Über Labels eingeleitete URLs (z. B. 'Host: iptv.server.com:25461')
+        for m in _LABEL_PREFIXED_URL.findall(working_line):
+            candidates.append(m)
+            working_line = working_line.replace(m, " ")
+
+        # C. Reiner Host mit Port (z. B. 'pars01.com:8080')
+        for m in _BARE_HOST_WITH_PORT.finditer(working_line):
+            candidates.append(m.group(0))
+
+        # D. Reiner Host mit Stalker-Pfad (z. B. 'portal.server.com/c')
+        for m in _BARE_HOST_WITH_PATH.finditer(working_line):
+            candidates.append(m.group(0))
+
+        # E. Typischer Portal-Subdomain-Präfix (z. B. 'mag.clubxc.com')
+        for m in _PORTAL_PREFIXED_HOST.findall(working_line):
+            candidates.append(m)
+
+        for raw_u in candidates:
+            clean_u = raw_u.strip().rstrip(".,;:)'\"<>`|")
+            if not clean_u:
                 continue
-            _, h_ext = os.path.splitext(h_lower)
-            if h_ext in EXCLUDED_EXTENSIONS:
+
+            norm = normalize_portal_url(clean_u)
+            parsed = urlparse(norm)
+            if not is_valid_portal_hostname(parsed.hostname):
                 continue
+            if parsed.port and not (1 <= parsed.port <= 65535):
+                continue
+
             if norm.lower() not in seen:
                 seen.add(norm.lower())
                 found.append(norm)
@@ -210,7 +332,11 @@ def normalize_portal_url(raw: str) -> str:
     scheme = parsed.scheme.lower() or "http"
     netloc = parsed.netloc.strip()
     path = parsed.path.rstrip("/")
-    if not path or path == "/":
+    
+    # Wenn Stream-URL (z. B. MPEG-TS oder HLS Stream), auf Basispfad /c zuruecksetzen
+    if any(path.lower().endswith(ext) for ext in (".ts", ".m3u8", ".mp4", ".mkv", ".avi")) or "/live/" in path or "/movie/" in path:
+        path = "/c"
+    elif not path or path == "/":
         path = "/c"
     elif not path.endswith("/c") and not path.endswith(".php"):
         path = f"{path}/c"
@@ -237,6 +363,11 @@ def load_portal_list(file_path: str) -> List[str]:
                     continue
                 # Unterstütze URLs oder Hostnames
                 norm = normalize_portal_url(line)
+                parsed = urlparse(norm)
+                if not is_valid_portal_hostname(parsed.hostname):
+                    continue
+                if parsed.port and not (1 <= parsed.port <= 65535):
+                    continue
                 if norm and norm.lower() not in seen:
                     seen.add(norm.lower())
                     portals.append(norm)

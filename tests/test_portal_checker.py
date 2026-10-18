@@ -485,6 +485,52 @@ class TestPortalChecker(unittest.TestCase):
             self.assertEqual(res["status"], "Verbindungsfehler")
             self.assertIn("timed out", res["error"].lower())
 
+    def test_20_extract_portal_urls_rejects_combos_and_fake_hosts(self):
+        """
+        Verifiziert, dass extract_portal_urls_from_text User:Pass/Email:Pass Combos,
+        Namen (lucas.pr, jester.bermejo, babi.morosoli) und Dateinamen strikt verwirft,
+        während echte Stalker-Portale sauber extrahiert werden.
+        """
+        sample_dump = (
+            "lucas.pr@yahoo.com:password123\n"
+            "jester.bermejo@hotmail.com:secret\n"
+            "babi.morosoli:mypassword\n"
+            "ian.meiser:12345\n"
+            "philippe.zanasi:qwerty\n"
+            "http://vip.bmbtv.me:15000/c\n"
+            "https://c44k.net/c\n"
+            "http://185.246.209.95/c\n"
+            "pars01.com:8080/c\n"
+            "mag.rs6ott.com:8000\n"
+            "185.125.230.128:8080\n"
+            "portal = mag.clubxc.com:8080/c\n"
+            "Host: iptv.darktv.eu:25461\n"
+            "readme.txt\n"
+            "config.json\n"
+            "https://github.com/secroot/stb-pro-qt6\n"
+            "http://google.com\n"
+        )
+        extracted = extract_portal_urls_from_text(sample_dump)
+
+        # Verifiziere: KEINE der Fake-Hosts / Combos vorhanden
+        for fake in ["lucas.pr", "jester.bermejo", "babi.morosoli", "ian.meiser", "philippe.zanasi", "yahoo.com", "google.com", "readme.txt"]:
+            self.assertFalse(any(fake in u for u in extracted), f"Fake entry '{fake}' was erroneously extracted!")
+
+        # Verifiziere: Alle echten Portale wurden extrahiert
+        expected_portals = [
+            "http://vip.bmbtv.me:15000/c",
+            "https://c44k.net/c",
+            "http://185.246.209.95/c",
+            "http://pars01.com:8080/c",
+            "http://mag.rs6ott.com:8000/c",
+            "http://185.125.230.128:8080/c",
+            "http://mag.clubxc.com:8080/c",
+            "http://iptv.darktv.eu:25461/c",
+        ]
+        self.assertEqual(len(extracted), len(expected_portals))
+        for exp in expected_portals:
+            self.assertIn(exp, extracted)
+
 
 if __name__ == "__main__":
     unittest.main()
