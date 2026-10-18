@@ -38,7 +38,13 @@ import requests
 from requests.adapters import HTTPAdapter
 
 from clients.m3u_client import M3UClient
-from clients.stb_client import STB_PRESETS, RateLimitError, StbClient, check_mac_account
+from clients.stb_client import (
+    STB_PRESETS,
+    RateLimitError,
+    StbClient,
+    check_mac_account,
+    emit_scanner_connection_error_log,
+)
 from clients.throttle import ScanThrottleController
 from clients.xtream_client import XtreamClient
 from core.config_manager import APP_DIR, ConfigManager
@@ -2601,6 +2607,24 @@ class MainWindow(QMainWindow):
                                 or has_ch_error
                                 or active_date_missing_channels
                             )
+
+                            # Sporadisches Logging von Verbindungs- & Timeout-Fehlern in den HTTP-Inspector
+                            if (
+                                is_transient
+                                or "ConnectionError" in err_str
+                                or "Verbindungsfehler" in stat_str
+                                or "Timeout" in stat_str
+                                or "timeout" in err_str
+                                or "RemoteDisconnected" in err_str
+                                or has_ch_error
+                            ):
+                                emit_scanner_connection_error_log(
+                                    portal_url=cur_portal,
+                                    mac=mac,
+                                    error_msg=err_str or stat_str or "Verbindungsfehler",
+                                    endpoint=cached_target_ep or res.get("load_url"),
+                                    status_code=504 if ("timeout" in err_str.lower() or "timeout" in stat_str.lower()) else 0,
+                                )
 
                             # WENN TRANSIENT (Timeout/503/429/Kanalfehler): MAC hinten anstellen und erneut probieren!
                             if scan_auto_requeue and is_transient and retries < scan_max_retries and not self._scan_stop_ev.is_set():

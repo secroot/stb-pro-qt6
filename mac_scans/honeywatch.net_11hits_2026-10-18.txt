@@ -1,0 +1,98 @@
+---------------------------------------------
+Portal: http://honeywatch.net
+Status: Aktiv
+Mac: 00:1A:79:00:13:BE
+Scandate: 2026-10-18 02:34:10
+Expire: October 24, 2026, 12:00 am
+Channels: 9034
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://honeywatch.net
+Status: Aktiv
+Mac: 00:1A:79:00:1B:D9
+Scandate: 2026-10-18 02:34:10
+Expire: November 14, 2026, 4:16 pm
+Channels: 56804
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://honeywatch.net
+Status: Aktiv
+Mac: 00:1A:79:B5:9E:EB
+Scandate: 2026-10-18 02:34:10
+Expire: October 24, 2026, 12:00 am
+Channels: 7085
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://honeywatch.net
+Status: Aktiv
+Mac: 00:1A:79:B3:9C:EE
+Scandate: 2026-10-18 02:34:10
+Expire: December 19, 2026, 12:00 am
+Channels: 31880
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://honeywatch.net
+Status: Aktiv
+Mac: 00:1A:79:30:39:62
+Scandate: 2026-10-18 02:34:10
+Expire: April 12, 2027, 12:00 am
+Channels: 28107
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://honeywatch.net
+Status: Aktiv
+Mac: 00:1A:79:B5:61:85
+Scandate: 2026-10-18 02:34:10
+Expire: January 11, 2027, 12:00 am
+Channels: 20008
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://honeywatch.net
+Status: Aktiv
+Mac: 00:1A:79:61:35:66
+Scandate: 2026-10-18 02:34:10
+Expire: October 28, 2026, 12:00 am
+Channels: 19818
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://honeywatch.net
+Status: Aktiv
+Mac: 00:1A:79:B0:D4:91
+Scandate: 2026-10-18 02:34:10
+Expire: March 11, 2027, 12:00 am
+Channels: 8088
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://honeywatch.net
+Status: Aktiv
+Mac: 00:1A:79:01:02:03
+Scandate: 2026-10-18 02:34:10
+Expire: February 26, 2027, 12:00 am
+Channels: 2866
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://honeywatch.net
+Status: Aktiv
+Mac: 00:1A:79:11:22:33
+Scandate: 2026-10-18 02:34:10
+Expire: July 16, 2027, 12:00 am
+Channels: 17808
+---------------------------------------------
+
+---------------------------------------------
+Portal: http://honeywatch.net
+Status: Aktiv
+Mac: 00:1A:79:44:55:66
+Scandate: 2026-10-18 02:34:10
+Expire: January 17, 2027, 12:00 am
+Channels: 17808
+---------------------------------------------

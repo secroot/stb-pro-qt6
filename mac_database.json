@@ -7703,7 +7703,7 @@
         "token": "",
         "model": "MAG 250",
         "first_seen": "2026-10-17 13:22:23",
-        "last_seen": "2026-10-17 22:44:14"
+        "last_seen": "2026-10-18 03:12:32"
       },
       "00:1A:79:44:55:66": {
         "mac": "00:1A:79:44:55:66",
@@ -7714,7 +7714,7 @@
         "token": "",
         "model": "MAG 250",
         "first_seen": "2026-10-17 13:22:24",
-        "last_seen": "2026-10-17 22:44:14"
+        "last_seen": "2026-10-18 03:12:32"
       }
     },
     "http://clubxc.com:8080/c": {
@@ -7732,13 +7732,13 @@
       "00:1A:79:08:E9:55": {
         "mac": "00:1A:79:08:E9:55",
         "portal_url": "http://clubxc.com:8080/c",
-        "channels": 13180,
+        "channels": 13181,
         "expire": "December 2, 2026, 9:03 am",
         "status": "Aktiv",
-        "token": "EE2690528DD418216D2ACE0DCE7BFFEA",
+        "token": "F615245617EFA611A1D40B0B8D551C63",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:07:02",
-        "last_seen": "2026-10-17 15:07:42"
+        "last_seen": "2026-10-18 02:09:01"
       },
       "A0:BB:3E:28:58:D9": {
         "mac": "A0:BB:3E:28:58:D9",
@@ -7754,13 +7754,13 @@
       "00:1A:79:BB:E6:7E": {
         "mac": "00:1A:79:BB:E6:7E",
         "portal_url": "http://clubxc.com:8080/c",
-        "channels": 13180,
+        "channels": 13181,
         "expire": "December 19, 2026, 4:55 pm",
         "status": "Aktiv",
-        "token": "845D774B2EDCB322EABAFF2B608DEBD0",
+        "token": "BA6D1CD394B75B3EBFC9098B5C6C8E3D",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:11:55",
-        "last_seen": "2026-10-17 15:11:55"
+        "last_seen": "2026-10-18 02:08:18"
       },
       "00:1A:79:B5:2C:E3": {
         "mac": "00:1A:79:B5:2C:E3",
@@ -7798,13 +7798,13 @@
       "00:1A:79:07:C0:FD": {
         "mac": "00:1A:79:07:C0:FD",
         "portal_url": "http://clubxc.com:8080/c",
-        "channels": 13180,
+        "channels": 13181,
         "expire": "January 6, 2027, 3:38 pm",
         "status": "Aktiv",
-        "token": "A13F9110D8F3DA1A8E5DF408DB30E706",
+        "token": "AC7C7FCE85E9911A12A3D66EEA8D8796",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:15:44",
-        "last_seen": "2026-10-17 15:15:44"
+        "last_seen": "2026-10-18 02:07:47"
       },
       "00:2A:01:90:89:BB": {
         "mac": "00:2A:01:90:89:BB",
@@ -7853,13 +7853,13 @@
       "00:2A:01:90:A4:3F": {
         "mac": "00:2A:01:90:A4:3F",
         "portal_url": "http://clubxc.com:8080/c",
-        "channels": 13180,
+        "channels": 13181,
         "expire": "May 5, 2027, 12:15 pm",
         "status": "Aktiv",
-        "token": "C8F92B0AA38B0555F9F127219746D82B",
+        "token": "3D73A6A3D47F29D0331C96768CE1F3BF",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:17:40",
-        "last_seen": "2026-10-17 15:17:40"
+        "last_seen": "2026-10-18 02:07:12"
       },
       "00:1A:79:B4:ED:F9": {
         "mac": "00:1A:79:B4:ED:F9",
@@ -7963,13 +7963,13 @@
       "00:1A:79:B5:CF:A1": {
         "mac": "00:1A:79:B5:CF:A1",
         "portal_url": "http://clubxc.com:8080/c",
-        "channels": 13180,
+        "channels": 13181,
         "expire": "December 29, 2026, 3:23 pm",
         "status": "Aktiv",
-        "token": "E52923C08F80F6A49046A2B364684864",
+        "token": "A853D39D1307E9EFBAD67EA20C798E24",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:28:57",
-        "last_seen": "2026-10-17 15:28:57"
+        "last_seen": "2026-10-18 02:06:06"
       },
       "00:1A:79:08:47:02": {
         "mac": "00:1A:79:08:47:02",
@@ -8117,13 +8117,13 @@
       "00:1A:79:B5:7B:9C": {
         "mac": "00:1A:79:B5:7B:9C",
         "portal_url": "http://clubxc.com:8080/c",
-        "channels": 13180,
+        "channels": 13181,
         "expire": "August 31, 2027, 11:07 pm",
         "status": "Aktiv",
-        "token": "A65277A726F95FFD9104E01B0D909EC0",
+        "token": "D2E50CA71F35E9F8C4D973807B84F14A",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:29:02",
-        "last_seen": "2026-10-17 15:29:02"
+        "last_seen": "2026-10-18 02:05:28"
       },
       "00:1A:79:C4:14:E9": {
         "mac": "00:1A:79:C4:14:E9",
@@ -8315,13 +8315,13 @@
       "00:1A:79:BA:BB:85": {
         "mac": "00:1A:79:BA:BB:85",
         "portal_url": "http://clubxc.com:8080/c",
-        "channels": 13076,
+        "channels": 13077,
         "expire": "December 24, 2026, 4:41 pm",
         "status": "Aktiv",
-        "token": "1946C2F03CDE95E32C41155D5C6FB23E",
+        "token": "4671F95C391DC97C57C52E46AC9F715F",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:29:10",
-        "last_seen": "2026-10-17 15:29:10"
+        "last_seen": "2026-10-18 02:23:25"
       },
       "00:1A:79:BA:BC:1C": {
         "mac": "00:1A:79:BA:BC:1C",
@@ -8359,13 +8359,13 @@
       "00:1A:79:C2:81:0D": {
         "mac": "00:1A:79:C2:81:0D",
         "portal_url": "http://clubxc.com:8080/c",
-        "channels": 13076,
+        "channels": 13077,
         "expire": "January 26, 2027, 6:25 pm",
         "status": "Aktiv",
-        "token": "D8E31BC0E152E496A67914BE7D99B824",
+        "token": "251176223046F76E81969349806DCF01",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:29:12",
-        "last_seen": "2026-10-17 15:29:12"
+        "last_seen": "2026-10-18 02:21:35"
       },
       "00:1A:79:08:47:7A": {
         "mac": "00:1A:79:08:47:7A",
@@ -8835,10 +8835,10 @@
         "channels": 2492,
         "expire": "September 9, 2027, 7:28 pm",
         "status": "Aktiv",
-        "token": "C1D427CF1C72C958D628BC1682E7853D",
+        "token": "AC7759827D8489285FE39F459A0EE408",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:29:29",
-        "last_seen": "2026-10-17 15:29:29"
+        "last_seen": "2026-10-18 01:58:12"
       },
       "00:2A:01:90:98:A5": {
         "mac": "00:2A:01:90:98:A5",
@@ -9030,13 +9030,13 @@
       "00:1A:79:07:BD:EA": {
         "mac": "00:1A:79:07:BD:EA",
         "portal_url": "http://clubxc.com:8080/c",
-        "channels": 13180,
+        "channels": 13181,
         "expire": "March 3, 2027, 9:37 am",
         "status": "Aktiv",
-        "token": "0D5C30FC49419BF8FBC4014A1FAE2A6B",
+        "token": "3005D114085A33111A615D028837E8D9",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:29:37",
-        "last_seen": "2026-10-17 15:29:37"
+        "last_seen": "2026-10-18 02:03:16"
       },
       "00:1A:79:7C:69:A0": {
         "mac": "00:1A:79:7C:69:A0",
@@ -9228,13 +9228,13 @@
       "00:2A:01:90:ED:9C": {
         "mac": "00:2A:01:90:ED:9C",
         "portal_url": "http://clubxc.com:8080/c",
-        "channels": 13180,
+        "channels": 13181,
         "expire": "December 8, 2026, 6:06 pm",
         "status": "Aktiv",
-        "token": "AACCC59ABBABD90149E5963B5EE8F910",
+        "token": "AD822B9FFA9D6D51733BBD0309D9492A",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:35:26",
-        "last_seen": "2026-10-17 15:35:26"
+        "last_seen": "2026-10-18 02:02:12"
       },
       "00:2A:01:90:E5:E7": {
         "mac": "00:2A:01:90:E5:E7",
@@ -9283,13 +9283,13 @@
       "00:2A:01:90:72:46": {
         "mac": "00:2A:01:90:72:46",
         "portal_url": "http://clubxc.com:8080/c",
-        "channels": 13180,
+        "channels": 13181,
         "expire": "November 6, 2026, 4:55 pm",
         "status": "Aktiv",
-        "token": "7BD2384C00CD0F50751BFF6F9233E9E0",
+        "token": "C656F4E2E6D36075195550A5C10F0B1D",
         "model": "MAG 250",
         "first_seen": "2026-10-17 15:36:03",
-        "last_seen": "2026-10-17 15:36:03"
+        "last_seen": "2026-10-18 02:00:49"
       },
       "00:2A:01:90:50:E4": {
         "mac": "00:2A:01:90:50:E4",
@@ -12007,6 +12007,481 @@
         "first_seen": "2026-10-17 18:23:15",
         "last_seen": "2026-10-17 18:23:15"
       }
+    },
+    "http://king.viviotv.xyz/c": {
+      "00:1A:79:B5:64:EF": {
+        "mac": "00:1A:79:B5:64:EF",
+        "portal_url": "http://king.viviotv.xyz/c",
+        "channels": 17742,
+        "expire": "January 30, 2027, 12:00 am",
+        "status": "Aktiv",
+        "token": "D218EC7CAFB5B1D5B4D65A869FFF14A1",
+        "model": "MAG 250",
+        "first_seen": "2026-10-05 05:32:58",
+        "last_seen": "2026-10-18 01:58:39"
+      }
+    },
+    "http://saray68.darktv.nl/c": {
+      "00:1A:79:64:66:35": {
+        "mac": "00:1A:79:64:66:35",
+        "portal_url": "http://saray68.darktv.nl/c",
+        "channels": 11131,
+        "expire": "October 30, 2026, 9:11 pm",
+        "status": "Aktiv",
+        "token": "BF10CFBEE5B1387248E03B12891C8009",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 16:26:34",
+        "last_seen": "2026-10-18 01:59:00"
+      }
+    },
+    "http://vpn.zdiptv.xyz/c": {
+      "00:1A:79:B5:9E:36": {
+        "mac": "00:1A:79:B5:9E:36",
+        "portal_url": "http://vpn.zdiptv.xyz/c",
+        "channels": 8811,
+        "expire": "November 21, 2026, 12:00 am",
+        "status": "Aktiv",
+        "token": "A9CD3A1FD8E37FD5290D0179064EB274",
+        "model": "MAG 250",
+        "first_seen": "2026-10-05 05:52:44",
+        "last_seen": "2026-10-18 01:59:17"
+      }
+    },
+    "http://honeywatch.net/c": {
+      "00:1A:79:11:22:33": {
+        "mac": "00:1A:79:11:22:33",
+        "portal_url": "http://honeywatch.net/c",
+        "channels": 17808,
+        "expire": "July 16, 2027, 12:00 am",
+        "status": "Aktiv",
+        "token": "8121E6CB8CD4A287A72805A67DFEB6D6",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 13:22:23",
+        "last_seen": "2026-10-18 01:59:48"
+      }
+    },
+    "http://ibo.club-xc.com:8080/c": {
+      "00:2A:01:90:72:46": {
+        "mac": "00:2A:01:90:72:46",
+        "portal_url": "http://ibo.club-xc.com:8080/c",
+        "channels": 13181,
+        "expire": "November 6, 2026, 4:55 pm",
+        "status": "Aktiv",
+        "token": "8ABD2AE2A3A9BAF3C68131857423AB99",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:36:03",
+        "last_seen": "2026-10-18 02:01:05"
+      },
+      "00:2A:01:90:A4:3F": {
+        "mac": "00:2A:01:90:A4:3F",
+        "portal_url": "http://ibo.club-xc.com:8080/c",
+        "channels": 13181,
+        "expire": "0000-00-00 00:00:00",
+        "status": "Aktiv",
+        "token": "E002B9B33D398A38B95A752D561EC7BD",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:17:40",
+        "last_seen": "2026-10-18 02:07:15"
+      },
+      "00:1A:79:07:C0:FD": {
+        "mac": "00:1A:79:07:C0:FD",
+        "portal_url": "http://ibo.club-xc.com:8080/c",
+        "channels": 13181,
+        "expire": "January 6, 2027, 3:38 pm",
+        "status": "Aktiv",
+        "token": "B97F9E87F71CBB8B436DF87866CE040B",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:15:44",
+        "last_seen": "2026-10-18 02:07:50"
+      },
+      "00:1A:79:08:E9:55": {
+        "mac": "00:1A:79:08:E9:55",
+        "portal_url": "http://ibo.club-xc.com:8080/c",
+        "channels": 13181,
+        "expire": "December 2, 2026, 9:03 am",
+        "status": "Aktiv",
+        "token": "B2E39CFD411BFD697EC3968376CD9ED5",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:07:02",
+        "last_seen": "2026-10-18 02:09:08"
+      },
+      "00:2A:01:90:A4:00": {
+        "mac": "00:2A:01:90:A4:00",
+        "portal_url": "http://ibo.club-xc.com:8080/c",
+        "channels": 13077,
+        "expire": "November 15, 2026, 1:39 pm",
+        "status": "Aktiv",
+        "token": "A43E5C45B8AC9DDB99335F170A153884",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:33:49",
+        "last_seen": "2026-10-18 02:11:03"
+      },
+      "00:2A:01:90:4F:AB": {
+        "mac": "00:2A:01:90:4F:AB",
+        "portal_url": "http://ibo.club-xc.com:8080/c",
+        "channels": 13077,
+        "expire": "0000-00-00 00:00:00",
+        "status": "Aktiv",
+        "token": "BB8A958659711F1255D95146C98138BA",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:29:28",
+        "last_seen": "2026-10-18 02:15:24"
+      },
+      "00:1A:79:BA:BB:85": {
+        "mac": "00:1A:79:BA:BB:85",
+        "portal_url": "http://ibo.club-xc.com:8080/c",
+        "channels": 13077,
+        "expire": "0000-00-00 00:00:00",
+        "status": "Aktiv",
+        "token": "9EF98F9E3F0B695FF2510C2C2A4BA691",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:29:10",
+        "last_seen": "2026-10-18 02:23:34"
+      },
+      "A0:BB:3E:00:26:42": {
+        "mac": "A0:BB:3E:00:26:42",
+        "portal_url": "http://ibo.club-xc.com:8080/c",
+        "channels": 13077,
+        "expire": "August 4, 2027, 7:14 pm",
+        "status": "Aktiv",
+        "token": "C2084152A863D7C47A95F6455DB5E9E0",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:28:57",
+        "last_seen": "2026-10-18 02:28:09"
+      }
+    },
+    "http://iptv-factory.xyz:8080/c": {
+      "00:2A:01:90:72:46": {
+        "mac": "00:2A:01:90:72:46",
+        "portal_url": "http://iptv-factory.xyz:8080/c",
+        "channels": 13181,
+        "expire": "November 6, 2026, 4:55 pm",
+        "status": "Aktiv",
+        "token": "B76D4560CD4137B9DA49C15576F52F9E",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:36:03",
+        "last_seen": "2026-10-18 02:01:11"
+      },
+      "00:2A:01:90:ED:9C": {
+        "mac": "00:2A:01:90:ED:9C",
+        "portal_url": "http://iptv-factory.xyz:8080/c",
+        "channels": 13181,
+        "expire": "0000-00-00 00:00:00",
+        "status": "Aktiv",
+        "token": "23B61C3A314C2F37970FCF08B18662B0",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:35:26",
+        "last_seen": "2026-10-18 02:02:43"
+      },
+      "00:1A:79:B6:4F:16": {
+        "mac": "00:1A:79:B6:4F:16",
+        "portal_url": "http://iptv-factory.xyz:8080/c",
+        "channels": 13181,
+        "expire": "January 20, 2027, 5:13 pm",
+        "status": "Aktiv",
+        "token": "097CF76CB253E5D544AAEB381F52D053",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:29:19",
+        "last_seen": "2026-10-18 02:05:05"
+      },
+      "00:1A:79:B5:CF:A1": {
+        "mac": "00:1A:79:B5:CF:A1",
+        "portal_url": "http://iptv-factory.xyz:8080/c",
+        "channels": 13181,
+        "expire": "December 29, 2026, 3:23 pm",
+        "status": "Aktiv",
+        "token": "814A025822C5223F6EE5538943E252B5",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:28:57",
+        "last_seen": "2026-10-18 02:06:24"
+      },
+      "A0:BB:3E:00:13:DF": {
+        "mac": "A0:BB:3E:00:13:DF",
+        "portal_url": "http://iptv-factory.xyz:8080/c",
+        "channels": 13077,
+        "expire": "April 6, 2027, 2:58 pm",
+        "status": "Aktiv",
+        "token": "6CB5D0D98D1F8A0FD254545CCCEFC03A",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:28:56",
+        "last_seen": "2026-10-18 02:28:46"
+      }
+    },
+    "http://th-primee.com:8080/c": {
+      "00:1A:79:B5:CF:A1": {
+        "mac": "00:1A:79:B5:CF:A1",
+        "portal_url": "http://th-primee.com:8080/c",
+        "channels": 13181,
+        "expire": "0000-00-00 00:00:00",
+        "status": "Aktiv",
+        "token": "9289B093A255F368926A1B2DDDC2A644",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:28:57",
+        "last_seen": "2026-10-18 02:06:54"
+      },
+      "00:1A:79:BB:E6:7E": {
+        "mac": "00:1A:79:BB:E6:7E",
+        "portal_url": "http://th-primee.com:8080/c",
+        "channels": 13181,
+        "expire": "December 19, 2026, 4:55 pm",
+        "status": "Aktiv",
+        "token": "ABE8A0108D6450B0CCDAFC3811A7CD24",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:11:55",
+        "last_seen": "2026-10-18 02:08:49"
+      },
+      "00:1A:79:08:E9:55": {
+        "mac": "00:1A:79:08:E9:55",
+        "portal_url": "http://th-primee.com:8080/c",
+        "channels": 13181,
+        "expire": "December 2, 2026, 9:03 am",
+        "status": "Aktiv",
+        "token": "D65C4C9288069E5762CCBCE850A05C64",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:07:02",
+        "last_seen": "2026-10-18 02:09:31"
+      },
+      "00:2A:01:90:E8:53": {
+        "mac": "00:2A:01:90:E8:53",
+        "portal_url": "http://th-primee.com:8080/c",
+        "channels": 13077,
+        "expire": "December 19, 2026, 5:25 pm",
+        "status": "Aktiv",
+        "token": "19B7D5E76E93A7C76076EE057F88A351",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:35:47",
+        "last_seen": "2026-10-18 02:10:52"
+      },
+      "00:2A:01:90:64:D7": {
+        "mac": "00:2A:01:90:64:D7",
+        "portal_url": "http://th-primee.com:8080/c",
+        "channels": 13077,
+        "expire": "March 18, 2027, 6:16 am",
+        "status": "Aktiv",
+        "token": "665BC545C7933E875CF72DB52AB2EF84",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:29:26",
+        "last_seen": "2026-10-18 02:16:57"
+      },
+      "00:2A:01:90:EC:64": {
+        "mac": "00:2A:01:90:EC:64",
+        "portal_url": "http://th-primee.com:8080/c",
+        "channels": 13077,
+        "expire": "0000-00-00 00:00:00",
+        "status": "Aktiv",
+        "token": "D8A64EE1701F5B965651ED05806CDF54",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:29:22",
+        "last_seen": "2026-10-18 02:18:48"
+      },
+      "00:1A:79:4D:04:32": {
+        "mac": "00:1A:79:4D:04:32",
+        "portal_url": "http://th-primee.com:8080/c",
+        "channels": 13077,
+        "expire": "March 16, 2027, 8:14 pm",
+        "status": "Aktiv",
+        "token": "B413BA3FE5823854061FD1251009F24B",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:29:17",
+        "last_seen": "2026-10-18 02:20:42"
+      },
+      "A0:BB:3E:00:13:DF": {
+        "mac": "A0:BB:3E:00:13:DF",
+        "portal_url": "http://th-primee.com:8080/c",
+        "channels": 13077,
+        "expire": "April 6, 2027, 2:58 pm",
+        "status": "Aktiv",
+        "token": "2EB5C14E2200DBA393A14474A7D43E7A",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:28:56",
+        "last_seen": "2026-10-18 02:29:02"
+      }
+    },
+    "http://nrvmobil.com:2095/c": {
+      "00:2A:01:90:A4:3F": {
+        "mac": "00:2A:01:90:A4:3F",
+        "portal_url": "http://nrvmobil.com:2095/c",
+        "channels": 6538,
+        "expire": "December 11, 2027, 3:17 pm",
+        "status": "Aktiv",
+        "token": "89A3AA84BA24224E58A17C35D6DBDECE",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:17:40",
+        "last_seen": "2026-10-18 02:07:18"
+      }
+    },
+    "http://pars01.com:8080/c": {
+      "00:1A:79:07:C0:FD": {
+        "mac": "00:1A:79:07:C0:FD",
+        "portal_url": "http://pars01.com:8080/c",
+        "channels": 9932,
+        "expire": "0000-00-00 00:00:00",
+        "status": "Aktiv",
+        "token": "9124BF9B7CCEB625566B3332BA9A689D",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:15:44",
+        "last_seen": "2026-10-18 02:08:06"
+      },
+      "00:1A:79:08:44:32": {
+        "mac": "00:1A:79:08:44:32",
+        "portal_url": "http://pars01.com:8080/c",
+        "channels": 10817,
+        "expire": "0000-00-00 00:00:00",
+        "status": "Aktiv",
+        "token": "010158A6CB41524904BD2080B2A27CE4",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:03:31",
+        "last_seen": "2026-10-18 02:10:14"
+      }
+    },
+    "http://honeywatch.net": {
+      "00:1A:79:00:13:BE": {
+        "mac": "00:1A:79:00:13:BE",
+        "portal_url": "http://honeywatch.net",
+        "channels": 9034,
+        "expire": "October 24, 2026, 12:00 am",
+        "status": "Aktiv",
+        "token": "814ECC7410B3C5985CA91A2B70F75588",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 15:30:03",
+        "last_seen": "2026-10-18 02:31:44"
+      },
+      "00:1A:79:00:1B:D9": {
+        "mac": "00:1A:79:00:1B:D9",
+        "portal_url": "http://honeywatch.net",
+        "channels": 56804,
+        "expire": "November 14, 2026, 4:16 pm",
+        "status": "Aktiv",
+        "token": "94300B1081C74466682A59E904FDC459",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 17:10:24",
+        "last_seen": "2026-10-18 02:31:45"
+      },
+      "00:1A:79:B5:9E:EB": {
+        "mac": "00:1A:79:B5:9E:EB",
+        "portal_url": "http://honeywatch.net",
+        "channels": 7085,
+        "expire": "October 24, 2026, 12:00 am",
+        "status": "Aktiv",
+        "token": "779D23BAF1AFA42DE0EB54F251D02162",
+        "model": "MAG 250",
+        "first_seen": "2026-10-05 05:53:56",
+        "last_seen": "2026-10-18 02:31:48"
+      },
+      "00:1A:79:B3:9C:EE": {
+        "mac": "00:1A:79:B3:9C:EE",
+        "portal_url": "http://honeywatch.net",
+        "channels": 31880,
+        "expire": "December 19, 2026, 12:00 am",
+        "status": "Aktiv",
+        "token": "AEBC7FBE82D72309D02938E31D81AD24",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 17:10:18",
+        "last_seen": "2026-10-18 02:31:49"
+      },
+      "00:1A:79:30:39:62": {
+        "mac": "00:1A:79:30:39:62",
+        "portal_url": "http://honeywatch.net",
+        "channels": 28107,
+        "expire": "April 12, 2027, 12:00 am",
+        "status": "Aktiv",
+        "token": "0D9155E75EFB1BBC36BED396EC5C43EC",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 16:26:33",
+        "last_seen": "2026-10-18 02:31:50"
+      },
+      "00:1A:79:B5:61:85": {
+        "mac": "00:1A:79:B5:61:85",
+        "portal_url": "http://honeywatch.net",
+        "channels": 20008,
+        "expire": "January 11, 2027, 12:00 am",
+        "status": "Aktiv",
+        "token": "B4E21F17E3BA51CE7672332F4C431864",
+        "model": "MAG 250",
+        "first_seen": "2026-10-05 05:32:03",
+        "last_seen": "2026-10-18 02:32:58"
+      },
+      "00:1A:79:61:35:66": {
+        "mac": "00:1A:79:61:35:66",
+        "portal_url": "http://honeywatch.net",
+        "channels": 19818,
+        "expire": "October 28, 2026, 12:00 am",
+        "status": "Aktiv",
+        "token": "FACAB19A1FD7DA11B175A0C3FC95739A",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 17:10:03",
+        "last_seen": "2026-10-18 02:32:59"
+      },
+      "00:1A:79:B0:D4:91": {
+        "mac": "00:1A:79:B0:D4:91",
+        "portal_url": "http://honeywatch.net",
+        "channels": 8088,
+        "expire": "March 11, 2027, 12:00 am",
+        "status": "Aktiv",
+        "token": "BF5923A00D75200F64A36EE49DDF087B",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 17:10:39",
+        "last_seen": "2026-10-18 02:33:09"
+      },
+      "00:1A:79:01:02:03": {
+        "mac": "00:1A:79:01:02:03",
+        "portal_url": "http://honeywatch.net",
+        "channels": 2866,
+        "expire": "February 26, 2027, 12:00 am",
+        "status": "Aktiv",
+        "token": "516287A8F3D42EDF3E208E37333081B4",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 14:38:13",
+        "last_seen": "2026-10-18 02:33:42"
+      },
+      "00:1A:79:11:22:33": {
+        "mac": "00:1A:79:11:22:33",
+        "portal_url": "http://honeywatch.net",
+        "channels": 17808,
+        "expire": "July 16, 2027, 12:00 am",
+        "status": "Aktiv",
+        "token": "D7B174C0E10D102E4241B50BF8504D70",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 13:22:23",
+        "last_seen": "2026-10-18 02:33:49"
+      },
+      "00:1A:79:44:55:66": {
+        "mac": "00:1A:79:44:55:66",
+        "portal_url": "http://honeywatch.net",
+        "channels": 17808,
+        "expire": "January 17, 2027, 12:00 am",
+        "status": "Aktiv",
+        "token": "C3C0C73DA3477DFF9AF886E44116AF17",
+        "model": "MAG 250",
+        "first_seen": "2026-10-17 13:22:24",
+        "last_seen": "2026-10-18 02:33:50"
+      }
+    },
+    "http://rot1.com/c": {
+      "00:1A:79:11:11:11": {
+        "mac": "00:1A:79:11:11:11",
+        "portal_url": "http://rot1.com/c",
+        "channels": 50,
+        "expire": "2027-01-01",
+        "status": "Aktiv",
+        "token": "",
+        "model": "MAG 250",
+        "first_seen": "2026-10-18 02:35:23",
+        "last_seen": "2026-10-18 03:11:22"
+      }
+    },
+    "http://rot2.com/c": {
+      "00:1A:79:22:22:22": {
+        "mac": "00:1A:79:22:22:22",
+        "portal_url": "http://rot2.com/c",
+        "channels": 50,
+        "expire": "2027-01-01",
+        "status": "Aktiv",
+        "token": "",
+        "model": "MAG 250",
+        "first_seen": "2026-10-18 02:35:23",
+        "last_seen": "2026-10-18 03:11:22"
+      }
     }
   },
   "global_history": {
@@ -12724,14 +13199,14 @@
     },
     "00:1A:79:B5:61:85": {
       "mac": "00:1A:79:B5:61:85",
-      "portal_url": "http://hottest.vip/c",
-      "channels": 13621,
-      "expire": "October 21, 2026, 12:40 am",
+      "portal_url": "http://honeywatch.net",
+      "channels": 20008,
+      "expire": "January 11, 2027, 12:00 am",
       "status": "Aktiv",
-      "token": "2B49EBCBE4244193A95114B9F96691BD",
+      "token": "B4E21F17E3BA51CE7672332F4C431864",
       "model": "MAG 250",
       "first_seen": "2026-10-05 05:32:03",
-      "last_seen": "2026-10-17 17:50:05"
+      "last_seen": "2026-10-18 02:32:58"
     },
     "00:1A:79:B5:61:4A": {
       "mac": "00:1A:79:B5:61:4A",
@@ -12790,14 +13265,14 @@
     },
     "00:1A:79:B5:64:EF": {
       "mac": "00:1A:79:B5:64:EF",
-      "portal_url": "http://hottest.vip/c",
+      "portal_url": "http://king.viviotv.xyz/c",
       "channels": 17742,
       "expire": "January 30, 2027, 12:00 am",
       "status": "Aktiv",
-      "token": "8ABE3B1F4C1DD36764C1D0F97503617F",
+      "token": "D218EC7CAFB5B1D5B4D65A869FFF14A1",
       "model": "MAG 250",
       "first_seen": "2026-10-05 05:32:58",
-      "last_seen": "2026-10-17 17:50:54"
+      "last_seen": "2026-10-18 01:58:39"
     },
     "00:1A:79:B5:65:2A": {
       "mac": "00:1A:79:B5:65:2A",
@@ -13668,14 +14143,14 @@
     },
     "00:1A:79:B5:9E:36": {
       "mac": "00:1A:79:B5:9E:36",
-      "portal_url": "http://hottest.vip/c",
+      "portal_url": "http://vpn.zdiptv.xyz/c",
       "channels": 8811,
       "expire": "November 21, 2026, 12:00 am",
       "status": "Aktiv",
-      "token": "8655CEEF69FC7B3A65E10D4DF4C16345",
+      "token": "A9CD3A1FD8E37FD5290D0179064EB274",
       "model": "MAG 250",
       "first_seen": "2026-10-05 05:52:44",
-      "last_seen": "2026-10-17 17:59:40"
+      "last_seen": "2026-10-18 01:59:17"
     },
     "00:1A:79:B5:9D:EC": {
       "mac": "00:1A:79:B5:9D:EC",
@@ -13877,14 +14352,14 @@
     },
     "00:1A:79:B5:9E:EB": {
       "mac": "00:1A:79:B5:9E:EB",
-      "portal_url": "http://hottest.vip/c",
-      "channels": 34621,
-      "expire": "March 16, 2027, 12:00 am",
+      "portal_url": "http://honeywatch.net",
+      "channels": 7085,
+      "expire": "October 24, 2026, 12:00 am",
       "status": "Aktiv",
-      "token": "01FDCA651D4A4AAB9B5DBB4779A0F3B2",
+      "token": "779D23BAF1AFA42DE0EB54F251D02162",
       "model": "MAG 250",
       "first_seen": "2026-10-05 05:53:56",
-      "last_seen": "2026-10-17 17:55:57"
+      "last_seen": "2026-10-18 02:31:48"
     },
     "00:1A:79:B5:9F:62": {
       "mac": "00:1A:79:B5:9F:62",
@@ -14498,7 +14973,7 @@
       "token": "",
       "model": "MAG 250",
       "first_seen": "2026-10-17 13:22:23",
-      "last_seen": "2026-10-17 22:44:14"
+      "last_seen": "2026-10-18 03:12:32"
     },
     "00:1A:79:44:55:66": {
       "mac": "00:1A:79:44:55:66",
@@ -14509,7 +14984,7 @@
       "token": "",
       "model": "MAG 250",
       "first_seen": "2026-10-17 13:22:24",
-      "last_seen": "2026-10-17 22:44:14"
+      "last_seen": "2026-10-18 03:12:32"
     },
     "00:1A:79:BB:43:5D": {
       "mac": "00:1A:79:BB:43:5D",
@@ -16031,14 +16506,14 @@
     },
     "00:1A:79:01:02:03": {
       "mac": "00:1A:79:01:02:03",
-      "portal_url": "http://pro.8k-strong.tv:80/c",
+      "portal_url": "http://honeywatch.net",
       "channels": 2866,
       "expire": "February 26, 2027, 12:00 am",
       "status": "Aktiv",
-      "token": "7A3DF0604C25BE8063508E60B0AB80E1",
+      "token": "516287A8F3D42EDF3E208E37333081B4",
       "model": "MAG 250",
       "first_seen": "2026-10-17 14:38:13",
-      "last_seen": "2026-10-17 17:11:30"
+      "last_seen": "2026-10-18 02:33:42"
     },
     "00:1A:79:01:6E:3F": {
       "mac": "00:1A:79:01:6E:3F",
@@ -17197,25 +17672,25 @@
     },
     "00:1A:79:08:44:32": {
       "mac": "00:1A:79:08:44:32",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13180,
-      "expire": "May 27, 2027, 11:45 pm",
+      "portal_url": "http://pars01.com:8080/c",
+      "channels": 10817,
+      "expire": "0000-00-00 00:00:00",
       "status": "Aktiv",
-      "token": "B67DFC99EFF9E4F321BB8A48CBF7F66D",
+      "token": "010158A6CB41524904BD2080B2A27CE4",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:03:31",
-      "last_seen": "2026-10-17 15:07:40"
+      "last_seen": "2026-10-18 02:10:14"
     },
     "00:1A:79:08:E9:55": {
       "mac": "00:1A:79:08:E9:55",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13180,
+      "portal_url": "http://th-primee.com:8080/c",
+      "channels": 13181,
       "expire": "December 2, 2026, 9:03 am",
       "status": "Aktiv",
-      "token": "EE2690528DD418216D2ACE0DCE7BFFEA",
+      "token": "D65C4C9288069E5762CCBCE850A05C64",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:07:02",
-      "last_seen": "2026-10-17 15:07:42"
+      "last_seen": "2026-10-18 02:09:31"
     },
     "A0:BB:3E:28:58:D9": {
       "mac": "A0:BB:3E:28:58:D9",
@@ -17230,14 +17705,14 @@
     },
     "00:1A:79:BB:E6:7E": {
       "mac": "00:1A:79:BB:E6:7E",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13180,
+      "portal_url": "http://th-primee.com:8080/c",
+      "channels": 13181,
       "expire": "December 19, 2026, 4:55 pm",
       "status": "Aktiv",
-      "token": "845D774B2EDCB322EABAFF2B608DEBD0",
+      "token": "ABE8A0108D6450B0CCDAFC3811A7CD24",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:11:55",
-      "last_seen": "2026-10-17 15:11:55"
+      "last_seen": "2026-10-18 02:08:49"
     },
     "00:1A:79:B5:2C:E3": {
       "mac": "00:1A:79:B5:2C:E3",
@@ -17274,14 +17749,14 @@
     },
     "00:1A:79:07:C0:FD": {
       "mac": "00:1A:79:07:C0:FD",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13180,
-      "expire": "January 6, 2027, 3:38 pm",
+      "portal_url": "http://pars01.com:8080/c",
+      "channels": 9932,
+      "expire": "0000-00-00 00:00:00",
       "status": "Aktiv",
-      "token": "A13F9110D8F3DA1A8E5DF408DB30E706",
+      "token": "9124BF9B7CCEB625566B3332BA9A689D",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:15:44",
-      "last_seen": "2026-10-17 15:15:44"
+      "last_seen": "2026-10-18 02:08:06"
     },
     "00:2A:01:90:89:BB": {
       "mac": "00:2A:01:90:89:BB",
@@ -17329,14 +17804,14 @@
     },
     "00:2A:01:90:A4:3F": {
       "mac": "00:2A:01:90:A4:3F",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13180,
-      "expire": "May 5, 2027, 12:15 pm",
+      "portal_url": "http://nrvmobil.com:2095/c",
+      "channels": 6538,
+      "expire": "December 11, 2027, 3:17 pm",
       "status": "Aktiv",
-      "token": "C8F92B0AA38B0555F9F127219746D82B",
+      "token": "89A3AA84BA24224E58A17C35D6DBDECE",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:17:40",
-      "last_seen": "2026-10-17 15:17:40"
+      "last_seen": "2026-10-18 02:07:18"
     },
     "00:1A:79:B4:ED:F9": {
       "mac": "00:1A:79:B4:ED:F9",
@@ -17417,14 +17892,14 @@
     },
     "A0:BB:3E:00:13:DF": {
       "mac": "A0:BB:3E:00:13:DF",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13076,
+      "portal_url": "http://th-primee.com:8080/c",
+      "channels": 13077,
       "expire": "April 6, 2027, 2:58 pm",
       "status": "Aktiv",
-      "token": "D8B677780B02986B401E5DC205692DB2",
+      "token": "2EB5C14E2200DBA393A14474A7D43E7A",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:28:56",
-      "last_seen": "2026-10-17 15:28:56"
+      "last_seen": "2026-10-18 02:29:02"
     },
     "00:1A:79:5D:6D:D0": {
       "mac": "00:1A:79:5D:6D:D0",
@@ -17439,14 +17914,14 @@
     },
     "00:1A:79:B5:CF:A1": {
       "mac": "00:1A:79:B5:CF:A1",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13180,
-      "expire": "December 29, 2026, 3:23 pm",
+      "portal_url": "http://th-primee.com:8080/c",
+      "channels": 13181,
+      "expire": "0000-00-00 00:00:00",
       "status": "Aktiv",
-      "token": "E52923C08F80F6A49046A2B364684864",
+      "token": "9289B093A255F368926A1B2DDDC2A644",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:28:57",
-      "last_seen": "2026-10-17 15:28:57"
+      "last_seen": "2026-10-18 02:06:54"
     },
     "00:1A:79:08:47:02": {
       "mac": "00:1A:79:08:47:02",
@@ -17472,14 +17947,14 @@
     },
     "A0:BB:3E:00:26:42": {
       "mac": "A0:BB:3E:00:26:42",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13076,
+      "portal_url": "http://ibo.club-xc.com:8080/c",
+      "channels": 13077,
       "expire": "August 4, 2027, 7:14 pm",
       "status": "Aktiv",
-      "token": "CD8D112B5241E19B9E7AE23F0D58D82A",
+      "token": "C2084152A863D7C47A95F6455DB5E9E0",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:28:57",
-      "last_seen": "2026-10-17 15:28:57"
+      "last_seen": "2026-10-18 02:28:09"
     },
     "00:1A:79:08:50:22": {
       "mac": "00:1A:79:08:50:22",
@@ -17594,13 +18069,13 @@
     "00:1A:79:B5:7B:9C": {
       "mac": "00:1A:79:B5:7B:9C",
       "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13180,
+      "channels": 13181,
       "expire": "August 31, 2027, 11:07 pm",
       "status": "Aktiv",
-      "token": "A65277A726F95FFD9104E01B0D909EC0",
+      "token": "D2E50CA71F35E9F8C4D973807B84F14A",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:29:02",
-      "last_seen": "2026-10-17 15:29:02"
+      "last_seen": "2026-10-18 02:05:28"
     },
     "00:1A:79:C4:14:E9": {
       "mac": "00:1A:79:C4:14:E9",
@@ -17791,14 +18266,14 @@
     },
     "00:1A:79:BA:BB:85": {
       "mac": "00:1A:79:BA:BB:85",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13076,
-      "expire": "December 24, 2026, 4:41 pm",
+      "portal_url": "http://ibo.club-xc.com:8080/c",
+      "channels": 13077,
+      "expire": "0000-00-00 00:00:00",
       "status": "Aktiv",
-      "token": "1946C2F03CDE95E32C41155D5C6FB23E",
+      "token": "9EF98F9E3F0B695FF2510C2C2A4BA691",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:29:10",
-      "last_seen": "2026-10-17 15:29:10"
+      "last_seen": "2026-10-18 02:23:34"
     },
     "00:1A:79:BA:BC:1C": {
       "mac": "00:1A:79:BA:BC:1C",
@@ -17836,13 +18311,13 @@
     "00:1A:79:C2:81:0D": {
       "mac": "00:1A:79:C2:81:0D",
       "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13076,
+      "channels": 13077,
       "expire": "January 26, 2027, 6:25 pm",
       "status": "Aktiv",
-      "token": "D8E31BC0E152E496A67914BE7D99B824",
+      "token": "251176223046F76E81969349806DCF01",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:29:12",
-      "last_seen": "2026-10-17 15:29:12"
+      "last_seen": "2026-10-18 02:21:35"
     },
     "00:1A:79:08:47:7A": {
       "mac": "00:1A:79:08:47:7A",
@@ -17967,14 +18442,14 @@
     },
     "00:1A:79:4D:04:32": {
       "mac": "00:1A:79:4D:04:32",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13076,
+      "portal_url": "http://th-primee.com:8080/c",
+      "channels": 13077,
       "expire": "March 16, 2027, 8:14 pm",
       "status": "Aktiv",
-      "token": "A7B6CBACD09ABF6ED8C7A29034ED9533",
+      "token": "B413BA3FE5823854061FD1251009F24B",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:29:17",
-      "last_seen": "2026-10-17 15:29:17"
+      "last_seen": "2026-10-18 02:20:42"
     },
     "00:2A:01:90:EB:98": {
       "mac": "00:2A:01:90:EB:98",
@@ -18011,14 +18486,14 @@
     },
     "00:1A:79:B6:4F:16": {
       "mac": "00:1A:79:B6:4F:16",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13180,
+      "portal_url": "http://iptv-factory.xyz:8080/c",
+      "channels": 13181,
       "expire": "January 20, 2027, 5:13 pm",
       "status": "Aktiv",
-      "token": "B430C2CDDFC63BB700E72DCDF90EADD9",
+      "token": "097CF76CB253E5D544AAEB381F52D053",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:29:19",
-      "last_seen": "2026-10-17 15:29:19"
+      "last_seen": "2026-10-18 02:05:05"
     },
     "00:2A:01:90:E8:30": {
       "mac": "00:2A:01:90:E8:30",
@@ -18121,14 +18596,14 @@
     },
     "00:2A:01:90:EC:64": {
       "mac": "00:2A:01:90:EC:64",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13076,
-      "expire": "November 11, 2026, 12:35 pm",
+      "portal_url": "http://th-primee.com:8080/c",
+      "channels": 13077,
+      "expire": "0000-00-00 00:00:00",
       "status": "Aktiv",
-      "token": "17FF30E26D228D07F68785840F2913EA",
+      "token": "D8A64EE1701F5B965651ED05806CDF54",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:29:22",
-      "last_seen": "2026-10-17 15:29:22"
+      "last_seen": "2026-10-18 02:18:48"
     },
     "00:2A:01:90:E5:F0": {
       "mac": "00:2A:01:90:E5:F0",
@@ -18242,14 +18717,14 @@
     },
     "00:2A:01:90:64:D7": {
       "mac": "00:2A:01:90:64:D7",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13076,
+      "portal_url": "http://th-primee.com:8080/c",
+      "channels": 13077,
       "expire": "March 18, 2027, 6:16 am",
       "status": "Aktiv",
-      "token": "066D5DCE421FEA03958A94A8397E1663",
+      "token": "665BC545C7933E875CF72DB52AB2EF84",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:29:26",
-      "last_seen": "2026-10-17 15:29:26"
+      "last_seen": "2026-10-18 02:16:57"
     },
     "00:2A:01:90:9D:D5": {
       "mac": "00:2A:01:90:9D:D5",
@@ -18275,14 +18750,14 @@
     },
     "00:2A:01:90:4F:AB": {
       "mac": "00:2A:01:90:4F:AB",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13076,
-      "expire": "February 1, 2027, 2:57 pm",
+      "portal_url": "http://ibo.club-xc.com:8080/c",
+      "channels": 13077,
+      "expire": "0000-00-00 00:00:00",
       "status": "Aktiv",
-      "token": "D6B290D8DF501DA9489712BBB7E0D500",
+      "token": "BB8A958659711F1255D95146C98138BA",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:29:28",
-      "last_seen": "2026-10-17 15:29:28"
+      "last_seen": "2026-10-18 02:15:24"
     },
     "00:2A:01:90:E6:6F": {
       "mac": "00:2A:01:90:E6:6F",
@@ -18312,10 +18787,10 @@
       "channels": 2492,
       "expire": "September 9, 2027, 7:28 pm",
       "status": "Aktiv",
-      "token": "C1D427CF1C72C958D628BC1682E7853D",
+      "token": "AC7759827D8489285FE39F459A0EE408",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:29:29",
-      "last_seen": "2026-10-17 15:29:29"
+      "last_seen": "2026-10-18 01:58:12"
     },
     "00:2A:01:90:98:A5": {
       "mac": "00:2A:01:90:98:A5",
@@ -18507,13 +18982,13 @@
     "00:1A:79:07:BD:EA": {
       "mac": "00:1A:79:07:BD:EA",
       "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13180,
+      "channels": 13181,
       "expire": "March 3, 2027, 9:37 am",
       "status": "Aktiv",
-      "token": "0D5C30FC49419BF8FBC4014A1FAE2A6B",
+      "token": "3005D114085A33111A615D028837E8D9",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:29:37",
-      "last_seen": "2026-10-17 15:29:37"
+      "last_seen": "2026-10-18 02:03:16"
     },
     "00:1A:79:7C:69:A0": {
       "mac": "00:1A:79:7C:69:A0",
@@ -18594,14 +19069,14 @@
     },
     "00:1A:79:00:13:BE": {
       "mac": "00:1A:79:00:13:BE",
-      "portal_url": "http://pro.8k-strong.tv:80/c",
+      "portal_url": "http://honeywatch.net",
       "channels": 9034,
       "expire": "October 24, 2026, 12:00 am",
       "status": "Aktiv",
-      "token": "874FAA0886E3884D547032AD0DF469FD",
+      "token": "814ECC7410B3C5985CA91A2B70F75588",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:30:03",
-      "last_seen": "2026-10-17 22:27:29"
+      "last_seen": "2026-10-18 02:31:44"
     },
     "00:1A:79:AB:53:D6": {
       "mac": "00:1A:79:AB:53:D6",
@@ -18660,14 +19135,14 @@
     },
     "00:2A:01:90:A4:00": {
       "mac": "00:2A:01:90:A4:00",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13076,
+      "portal_url": "http://ibo.club-xc.com:8080/c",
+      "channels": 13077,
       "expire": "November 15, 2026, 1:39 pm",
       "status": "Aktiv",
-      "token": "B996A6B6271CC4F2A9B7021C9DB0A616",
+      "token": "A43E5C45B8AC9DDB99335F170A153884",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:33:49",
-      "last_seen": "2026-10-17 15:33:49"
+      "last_seen": "2026-10-18 02:11:03"
     },
     "00:2A:01:90:FE:35": {
       "mac": "00:2A:01:90:FE:35",
@@ -18704,14 +19179,14 @@
     },
     "00:2A:01:90:ED:9C": {
       "mac": "00:2A:01:90:ED:9C",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13180,
-      "expire": "December 8, 2026, 6:06 pm",
+      "portal_url": "http://iptv-factory.xyz:8080/c",
+      "channels": 13181,
+      "expire": "0000-00-00 00:00:00",
       "status": "Aktiv",
-      "token": "AACCC59ABBABD90149E5963B5EE8F910",
+      "token": "23B61C3A314C2F37970FCF08B18662B0",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:35:26",
-      "last_seen": "2026-10-17 15:35:26"
+      "last_seen": "2026-10-18 02:02:43"
     },
     "00:2A:01:90:E5:E7": {
       "mac": "00:2A:01:90:E5:E7",
@@ -18737,14 +19212,14 @@
     },
     "00:2A:01:90:E8:53": {
       "mac": "00:2A:01:90:E8:53",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13076,
+      "portal_url": "http://th-primee.com:8080/c",
+      "channels": 13077,
       "expire": "December 19, 2026, 5:25 pm",
       "status": "Aktiv",
-      "token": "5DA6C337280D302522E9E0608FCD4730",
+      "token": "19B7D5E76E93A7C76076EE057F88A351",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:35:47",
-      "last_seen": "2026-10-17 15:35:47"
+      "last_seen": "2026-10-18 02:10:52"
     },
     "00:2A:01:90:50:5D": {
       "mac": "00:2A:01:90:50:5D",
@@ -18759,14 +19234,14 @@
     },
     "00:2A:01:90:72:46": {
       "mac": "00:2A:01:90:72:46",
-      "portal_url": "http://clubxc.com:8080/c",
-      "channels": 13180,
+      "portal_url": "http://iptv-factory.xyz:8080/c",
+      "channels": 13181,
       "expire": "November 6, 2026, 4:55 pm",
       "status": "Aktiv",
-      "token": "7BD2384C00CD0F50751BFF6F9233E9E0",
+      "token": "B76D4560CD4137B9DA49C15576F52F9E",
       "model": "MAG 250",
       "first_seen": "2026-10-17 15:36:03",
-      "last_seen": "2026-10-17 15:36:03"
+      "last_seen": "2026-10-18 02:01:11"
     },
     "00:2A:01:90:50:E4": {
       "mac": "00:2A:01:90:50:E4",
@@ -20123,14 +20598,14 @@
     },
     "00:1A:79:30:39:62": {
       "mac": "00:1A:79:30:39:62",
-      "portal_url": "http://pro.8k-strong.tv:80/c",
+      "portal_url": "http://honeywatch.net",
       "channels": 28107,
       "expire": "April 12, 2027, 12:00 am",
       "status": "Aktiv",
-      "token": "6940A2F4A8EEAD7CD0E443D33500F745",
+      "token": "0D9155E75EFB1BBC36BED396EC5C43EC",
       "model": "MAG 250",
       "first_seen": "2026-10-17 16:26:33",
-      "last_seen": "2026-10-17 17:15:20"
+      "last_seen": "2026-10-18 02:31:50"
     },
     "00:1A:79:70:70:BC": {
       "mac": "00:1A:79:70:70:BC",
@@ -20156,14 +20631,14 @@
     },
     "00:1A:79:64:66:35": {
       "mac": "00:1A:79:64:66:35",
-      "portal_url": "http://iptv.darktv.eu:25461",
+      "portal_url": "http://saray68.darktv.nl/c",
       "channels": 11131,
       "expire": "October 30, 2026, 9:11 pm",
       "status": "Aktiv",
-      "token": "9D2BC9997AB8DB17777720F8C3F2585F",
+      "token": "BF10CFBEE5B1387248E03B12891C8009",
       "model": "MAG 250",
       "first_seen": "2026-10-17 16:26:34",
-      "last_seen": "2026-10-17 16:26:34"
+      "last_seen": "2026-10-18 01:59:00"
     },
     "00:1A:79:C0:80:C1": {
       "mac": "00:1A:79:C0:80:C1",
@@ -20486,47 +20961,47 @@
     },
     "00:1A:79:61:35:66": {
       "mac": "00:1A:79:61:35:66",
-      "portal_url": "http://hottest.vip/c",
-      "channels": 11295,
-      "expire": "January 7, 2027, 1:00 am",
+      "portal_url": "http://honeywatch.net",
+      "channels": 19818,
+      "expire": "October 28, 2026, 12:00 am",
       "status": "Aktiv",
-      "token": "CC6AFB3E7CF5426D4862CDB2B0DBD641",
+      "token": "FACAB19A1FD7DA11B175A0C3FC95739A",
       "model": "MAG 250",
       "first_seen": "2026-10-17 17:10:03",
-      "last_seen": "2026-10-17 17:53:59"
+      "last_seen": "2026-10-18 02:32:59"
     },
     "00:1A:79:B3:9C:EE": {
       "mac": "00:1A:79:B3:9C:EE",
-      "portal_url": "http://pro.8k-strong.tv:80/c",
+      "portal_url": "http://honeywatch.net",
       "channels": 31880,
       "expire": "December 19, 2026, 12:00 am",
       "status": "Aktiv",
-      "token": "1B2FD5FF1ADBCFC4EEEDC39F0A4ECC67",
+      "token": "AEBC7FBE82D72309D02938E31D81AD24",
       "model": "MAG 250",
       "first_seen": "2026-10-17 17:10:18",
-      "last_seen": "2026-10-17 17:17:19"
+      "last_seen": "2026-10-18 02:31:49"
     },
     "00:1A:79:00:1B:D9": {
       "mac": "00:1A:79:00:1B:D9",
-      "portal_url": "http://pro.8k-strong.tv:80/c",
+      "portal_url": "http://honeywatch.net",
       "channels": 56804,
       "expire": "November 14, 2026, 4:16 pm",
       "status": "Aktiv",
-      "token": "42480F2B6826E37D1C07CAAC94A24000",
+      "token": "94300B1081C74466682A59E904FDC459",
       "model": "MAG 250",
       "first_seen": "2026-10-17 17:10:24",
-      "last_seen": "2026-10-17 22:07:04"
+      "last_seen": "2026-10-18 02:31:45"
     },
     "00:1A:79:B0:D4:91": {
       "mac": "00:1A:79:B0:D4:91",
-      "portal_url": "http://pro.8k-strong.tv:80/c",
+      "portal_url": "http://honeywatch.net",
       "channels": 8088,
       "expire": "March 11, 2027, 12:00 am",
       "status": "Aktiv",
-      "token": "F895D34EF33AE0E4B2A5CE8B07EE4C36",
+      "token": "BF5923A00D75200F64A36EE49DDF087B",
       "model": "MAG 250",
       "first_seen": "2026-10-17 17:10:39",
-      "last_seen": "2026-10-17 17:10:49"
+      "last_seen": "2026-10-18 02:33:09"
     },
     "00:1A:79:A8:67:59": {
       "mac": "00:1A:79:A8:67:59",

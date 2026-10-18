@@ -16,7 +16,7 @@ import socket
 import threading
 import time
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 import requests
@@ -77,10 +77,12 @@ class PortalCheckResult:
         )
 
     def display_status(self) -> str:
+        if self.is_online and self.stalker_detected:
+            return f"🟢 Stalker OK ({self.status_code})"
         if self.is_online:
-            if self.stalker_detected:
-                return f"🟢 Stalker OK ({self.status_code})"
-            return f"🟢 Online ({self.status_code})"
+            return f"🟢 Stalker OK ({self.status_code})"
+        if self.status_code is not None and not self.stalker_detected:
+            return f"🔴 Kein Stalker ({self.status_code})"
         if self.error:
             if "Timeout" in self.error or "timed out" in self.error.lower():
                 return "⏳ Timeout"
@@ -89,6 +91,112 @@ class PortalCheckResult:
             if "Connection refused" in self.error or "Verbindung abgelehnt" in self.error:
                 return "🔴 Refused"
         return "🔴 Offline"
+
+
+PORTAL_URL_PATTERN = re.compile(
+    r"(?:https?://[^\s<>\"'{}|\\^`]+|"
+    r"(?:[a-zA-Z0-9][-a-zA-Z0-9]*\.)+[a-zA-Z]{2,}(?::\d+)?(?:/[^\s<>\"'{}|\\^`]*)?|"
+    r"(?:\d{1,3}\.){3}\d{1,3}(?::\d+)?(?:/[^\s<>\"'{}|\\^`]*)?)",
+    re.IGNORECASE,
+)
+
+EXCLUDED_HOST_SUFFIXES = (
+    "w3.org", "schema.org", "github.com", "google.com", "microsoft.com",
+    "apple.com", "cloudflare.com", "example.com", "localhost",
+)
+
+EXCLUDED_EXTENSIONS = {
+    ".txt", ".json", ".log", ".py", ".md", ".exe", ".dll", ".bak",
+    ".csv", ".bat", ".sh", ".zip", ".tar", ".gz", ".png", ".jpg",
+    ".jpeg", ".gif", ".pdf", ".doc", ".docx", ".xml", ".yml", ".yaml",
+    ".ini", ".cfg", ".conf", ".htm"
+}
+
+
+def extract_portal_urls_from_text(content: str) -> List[str]:
+    """
+    Extrahiert Stalker-Portal-URLs aus einem Textstring (z. B. aus TXT-Listen, Logs, M3U).
+    Erkennt http(s)-URLs sowie Host:Port-Angaben, Host/Path-Angaben und IPs,
+    ignoriert Dateinamen (z. B. .txt, .json), Kommentare und normalisiert
+    die URLs dedupliziert über normalize_portal_url.
+    """
+    if not content:
+        return []
+
+    found: List[str] = []
+    seen = set()
+
+    cleaned_lines = []
+    for line in content.splitlines():
+        line_s = line.strip()
+        if not line_s or line_s.startswith(("#", "//", "/*")):
+            continue
+        cleaned_lines.append(line_s)
+    clean_text = "\n".join(cleaned_lines)
+
+    matches = PORTAL_URL_PATTERN.findall(clean_text)
+    for m in matches:
+        raw_u = m.strip().rstrip(".,;:)'\"<>`|")
+        if not raw_u:
+            continue
+
+        # Prüfe, ob es sich ohne Scheme um einen Dateinamen handelt (z. B. readme.txt)
+        if not raw_u.startswith(("http://", "https://")):
+            root_part = raw_u.split("/")[0].split(":")[0]
+            _, ext = os.path.splitext(root_part.lower())
+            if ext in EXCLUDED_EXTENSIONS:
+                continue
+
+        norm = normalize_portal_url(raw_u)
+        parsed = urlparse(norm)
+        if parsed.hostname and "." in parsed.hostname:
+            h_lower = parsed.hostname.lower()
+            if any(h_lower.endswith(d) for d in EXCLUDED_HOST_SUFFIXES):
+                continue
+            _, h_ext = os.path.splitext(h_lower)
+            if h_ext in EXCLUDED_EXTENSIONS:
+                continue
+            if norm.lower() not in seen:
+                seen.add(norm.lower())
+                found.append(norm)
+
+    return found
+
+
+def extract_portal_urls_from_folder(
+    folder_path: str,
+    max_file_size: int = 50 * 1024 * 1024,
+) -> Tuple[List[str], int]:
+    """
+    Durchsucht alle .txt-Dateien eines Ordners rekursiv nach Stalker Portal-URLs.
+    Gibt (deduplizierte Liste normalisierter URLs, Anzahl durchsuchter .txt-Dateien) zurück.
+    """
+    if not os.path.exists(folder_path):
+        return [], 0
+
+    found_portals: List[str] = []
+    seen = set()
+    txt_files_count = 0
+
+    for root, _dirs, files in os.walk(folder_path):
+        for fname in files:
+            if fname.lower().endswith(".txt"):
+                txt_files_count += 1
+                fpath = os.path.join(root, fname)
+                try:
+                    if os.path.getsize(fpath) > max_file_size:
+                        continue
+                    with open(fpath, "r", encoding="utf-8", errors="ignore") as f:
+                        content = f.read()
+                    urls = extract_portal_urls_from_text(content)
+                    for u in urls:
+                        if u.lower() not in seen:
+                            seen.add(u.lower())
+                            found_portals.append(u)
+                except Exception:
+                    continue
+
+    return found_portals, txt_files_count
 
 
 def normalize_portal_url(raw: str) -> str:
@@ -153,6 +261,93 @@ def save_reachable_portals_file(file_path: str, urls: List[str]) -> bool:
         return False
 
 
+def is_stalker_response(r: Optional[requests.Response]) -> bool:
+    """
+    Prüft eine HTTP-Response rigoros auf definitive Stalker / Ministra Signaturen.
+    Verwirft generische Webseiten, PHP-Blogs und fremde REST-APIs (False-Positive Schutz).
+    """
+    if r is None:
+        return False
+    text = (r.text[:8192] if r.text else "").lower()
+    content_type = r.headers.get("Content-Type", "").lower()
+    cookies_names = {c.name.lower() for c in r.cookies}
+
+    # 1. Spezifische JsHttpRequest & Stalker API Container Signaturen
+    # JsHttpRequest liefert immer JSON mit Top-Level Key "js" oder /*-secure- Wrapper
+    if "/*-secure-" in text or "jshttprequest" in text:
+        return True
+    if '"js":' in text or '"js" :' in text:
+        return True
+
+    # 2. Spezifische Stalker / Ministra JavaScript- und Middleware-Pfade
+    if any(k in text for k in (
+        "stbapp", "ministra", "stalker portal", "layer_loader",
+        "/c/default/", "/c/version", "embed.js", "stb.js",
+        "player engine version", "infomir", "stalker stb",
+        "tariff_plan_id"
+    )):
+        return True
+
+    # 3. HTML-Titel spezifisch für STB-Portale (mit beliebigen Leerzeichen im Tag)
+    if re.search(r"<title>[^<]*(ministra|stalker|mag\s*25\d|mag\s*32\d)", text, re.IGNORECASE):
+        return True
+
+    # 4. Spezifische STB-Cookies
+    if any(c in cookies_names for c in ("mac", "stb_lang", "stb_mac", "stb_version")):
+        return True
+
+    # 5. Handshake-Parameter / Fehlermeldungen von Stalker (z.B. bei fehlendem/ungültigem MAC)
+    # Stalker gibt bei Handshake typischerweise {"token":..., "random":...} oder "authorization failed" zurück
+    if ('"token":' in text and '"random":' in text) or "authorization failed" in text or "unhandled request" in text:
+        return True
+
+    # 6. PHPSESSID in Kombination mit expliziten Stalker-Identifikatoren
+    if "phpsessid" in cookies_names and any(k in text for k in (
+        "ministra", "stalker", "/c/default/", "/c/portal", "infomir", "stbapp"
+    )):
+        return True
+
+    return False
+
+
+def get_portal_candidate_endpoints(url: str) -> List[str]:
+    """Generiert typische Stalker/Ministra-Endpunkte für Handshake-Probes."""
+    norm = normalize_portal_url(url)
+    parsed = urlparse(norm)
+    scheme = parsed.scheme or "http"
+    netloc = parsed.netloc
+    base = f"{scheme}://{netloc}"
+    path = parsed.path.rstrip("/")
+
+    candidates: List[str] = []
+
+    if path.endswith(".php"):
+        candidates.append(f"{base}{path}")
+
+    clean_sub = re.sub(r"/c$", "", path)
+    if clean_sub and clean_sub != "/":
+        candidates.append(f"{base}{clean_sub}/c/server/load.php")
+        candidates.append(f"{base}{clean_sub}/server/load.php")
+        candidates.append(f"{base}{clean_sub}/c/portal.php")
+        candidates.append(f"{base}{clean_sub}/portal.php")
+        candidates.append(f"{base}{clean_sub}/load.php")
+
+    candidates.append(f"{base}/c/server/load.php")
+    candidates.append(f"{base}/server/load.php")
+    candidates.append(f"{base}/c/portal.php")
+    candidates.append(f"{base}/portal.php")
+    candidates.append(f"{base}/load.php")
+    candidates.append(f"{base}/stalker_portal/server/load.php")
+
+    seen = set()
+    res = []
+    for c in candidates:
+        if c not in seen:
+            seen.add(c)
+            res.append(c)
+    return res[:6]
+
+
 def check_single_portal(
     url: str,
     timeout: float = DEFAULT_PORTAL_TIMEOUT,
@@ -160,8 +355,8 @@ def check_single_portal(
     session: Optional[requests.Session] = None,
 ) -> PortalCheckResult:
     """
-    Prüft einen einzelnen Portal-Host schnell auf TCP/HTTP-Erreichbarkeit,
-    Latenz und Stalker/Ministra-Endpunkte.
+    Prüft einen einzelnen Portal-Host rigoros auf echte Stalker/Ministra-Erreichbarkeit,
+    Latenz und Endpunkte. Verwirft generische Webseiten und Parking-Seiten (False-Positive Schutz).
     """
     norm_url = normalize_portal_url(url)
     parsed = urlparse(norm_url)
@@ -192,6 +387,12 @@ def check_single_portal(
             "Accept": "*/*",
             "Connection": "close",
         })
+    else:
+        # Session Cookie Isolation zwischen verschiedenen Portalen (STB Guideline Rule 1)
+        try:
+            session.cookies.clear()
+        except Exception:
+            pass
 
     t0 = time.perf_counter()
     connect_timeout = min(2.5, timeout)
@@ -210,34 +411,12 @@ def check_single_portal(
         res.status_code = r.status_code
         res.server = r.headers.get("Server", "").strip()
 
-        # HTTP Status-Codes im Bereich 200..599 bedeuten: Host antwortet auf TCP/HTTP -> ONLINE
-        # (Selbst 401/403/500 bedeuten, dass der Stalker-Server aktiv läuft und erreichbar ist)
-        res.is_online = True
-
-        # Stalker / Ministra Prüfung
-        text_snippet = (r.text[:2048] if r.text else "").lower()
-        content_type = r.headers.get("Content-Type", "").lower()
-        cookies_names = [c.name.lower() for c in r.cookies]
-
-        is_stalker = False
+        is_stalker = is_stalker_response(r)
         detected_ep = norm_url
 
-        if any(k in text_snippet for k in ("ministra", "stalker", "infomir", "mag", "jshttprequest", "stb")):
-            is_stalker = True
-        elif any(c in cookies_names for c in ("phpsessid", "mac", "stb_lang")):
-            is_stalker = True
-        elif "json" in content_type and ("token" in text_snippet or "js" in text_snippet):
-            is_stalker = True
-
-        # Schneller Handshake-Check, falls 200/401/403
-        if not is_stalker and r.status_code in (200, 301, 302, 401, 403):
-            # Prüfe ob Basis-Endpoint server/load.php oder portal.php antwortet
-            base_url = f"{parsed.scheme}://{parsed.netloc}"
-            cand_eps = [
-                f"{norm_url.rstrip('/')}/../server/load.php",
-                f"{base_url}/server/load.php",
-                f"{base_url}/portal.php",
-            ]
+        # 2. Falls Hauptabfrage nicht eindeutig Stalker ist: Endpunkte mit Handshake-Payload sondieren
+        if not is_stalker:
+            cand_eps = get_portal_candidate_endpoints(norm_url)
             for cand in cand_eps:
                 try:
                     probe_r = session.get(
@@ -245,11 +424,18 @@ def check_single_portal(
                         params={"type": "stb", "action": "handshake", "token": "", "JsHttpRequest": "1-xml"},
                         timeout=(1.5, 2.0),
                         verify=verify_ssl,
+                        allow_redirects=True,
                     )
-                    probe_txt = (probe_r.text[:1024] if probe_r.text else "").lower()
-                    if "js" in probe_txt or "token" in probe_txt or probe_r.status_code in (200, 401, 403):
+                    if is_stalker_response(probe_r):
                         is_stalker = True
                         detected_ep = cand
+                        res.status_code = probe_r.status_code
+                        break
+                    probe_txt = (probe_r.text[:2048] if probe_r.text else "").lower()
+                    if any(k in probe_txt for k in ('"js":', '"token":', '"random":', "authorization failed", "/*-secure-")):
+                        is_stalker = True
+                        detected_ep = cand
+                        res.status_code = probe_r.status_code
                         break
                 except Exception:
                     pass
@@ -257,20 +443,34 @@ def check_single_portal(
         res.stalker_detected = is_stalker
         res.endpoint = detected_ep
 
+        # Strikte Einstufung: Nur verifizierte Stalker-Portale sind online & erreichbar!
+        if is_stalker:
+            res.is_online = True
+            res.error = None
+        else:
+            res.is_online = False
+            res.error = f"Kein Stalker/Ministra Portal (HTTP {res.status_code})"
+
     except requests.exceptions.ConnectTimeout:
         res.latency_ms = round((time.perf_counter() - t0) * 1000.0, 1)
+        res.is_online = False
+        res.stalker_detected = False
         res.error = f"Verbindungs-Timeout (>{connect_timeout}s)"
     except requests.exceptions.ReadTimeout:
         res.latency_ms = round((time.perf_counter() - t0) * 1000.0, 1)
+        res.is_online = False
+        res.stalker_detected = False
         res.error = f"Lese-Timeout (>{read_timeout}s)"
     except requests.exceptions.SSLError as ssl_err:
-        # SSL-Zertifikatsfehler bedeutet: Host existiert und ist erreichbar!
         res.latency_ms = round((time.perf_counter() - t0) * 1000.0, 1)
-        res.is_online = True
+        res.is_online = False
+        res.stalker_detected = False
         res.status_code = 495  # SSL Certificate Error marker
         res.error = "SSL-Zertifikatsfehler (verify_ssl=False empfohlen)"
     except (socket.gaierror, requests.exceptions.ConnectionError) as ce:
         res.latency_ms = round((time.perf_counter() - t0) * 1000.0, 1)
+        res.is_online = False
+        res.stalker_detected = False
         err_msg = str(ce)
         if "getaddrinfo failed" in err_msg or "gaierror" in err_msg:
             res.error = "DNS-Auflösungsfehler (Host nicht gefunden)"
@@ -282,6 +482,8 @@ def check_single_portal(
             res.error = "Verbindungsfehler"
     except Exception as e:
         res.latency_ms = round((time.perf_counter() - t0) * 1000.0, 1)
+        res.is_online = False
+        res.stalker_detected = False
         res.error = f"Fehler: {type(e).__name__}"
     finally:
         if owns_session and session:
@@ -313,6 +515,9 @@ class StalkerPortalChecker:
         self._online_count = 0
         self._offline_count = 0
         self._start_ts = 0.0
+        self._start_perf = 0.0
+        self._progress_samples: collections.deque[Tuple[float, int]] = collections.deque(maxlen=50)
+        self._smoothed_cps: float = 0.0
 
         # Callbacks
         self.on_portal_result: Optional[Callable[[PortalCheckResult], None]] = None
@@ -369,6 +574,9 @@ class StalkerPortalChecker:
             self._online_count = 0
             self._offline_count = 0
             self._start_ts = time.time()
+            self._start_perf = time.perf_counter()
+            self._progress_samples.clear()
+            self._smoothed_cps = 0.0
 
         work_queue: queue.Queue[str] = queue.Queue()
         for u in urls:
@@ -417,7 +625,7 @@ class StalkerPortalChecker:
                             with self._lock:
                                 self._results.append(res)
                                 self._done += 1
-                                if res.is_online:
+                                if res.is_online and res.stalker_detected:
                                     self._online_count += 1
                                     if res.url not in self._reachable_urls:
                                         self._reachable_urls.append(res.url)
@@ -428,9 +636,28 @@ class StalkerPortalChecker:
                                 cur_online = self._online_count
                                 cur_offline = self._offline_count
 
-                            # Berechne CPS (Checks/sec)
-                            elapsed = max(0.001, time.time() - self._start_ts)
-                            cps = cur_done / elapsed
+                                # Windowed & EMA smoothed CPS
+                                now_perf = time.perf_counter()
+                                self._progress_samples.append((now_perf, cur_done))
+                                cutoff = now_perf - 4.0
+                                while len(self._progress_samples) > 2 and self._progress_samples[0][0] < cutoff:
+                                    self._progress_samples.popleft()
+
+                                oldest_t, oldest_d = self._progress_samples[0]
+                                dt = now_perf - oldest_t
+                                dn = cur_done - oldest_d
+                                if dt >= 0.5:
+                                    instant_cps = max(0.0, dn / dt)
+                                elif cur_done > 0:
+                                    instant_cps = cur_done / max(0.001, now_perf - (self._start_perf or now_perf))
+                                else:
+                                    instant_cps = 0.0
+
+                                if self._smoothed_cps <= 0.0:
+                                    self._smoothed_cps = instant_cps
+                                else:
+                                    self._smoothed_cps = 0.25 * instant_cps + 0.75 * self._smoothed_cps
+                                cps = round(max(0.0, self._smoothed_cps), 1)
 
                             if self.on_portal_result:
                                 try:

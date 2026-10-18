@@ -6,11 +6,12 @@ filterable hit table, and 1-click profile adoption.
 """
 from __future__ import annotations
 
+import collections
 import os
 import random
 import re
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 from PySide6.QtCore import QObject, Qt, Signal
@@ -39,6 +40,8 @@ from clients.stb_client import STB_PRESETS
 from core.portal_checker import (
     PortalCheckResult,
     StalkerPortalChecker,
+    extract_portal_urls_from_folder,
+    extract_portal_urls_from_text,
     load_portal_list,
     normalize_portal_url,
     save_reachable_portals_file,
@@ -95,9 +98,14 @@ class ScannerView(QWidget):
         self._results: List[Dict[str, Any]] = []
         self._filter_mode: str = "ALL"  # ALL, HOT, VALID, DEAD
         self._scan_start_ts: float = 0.0
+        self._scan_start_perf: float = 0.0
         self._total_to_scan: int = 0
         self._done_count: int = 0
         self._is_paused: bool = False
+        self._scan_samples: collections.deque[Tuple[float, int]] = collections.deque(maxlen=60)
+        self._smoothed_cps: float = 0.0
+        self._smoothed_eta: Optional[float] = None
+        self._smoothed_portal_eta: Optional[float] = None
 
         # Stalker Portal Checker & Rotations-Pool Attribute
         self._portal_checker = StalkerPortalChecker()
@@ -244,6 +252,11 @@ class ScannerView(QWidget):
         btn_browse_portal.setToolTip("Andere Portal-Liste auswählen (.txt)")
         btn_browse_portal.clicked.connect(self._browse_portal_file)
         drow1.addWidget(btn_browse_portal)
+
+        btn_import_portal_folder = QPushButton("📁 Ordner (.txt)")
+        btn_import_portal_folder.setToolTip("Durchsucht alle .txt-Dateien eines Ordners rekursiv nach Portal-URLs und fügt sie dedupliziert hinzu")
+        btn_import_portal_folder.clicked.connect(self._import_portals_from_folder)
+        drow1.addWidget(btn_import_portal_folder)
 
         btn_reload_portal = QPushButton("🔄 Neu laden")
         btn_reload_portal.setToolTip("Liest die ausgewählte Portaldatei neu ein")
@@ -719,6 +732,11 @@ class ScannerView(QWidget):
         delay_s = float(delay_str) / 1000.0 if delay_str.isdigit() else 0.0
 
         self._scan_start_ts = time.time()
+        self._scan_start_perf = time.perf_counter()
+        self._scan_samples.clear()
+        self._scan_samples.append((self._scan_start_perf, 0))
+        self._smoothed_cps = 0.0
+        self._smoothed_eta = None
         self._total_to_scan = len(macs) if not (is_rotation and rot_mode == "sweep") else len(macs) * len(rotation_portals)
         self._done_count = 0
         self._is_paused = False
@@ -789,11 +807,62 @@ class ScannerView(QWidget):
         self.progress.setRange(0, self._total_to_scan)
         self.progress.setValue(done)
 
-        elapsed = max(0.001, time.time() - self._scan_start_ts)
-        cps = done / elapsed
+        now = time.perf_counter()
+        if not self._scan_start_perf:
+            self._scan_start_perf = now
+        self._scan_samples.append((now, done))
+
+        # Dynamisches Roll-Fenster über die letzten 3.5 Sekunden zur Vermeidung von Verzögerungen
+        cutoff = now - 3.5
+        while len(self._scan_samples) > 2 and self._scan_samples[0][0] < cutoff:
+            self._scan_samples.popleft()
+
+        oldest_t, oldest_d = self._scan_samples[0]
+        dt = now - oldest_t
+        dn = done - oldest_d
+
+        if dt >= 0.4:
+            instant_cps = max(0.0, dn / dt)
+        elif done > 0:
+            total_elapsed = max(0.001, now - self._scan_start_perf)
+            instant_cps = done / total_elapsed
+        else:
+            instant_cps = 0.0
+
+        # Glättung über Exponential Moving Average (EMA)
+        if self._smoothed_cps <= 0.0:
+            self._smoothed_cps = instant_cps
+        else:
+            alpha = 0.25
+            self._smoothed_cps = alpha * instant_cps + (1.0 - alpha) * self._smoothed_cps
+
+        cps = max(0.0, self._smoothed_cps)
         rem = max(0, total - done)
-        eta_sec = int(rem / cps) if cps > 0.05 else 0
-        eta_str = f"{eta_sec // 60:02d}:{eta_sec % 60:02d}" if eta_sec > 0 else "00:00"
+
+        # ETA-Berechnung mit zweistufiger Glättung gegen Sprünge
+        if rem == 0:
+            eta_str = "00:00"
+            self._smoothed_eta = 0.0
+        elif cps > 0.05:
+            raw_eta = rem / cps
+            if self._smoothed_eta is None or self._smoothed_eta <= 0:
+                self._smoothed_eta = raw_eta
+            else:
+                alpha_eta = 0.20
+                self._smoothed_eta = alpha_eta * raw_eta + (1.0 - alpha_eta) * self._smoothed_eta
+
+            eta_sec = int(round(self._smoothed_eta))
+            if eta_sec >= 3600:
+                h = eta_sec // 3600
+                m = (eta_sec % 3600) // 60
+                s = eta_sec % 60
+                eta_str = f"{h:02d}:{m:02d}:{s:02d}"
+            else:
+                m = eta_sec // 60
+                s = eta_sec % 60
+                eta_str = f"{m:02d}:{s:02d}"
+        else:
+            eta_str = "—"
 
         hot_cnt = sum(1 for r in self._results if r.get("tag") == "hot")
         pause_txt = " [⏸ PAUSIERT]" if self._is_paused else ""
@@ -985,6 +1054,33 @@ class ScannerView(QWidget):
             self.entry_portal_file.setText(path)
             self._reload_portal_file()
 
+    def _import_portals_from_folder(self):
+        folder = QFileDialog.getExistingDirectory(
+            self, "Ordner auswählen (durchsucht alle .txt-Dateien rekursiv nach Portal-URLs)"
+        )
+        if not folder:
+            return
+
+        found_portals, txt_count = extract_portal_urls_from_folder(folder)
+        if found_portals:
+            existing_set = {p.lower() for p in self._loaded_portals}
+            new_portals = [p for p in found_portals if p.lower() not in existing_set]
+            self._loaded_portals.extend(new_portals)
+            count = len(self._loaded_portals)
+            self.btn_toggle_checker.setText(f"▼ Portal-Checker ({count} Portale)")
+            self.lbl_portals_summary.setText(f"0 / {count} Erreichbar")
+            self.lbl_portal_telemetry.setText(
+                f"{count} Portale geladen ({len(found_portals)} im Ordner gefunden, {len(new_portals)} neu hinzugefügt)."
+            )
+            event_bus.log_message.emit(
+                f"[📁] Portal-Ordner-Scan abgeschlossen: {txt_count} .txt-Dateien durchsucht, "
+                f"{len(found_portals)} Portal-URLs gefunden ({len(new_portals)} neu zur Prüfliste hinzugefügt)."
+            )
+        else:
+            event_bus.log_message.emit(
+                f"[📁] Portal-Ordner-Scan: {txt_count} .txt-Dateien durchsucht, keine gültigen Portal-URLs gefunden."
+            )
+
     def _reload_portal_file(self):
         file_input = self.entry_portal_file.text().strip()
         if not file_input:
@@ -1021,6 +1117,7 @@ class ScannerView(QWidget):
         self.btn_start_portal_check.setEnabled(False)
         self.btn_stop_portal_check.setEnabled(True)
         self._clear_portal_results()
+        self._smoothed_portal_eta = None
 
         self.portal_progress.setRange(0, len(self._loaded_portals))
         self.portal_progress.setValue(0)
@@ -1041,7 +1138,7 @@ class ScannerView(QWidget):
 
     def _on_portal_check_result(self, res: PortalCheckResult):
         self._portal_results.append(res)
-        if res.is_online and res.url not in self._reachable_portals:
+        if res.is_online and res.stalker_detected and res.url not in self._reachable_portals:
             self._reachable_portals.append(res.url)
             self._update_portal_selector_dropdown()
 
@@ -1053,8 +1150,23 @@ class ScannerView(QWidget):
         self.portal_progress.setRange(0, max(1, total))
         self.portal_progress.setValue(done)
         rem = max(0, total - done)
-        eta_s = int(rem / cps) if cps > 0.05 else 0
-        eta_str = f"{eta_s // 60:02d}:{eta_s % 60:02d}" if eta_s > 0 else "00:00"
+        if rem == 0:
+            eta_str = "00:00"
+            self._smoothed_portal_eta = 0.0
+        elif cps > 0.05:
+            raw_eta = rem / cps
+            if self._smoothed_portal_eta is None or self._smoothed_portal_eta <= 0:
+                self._smoothed_portal_eta = raw_eta
+            else:
+                alpha = 0.20
+                self._smoothed_portal_eta = alpha * raw_eta + (1.0 - alpha) * self._smoothed_portal_eta
+            eta_s = int(round(self._smoothed_portal_eta))
+            if eta_s >= 3600:
+                eta_str = f"{eta_s // 3600:02d}:{(eta_s % 3600) // 60:02d}:{eta_s % 60:02d}"
+            else:
+                eta_str = f"{eta_s // 60:02d}:{eta_s % 60:02d}"
+        else:
+            eta_str = "—"
 
         self.lbl_portal_telemetry.setText(
             f"{done}/{total} geprüft  |  🟢 {online} Online  |  🔴 {offline} Offline  |  ⚡ {cps:.1f} P/s  |  ETA: {eta_str}"
@@ -1080,9 +1192,9 @@ class ScannerView(QWidget):
 
     def _matches_portal_filter(self, res: PortalCheckResult) -> bool:
         if self._portal_filter_mode == "ONLINE":
-            return res.is_online
+            return bool(res.is_online and res.stalker_detected)
         if self._portal_filter_mode == "OFFLINE":
-            return not res.is_online
+            return not (res.is_online and res.stalker_detected)
         return True
 
     def _set_portal_filter(self, mode: str):
@@ -1094,7 +1206,7 @@ class ScannerView(QWidget):
         self._rebuild_portal_table()
 
     def _update_portal_filter_badges(self):
-        online = sum(1 for r in self._portal_results if r.is_online)
+        online = sum(1 for r in self._portal_results if r.is_online and r.stalker_detected)
         offline = len(self._portal_results) - online
         self._portal_filter_btns["ALL"].setText(f"ALL ({len(self._portal_results)})")
         self._portal_filter_btns["ONLINE"].setText(f"🟢 ONLINE ({online})")
@@ -1125,8 +1237,10 @@ class ScannerView(QWidget):
             info_parts.append(res.error)
         it_info = QTableWidgetItem(" | ".join(info_parts) if info_parts else "—")
 
-        if res.is_online:
-            color = QColor("#10B981") if res.stalker_detected else QColor("#38BDF8")
+        if res.is_online and res.stalker_detected:
+            color = QColor("#10B981")
+        elif res.status_code is not None and not res.stalker_detected:
+            color = QColor("#F59E0B")
         else:
             color = QColor("#EF4444")
 

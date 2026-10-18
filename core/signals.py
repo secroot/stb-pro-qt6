@@ -11,6 +11,7 @@ class AppEventBus(QObject):
     """Zentraler Signal-Bus für die gesamte Applikation."""
     log_message = Signal(str)                       # (text)
     http_Exchange_logged = Signal(object)           # (HttpLogEntry)
+    http_exchange_logged = http_Exchange_logged     # Alias for lower-case consistency
     connection_state_changed = Signal(bool, bool, str)  # (connected, loading, status_text)
     profile_updated = Signal(object)                # (Profile)
     channels_loaded = Signal(list, list)            # (List[Channel], List[str])

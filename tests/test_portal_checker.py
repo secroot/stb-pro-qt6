@@ -11,10 +11,16 @@ from core.portal_checker import (
     PortalCheckResult,
     StalkerPortalChecker,
     check_single_portal,
+    extract_portal_urls_from_folder,
+    extract_portal_urls_from_text,
+    get_portal_candidate_endpoints,
+    is_stalker_response,
     load_portal_list,
     normalize_portal_url,
     save_reachable_portals_file,
 )
+from clients.stb_client import emit_scanner_connection_error_log
+from core.models import HttpLogEntry
 
 
 class TestPortalChecker(unittest.TestCase):
@@ -180,7 +186,8 @@ class TestPortalChecker(unittest.TestCase):
                     "expire": "2027-01-01",
                 }
 
-            with patch("ui.main_window.check_mac_account", side_effect=mock_check):
+            with patch("ui.main_window.check_mac_account", side_effect=mock_check), \
+                 patch.object(win.mac_db, "save_found_mac", return_value=True):
                 results_received = []
                 event_bus.scan_result_received.connect(results_received.append)
 
@@ -211,6 +218,272 @@ class TestPortalChecker(unittest.TestCase):
         finally:
             win.stop_mac_scan()
             win.close()
+
+    def test_08_check_single_portal_rejects_generic_web_server(self):
+        """Verifiziert, dass generische Webserver (z. B. Apache/Nginx Default Page 200) als ungültig verworfen werden."""
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.headers = {"Server": "nginx", "Content-Type": "text/html"}
+        mock_resp.text = "<html><head><title>Welcome to nginx!</title></head><body><p>If you see this page, the nginx web server is successfully installed.</p></body></html>"
+        mock_resp.cookies = []
+
+        with patch("requests.Session.get", return_value=mock_resp):
+            res = check_single_portal("http://not-a-portal.com/c", timeout=1.0)
+            self.assertFalse(res.is_online)
+            self.assertFalse(res.stalker_detected)
+            self.assertEqual(res.status_code, 200)
+            self.assertIn("Kein Stalker", res.display_status())
+            self.assertIn("Kein Stalker", res.error)
+
+    def test_09_check_single_portal_detects_stalker_via_handshake_probe(self):
+        """Testet, dass Stalker-Portale erkannt werden, wenn erst die Sondierung von server/load.php erfolgreich antwortet."""
+        resp_main = MagicMock()
+        resp_main.status_code = 404
+        resp_main.headers = {"Content-Type": "text/html"}
+        resp_main.text = "404 Not Found"
+        resp_main.cookies = []
+
+        resp_probe = MagicMock()
+        resp_probe.status_code = 200
+        resp_probe.headers = {"Content-Type": "application/json"}
+        resp_probe.text = '/*-secure-{"js":{"token":"abc1234567890123","random":"rnd123"}}*/'
+        resp_probe.cookies = []
+
+        def side_effect(url, *args, **kwargs):
+            if "server/load.php" in url or "portal.php" in url:
+                return resp_probe
+            return resp_main
+
+        with patch("requests.Session.get", side_effect=side_effect):
+            res = check_single_portal("http://myiptv.org/c", timeout=1.5)
+            self.assertTrue(res.is_online)
+            self.assertTrue(res.stalker_detected)
+            self.assertIn("🟢", res.display_status())
+            self.assertTrue(res.endpoint.endswith("load.php") or res.endpoint.endswith("portal.php"))
+
+    def test_10_extract_portal_urls_from_text_and_folder(self):
+        """Testet das regex-basierte Parsen von Portal-URLs aus Text und Ordnern."""
+        sample_text = (
+            "# Dies ist eine Test-Liste\n"
+            "http://portal1.me:8080/c/\n"
+            "https://stream.server.com:2095/c\n"
+            "http://portal1.me:8080/c\n"  # Duplicate
+            "Portal: http://mag.tv:8888/stalker_portal/c/\n"
+            "// Kommentar\n"
+            "keine-url-hier\n"
+        )
+        extracted = extract_portal_urls_from_text(sample_text)
+        self.assertEqual(len(extracted), 3)
+        self.assertIn("http://portal1.me:8080/c", extracted)
+        self.assertIn("https://stream.server.com:2095/c", extracted)
+        self.assertIn("http://mag.tv:8888/stalker_portal/c", extracted)
+
+        # Teste Ordner-Scan
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            f1 = os.path.join(tmp_dir, "sub1", "list1.txt")
+            os.makedirs(os.path.dirname(f1), exist_ok=True)
+            with open(f1, "w", encoding="utf-8") as tf1:
+                tf1.write("http://folder-portal-1.com:8080/c\n")
+
+            f2 = os.path.join(tmp_dir, "sub2", "list2.txt")
+            os.makedirs(os.path.dirname(f2), exist_ok=True)
+            with open(f2, "w", encoding="utf-8") as tf2:
+                tf2.write("http://folder-portal-2.com:8080/c\nhttp://folder-portal-1.com:8080/c\n")
+
+            urls, count = extract_portal_urls_from_folder(tmp_dir)
+            self.assertEqual(count, 2)
+            self.assertEqual(len(urls), 2)
+            self.assertIn("http://folder-portal-1.com:8080/c", urls)
+            self.assertIn("http://folder-portal-2.com:8080/c", urls)
+
+    def test_11_scanner_view_smoothed_cps_and_eta(self):
+        """Testet die geglättete Telemetrie- und ETA-Berechnung in ScannerView."""
+        from PySide6.QtWidgets import QApplication
+        app = QApplication.instance() or QApplication([])
+
+        from ui.views.scanner_view import ScannerView
+        sv = ScannerView()
+        try:
+            # 1. Start-Reset
+            sv.update_scan_progress(0, 100)
+            self.assertIn("0 / 100", sv.lbl_telemetry.text())
+            self.assertIn("ETA: —", sv.lbl_telemetry.text())
+
+            # 2. Simuliere Fortschritt
+            sv._scan_start_perf = time.perf_counter() - 2.0
+            sv._scan_samples.append((time.perf_counter() - 1.0, 5))
+            sv.update_scan_progress(10, 100)
+
+            # CPS muss positiv und geglättet sein, ETA formatiert als MM:SS
+            self.assertNotIn("ETA: —", sv.lbl_telemetry.text())
+            self.assertIn("CPS", sv.lbl_telemetry.text())
+            self.assertGreater(sv._smoothed_cps, 0.0)
+
+            # 3. Fertiggestellt (100/100) -> ETA 00:00
+            sv.update_scan_progress(100, 100)
+            self.assertIn("ETA: 00:00", sv.lbl_telemetry.text())
+        finally:
+            sv.close()
+
+    def test_12_sporadic_error_logging_inspector(self):
+        """Testet das sporadische Logging von Scan-Verbindungsfehlern in den HTTP-Inspector."""
+        from core.signals import event_bus
+        logged_entries = []
+        event_bus.http_Exchange_logged.connect(logged_entries.append)
+        try:
+            emit_scanner_connection_error_log(
+                portal_url="http://fail-portal.org/c",
+                mac="00:1A:79:88:99:00",
+                error_msg="Connection timed out after 3.0s",
+                status_code=504,
+                sample_interval=0.0,
+                sample_frequency=1,
+            )
+            self.assertGreaterEqual(len(logged_entries), 1)
+            entry = logged_entries[-1]
+            self.assertIsInstance(entry, HttpLogEntry)
+            self.assertEqual(entry.status_code, 504)
+            self.assertIn("00:1A:79:88:99:00", entry.response_preview)
+            self.assertIn("Connection timed out", entry.response_preview)
+            self.assertIn("Cookie", entry.request_headers)
+        finally:
+            try:
+                event_bus.http_Exchange_logged.disconnect(logged_entries.append)
+            except Exception:
+                pass
+
+    def test_13_scanner_view_import_portals_from_folder(self):
+        """Testet den Ordner-Import von Portal-URLs im ScannerView."""
+        from PySide6.QtWidgets import QApplication
+        app = QApplication.instance() or QApplication([])
+
+        from ui.views.scanner_view import ScannerView
+        sv = ScannerView()
+        try:
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                f_path = os.path.join(tmp_dir, "portals.txt")
+                with open(f_path, "w", encoding="utf-8") as f:
+                    f.write("http://portal-folder-test-a.com/c\nhttp://portal-folder-test-b.com/c\n")
+
+                with patch("PySide6.QtWidgets.QFileDialog.getExistingDirectory", return_value=tmp_dir):
+                    sv._import_portals_from_folder()
+
+                self.assertIn("http://portal-folder-test-a.com/c", sv._loaded_portals)
+                self.assertIn("http://portal-folder-test-b.com/c", sv._loaded_portals)
+                self.assertIn("Portal-Checker", sv.btn_toggle_checker.text())
+        finally:
+            sv.close()
+
+    def test_14_rejects_php_page_with_images_and_phpsessid(self):
+        """Verifiziert, dass generische PHP-Seiten mit PHPSESSID und Bildern/Wörtern wie 'image' nicht als Stalker erkannt werden."""
+        mock_cookie = MagicMock()
+        mock_cookie.name = "PHPSESSID"
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.headers = {"Content-Type": "text/html"}
+        mock_resp.text = "<html><body><h1>Mein Foto-Blog</h1><p><img src='/images/magenta_sunset.jpg'>Schöne Bilder</p></body></html>"
+        mock_resp.cookies = [mock_cookie]
+
+        self.assertFalse(is_stalker_response(mock_resp))
+
+        with patch("requests.Session.get", return_value=mock_resp):
+            res = check_single_portal("http://mein-php-blog.de/c", timeout=1.0)
+            self.assertFalse(res.is_online)
+            self.assertFalse(res.stalker_detected)
+            self.assertIn("Kein Stalker", res.display_status())
+
+    def test_15_rejects_generic_json_apis_with_tokens_or_unauthorized(self):
+        """Verifiziert, dass generische REST-APIs (z. B. OAuth Tokens oder 401 Unauthorized) nicht als Stalker fehlklassifiziert werden."""
+        # Generic OAuth Token response
+        mock_oauth = MagicMock()
+        mock_oauth.status_code = 200
+        mock_oauth.headers = {"Content-Type": "application/json"}
+        mock_oauth.text = '{"token": "eyJhbGciOi...", "expires_in": 3600, "user": "alice"}'
+        mock_oauth.cookies = []
+        self.assertFalse(is_stalker_response(mock_oauth))
+
+        # Generic 401 Unauthorized response
+        mock_unauth = MagicMock()
+        mock_unauth.status_code = 401
+        mock_unauth.headers = {"Content-Type": "application/json"}
+        mock_unauth.text = '{"error": "unauthorized", "message": "Invalid API key"}'
+        mock_unauth.cookies = []
+        self.assertFalse(is_stalker_response(mock_unauth))
+
+        # Echtes Stalker JsHttpRequest Handshake dagegen MUSS erkannt werden
+        mock_stalker = MagicMock()
+        mock_stalker.status_code = 200
+        mock_stalker.headers = {"Content-Type": "text/html"}
+        mock_stalker.text = '/*-secure-{"js":{"token":"ABC123XYZ","random":"RND456"}}*/'
+        mock_stalker.cookies = []
+        self.assertTrue(is_stalker_response(mock_stalker))
+
+    def test_16_extract_portal_urls_without_port_or_scheme_and_exclude_files(self):
+        """Testet, dass Stalker-URLs ohne Scheme und Port korrekt geparst und Dateinamen ignoriert werden."""
+        sample = (
+            "portal.provider.com/c\n"
+            "http://other-portal.org:8080/c\n"
+            "192.168.1.50/c\n"
+            "readme.txt\n"
+            "config.json\n"
+            "tool.py\n"
+            "script.bat\n"
+            "vip.streamtv.to/c/portal.php\n"
+        )
+        urls = extract_portal_urls_from_text(sample)
+        self.assertEqual(len(urls), 4)
+        self.assertIn("http://portal.provider.com/c", urls)
+        self.assertIn("http://other-portal.org:8080/c", urls)
+        self.assertIn("http://192.168.1.50/c", urls)
+        self.assertIn("http://vip.streamtv.to/c/portal.php", urls)
+        # Keine Dateinamen
+        for u in urls:
+            self.assertNotIn("readme.txt", u)
+            self.assertNotIn("config.json", u)
+
+    def test_17_to_curl_includes_get_query_parameters(self):
+        """Testet, dass to_curl() für GET-Requests die Query-Parameter an die URL anhängt."""
+        entry = HttpLogEntry.create(
+            method="GET",
+            url="http://stalker-server.me:8080/c/server/load.php",
+            status_code=200,
+            elapsed_ms=150,
+            headers={"User-Agent": "MAG200", "Cookie": "mac=00:1A:79:AA:BB:CC"},
+            params="type=stb&action=handshake&token=&JsHttpRequest=1-xml",
+        )
+        curl_cmd = entry.to_curl()
+        self.assertIn("type=stb&action=handshake", curl_cmd)
+        self.assertIn("http://stalker-server.me:8080/c/server/load.php?", curl_cmd)
+
+    def test_18_cps_and_eta_stall_decay(self):
+        """Testet, dass bei einem Stillstand des Scanners der CPS-Wert abfällt und nicht auf Lifetime-Average verharrt."""
+        from PySide6.QtWidgets import QApplication
+        app = QApplication.instance() or QApplication([])
+
+        from ui.views.scanner_view import ScannerView
+        sv = ScannerView()
+        try:
+            sv._scan_start_perf = time.perf_counter() - 10.0
+            sv._smoothed_cps = 5.0
+            sv._scan_samples.clear()
+            sv._scan_samples.append((time.perf_counter() - 3.0, 50))
+            # Keine neuen Treffer seit 3 Sekunden -> dn = 0 bei dt >= 0.4
+            sv.update_scan_progress(50, 100)
+
+            # smoothed CPS muss kleiner sein als die anfänglichen 5.0, da dn == 0
+            self.assertLess(sv._smoothed_cps, 5.0)
+        finally:
+            sv.close()
+
+    def test_19_check_mac_account_handles_timeout_as_connection_error(self):
+        """Testet, dass Timeouts in check_mac_account als Verbindungsfehler behandelt werden."""
+        import requests
+        from clients.stb_client import check_mac_account
+
+        with patch("clients.stb_client.StbClient.handshake", side_effect=requests.exceptions.ConnectTimeout("Connect timed out")):
+            res = check_mac_account("http://timeout-portal.com/c", "00:1A:79:00:11:22", timeout=1.0)
+            self.assertEqual(res["status"], "Verbindungsfehler")
+            self.assertIn("timed out", res["error"].lower())
 
 
 if __name__ == "__main__":

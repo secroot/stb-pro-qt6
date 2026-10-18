@@ -526,9 +526,14 @@ class HttpLogEntry:
         for k, v in self.request_headers.items():
             safe_v = str(v).replace('"', '\\"')
             parts.append(f'-H "{k}: {safe_v}"')
-        if self.request_params and self.method == "POST":
-            safe_p = self.request_params.replace('"', '\\"')
-            parts.append(f'--data "{safe_p}"')
+        if self.request_params:
+            if self.method == "POST":
+                safe_p = self.request_params.replace('"', '\\"')
+                parts.append(f'--data "{safe_p}"')
+            elif self.method == "GET" and "?" not in self.url:
+                target_url = f"{self.url}?{self.request_params}"
+                parts.append(f'"{target_url}"')
+                return " \\\n  ".join(parts)
         parts.append(f'"{self.url}"')
         return " \\\n  ".join(parts)
 

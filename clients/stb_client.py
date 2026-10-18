@@ -58,6 +58,89 @@ def _attach_inspector_hook(session, enable: bool = True):
     session.hooks.setdefault("response", []).append(_on_response)
 
 
+import datetime as _dt
+import re
+import threading
+import time
+
+_last_inspector_sample_ts = 0.0
+_inspector_sample_counter = 0
+_inspector_sample_lock = threading.Lock()
+
+
+def emit_scanner_connection_error_log(
+    portal_url: str,
+    mac: str,
+    error_msg: str,
+    endpoint: Optional[str] = None,
+    status_code: int = 0,
+    headers: Optional[Dict[str, str]] = None,
+    params: Optional[str] = None,
+    elapsed_ms: int = 0,
+    sample_interval: float = 1.0,
+    sample_frequency: int = 5,
+):
+    """
+    Sporadisches / gesampeltes Logging von Verbindungs- und Timeout-Fehlern während des MAC-Scannens
+    in den interaktiven HTTP-Inspector.
+    Verhindert Inspector-Überlastung bei Massen-Scans und zeigt Request-Header, Parameter und Response/Fehler an.
+    """
+    global _last_inspector_sample_ts, _inspector_sample_counter
+    now = time.time()
+    with _inspector_sample_lock:
+        _inspector_sample_counter += 1
+        cnt = _inspector_sample_counter
+        time_elapsed = now - _last_inspector_sample_ts
+        if time_elapsed < 0.25:
+            return
+        if (cnt % sample_frequency != 0) and (time_elapsed < sample_interval):
+            return
+        _last_inspector_sample_ts = now
+
+    target_url = endpoint or f"{portal_url.rstrip('/')}/c/server/load.php"
+    req_headers = dict(headers or {
+        "User-Agent": "Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Cookie": f"mac={mac}; stb_lang=en; timezone=Europe/Berlin",
+    })
+    req_params = params or f"type=stb&action=handshake&mac={mac}&token=&JsHttpRequest=1-xml"
+
+    code = status_code
+    if not code:
+        code_match = re.search(r"\b(50[0-4]|429|403|404|401)\b", error_msg)
+        if code_match:
+            try:
+                code = int(code_match.group(1))
+            except Exception:
+                code = 0
+
+    response_preview = (
+        f"--- [MAC SCANNER VERBINDUNGSFEHLER] ---\n"
+        f"Zeitstempel: {_dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        f"Portal: {portal_url}\n"
+        f"MAC-Adresse: {mac}\n"
+        f"Ziel-Endpoint: {target_url}\n"
+        f"Status: {code if code else '0 (Timeout / Verbindungsfehler)'}\n"
+        f"Fehler-Details:\n{error_msg}\n"
+        f"----------------------------------------"
+    )
+
+    entry = HttpLogEntry.create(
+        method="GET",
+        url=target_url,
+        status_code=code,
+        elapsed_ms=elapsed_ms or 2500,
+        headers=req_headers,
+        params=req_params,
+        body=response_preview,
+    )
+    try:
+        event_bus.http_Exchange_logged.emit(entry)
+    except Exception:
+        pass
+
+
 try:
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -136,6 +219,7 @@ def check_mac_account(
     sortby_param: str = "number",
     fallback_get_all: bool = True,
     device_id_mode: Optional[str] = None,
+    enable_error_log: bool = False,
 ) -> Dict[str, Any]:
     """Prüft einen einzelnen MAC-Account schnell im Hintergrund mit voller Boost-Konfigurierbarkeit."""
     import time
@@ -240,6 +324,13 @@ def check_mac_account(
                     time.sleep(0.15)
                     continue
                 res["channel_error"] = str(ce)
+                if enable_error_log:
+                    emit_scanner_connection_error_log(
+                        portal_url=portal_url,
+                        mac=mac,
+                        error_msg=f"Kanalabfrage fehlgeschlagen: {ce}",
+                        endpoint=res.get("load_url"),
+                    )
             except Exception:
                 pass
 
@@ -259,9 +350,17 @@ def check_mac_account(
         res["status"] = "Rate Limited (429/WAF)"
         res["error"] = str(re_err)
         res["rate_limited"] = True
-    except ConnectionError as ce:
+    except (ConnectionError, requests.exceptions.RequestException, socket.error) as ce:
         res["status"] = "Verbindungsfehler"
         res["error"] = str(ce)
+        if enable_error_log:
+            emit_scanner_connection_error_log(
+                portal_url=portal_url,
+                mac=mac,
+                error_msg=str(ce),
+                endpoint=res.get("load_url"),
+                status_code=504 if ("timeout" in str(ce).lower() or "timed out" in str(ce).lower()) else 0,
+            )
     except Exception as e:
         res["status"] = "Fehlgeschlagen"
         res["error"] = str(e)
