@@ -425,6 +425,54 @@ class TestScanScheduler(unittest.TestCase):
         # Log verifiziert
         self.assertTrue(any("Backfill aktiviert" in l for l in logs))
 
+    def test_12_hot_spot_consecutive_misses_does_not_abort_scan_prematurely(self):
+        """
+        Simuliert den realen Fall: 50 MACs über 2 Portale.
+        Nach 20 MACs liefert Portal 1 einen Hot Hit -> 20 Backfill-Checks auf Portal 1 queued.
+        Danach folgen 15 aufeinanderfolgende Misses (übersteigt hot_spot_max_misses = 10).
+        Der Scheduler darf die verbleibenden Backfill-Items NICHT vernichten,
+        sondern muss den gesamten Scan zu 100% (done == total) abschließen.
+        """
+        macs = [f"00:1A:79:00:00:{i:02X}" for i in range(1, 51)]
+        portals = ["http://portal-1.com/c", "http://portal-2.com/c"]
+        logs = []
+
+        scheduler = MultiPortalScanScheduler(
+            portals=portals,
+            macs=macs,
+            mode=ScanRotationMode.HOT_SPOT,
+            hot_spot_burst=30,
+            on_log=logs.append,
+        )
+
+        completed_count = 0
+        total_initial = scheduler.total_checks
+        self.assertEqual(total_initial, 50)
+
+        # Arbeite alle Items ab
+        while not scheduler.is_exhausted():
+            item = scheduler.get_next_work_item()
+            if not item:
+                break
+            mac, portal = item
+            completed_count += 1
+
+            # Bei Check 19 auf Portal 1: simuliere Hot Hit!
+            if completed_count == 19 and portal == portals[0]:
+                scheduler.report_result(portal, mac, {"tag": "hot", "channels": 500, "valid": True})
+            else:
+                # Alle anderen sind Misses
+                scheduler.report_result(portal, mac, {"valid": False, "channels": 0, "status": "Ungültig"})
+
+        done, total = scheduler.get_progress()
+        # Verifiziere: Scan hat nicht vorzeitig gestoppt, sondern alle Checks (inkl. Backfill) sauber erledigt
+        self.assertEqual(done, total)
+        self.assertGreater(total, 50)  # Backfill hat Items hinzugefügt
+        self.assertEqual(completed_count, total)
+        self.assertTrue(scheduler.is_exhausted())
+        # Bestätige, dass Hot-Spot-Misses-Log aufgetaucht ist
+        self.assertTrue(any("kein Treffer in Folge" in l for l in logs))
+
 
 if __name__ == "__main__":
     unittest.main()
