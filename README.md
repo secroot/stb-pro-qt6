@@ -22,7 +22,7 @@
 
 ## 🌟 Schnellübersicht
 
-**Dank reaktiver **EventBus-Architektur** und virtueller GPU-Listen rendert die Anwendung selbst Kataloge mit über **100.000 Sendern** bei stabilen **120 FPS** mit Latenzen unter 1 ms und **0 % CPU-Last im Leerlauf.
+**Dank reaktiver **EventBus-Architektur** und virtueller GPU-Listen rendert die Anwendung selbst Kataloge mit über **100.000 Sendern** bei stabilen **120 FPS** mit Latenzen unter 1 ms und 0 % CPU-Last im Leerlauf.
 
 | 🎯 Multi-Thread Pentest Scanner | 🌲 Host-Gruppierter HOT-Baum | 🏷️ Intelligente Bouquet-Tags |
 | :--- | :--- | :--- |
