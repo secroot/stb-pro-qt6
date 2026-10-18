@@ -10,6 +10,8 @@ import shutil
 import threading
 from typing import Dict, List, Optional, Any
 
+from core.models import is_valid_expire_date
+
 APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PARENT_DIR = os.path.dirname(APP_DIR)
 LOCAL_DB_FILE = os.path.join(APP_DIR, "mac_database.json")
@@ -98,8 +100,12 @@ class MacDatabase:
                 if prev_ch > ch_cnt:
                     ch_cnt = prev_ch
                 prev_exp = existing.get("expire", "")
-                if prev_exp and prev_exp not in ("Unbekannt", "-", "0000-00-00 00:00:00") and new_expire in ("Unbekannt", "-", "0000-00-00 00:00:00"):
+                if is_valid_expire_date(prev_exp) and not is_valid_expire_date(new_expire):
                     new_expire = prev_exp
+
+            # Nur echte Treffer mit gültigem Ablaufdatum und Kanälen > 0 aufnehmen
+            if ch_cnt <= 0 or not is_valid_expire_date(new_expire):
+                return False
 
             record = {
                 "mac": mac,
@@ -192,6 +198,9 @@ class MacDatabase:
                 new_portals.setdefault(clean_p, {})
                 for m_key, val in mac_map.items():
                     norm_m = format_mac_str(m_key)
+                    if not is_valid_expire_date(val.get("expire")) or int(val.get("channels", 0) or 0) <= 0:
+                        removed += 1
+                        continue
                     if norm_m in new_portals[clean_p]:
                         removed += 1
                     else:
@@ -202,6 +211,9 @@ class MacDatabase:
             new_global = {}
             for m_key, val in self._db.get("global_history", {}).items():
                 norm_m = format_mac_str(m_key)
+                if not is_valid_expire_date(val.get("expire")) or int(val.get("channels", 0) or 0) <= 0:
+                    removed += 1
+                    continue
                 if norm_m in new_global:
                     removed += 1
                 else:

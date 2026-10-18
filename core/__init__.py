@@ -12,6 +12,7 @@ from core.models import (
     AppState,
     quality_from_dimensions,
     detect_quality_tag,
+    is_valid_expire_date,
 )
 from core.signals import event_bus, worker_pool
 from core.vpn_manager import vpn_manager, NordVpnManager
@@ -27,6 +28,7 @@ __all__ = [
     "AppState",
     "quality_from_dimensions",
     "detect_quality_tag",
+    "is_valid_expire_date",
     "event_bus",
     "worker_pool",
     "vpn_manager",

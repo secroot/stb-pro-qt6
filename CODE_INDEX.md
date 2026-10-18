@@ -42,12 +42,12 @@
 | `_WorkerSignals` | **Class / Widget** | [core/signals.py](core/signals.py#L31-L33) | `L31-L33` | Basis: QObject |
 | `AppEventBus` | **Class / Widget** | [core/signals.py](core/signals.py#L10-L28) | `L10-L28` | Zentraler Signal-Bus für die gesamte Applikation. |
 | `apply_obsidian_theme` | **Function** | [ui/theme.py](ui/theme.py#L492-L526) | `L492-L526` | Apply dark QPalette and Obsidian Cyber-Cinema QSS stylesheet with dynamic UI scaling. |
-| `AppState` | **Class / Widget** | [core/models.py](core/models.py#L541-L563) | `L541-L563` | Zentraler Laufzeit-Zustand der Anwendung. |
+| `AppState` | **Class / Widget** | [core/models.py](core/models.py#L663-L685) | `L663-L685` | Zentraler Laufzeit-Zustand der Anwendung. |
 | `AsyncWorkerPool` | **Class / Widget** | [core/signals.py](core/signals.py#L67-L112) | `L67-L112` | Hochperformanter Thread-Pool auf Basis von Qt QThreadPool. |
 | `BufferConfigDialog` | **Class / Widget** | [ui/dialogs/buffer_dialog.py](ui/dialogs/buffer_dialog.py#L23-L169) | `L23-L169` | Basis: QDialog |
 | `BufferSettings` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L22-L67) | `L22-L67` | Basis:  |
 | `build_m3u_playlist` | **Function** | [core/m3u_exporter.py](core/m3u_exporter.py#L10-L44) | `L10-L44` | def build_m3u_playlist(channels, user_agent, resolve_url_fn) |
-| `Channel` | **Class / Widget** | [core/models.py](core/models.py#L62-L167) | `L62-L167` | Basis:  |
+| `Channel` | **Class / Widget** | [core/models.py](core/models.py#L184-L289) | `L184-L289` | Basis:  |
 | `ChannelCardDelegate` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L284-L580) | `L284-L580` | Custom QPainter delegate rendering sleek, GPU-accelerated channel cards: |
 | `ChannelFilterProxyModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L213-L281) | `L213-L281` | Zero-allocation filter proxy supporting Category, Search, Favorites, Recent, HD/4K, and De... |
 | `ChannelListModel` | **Class / Widget** | [ui/models/channel_model.py](ui/models/channel_model.py#L51-L210) | `L51-L210` | High-performance backing model for 50,000+ Live TV channels. |
@@ -59,14 +59,14 @@
 | `decode_vlc_fourcc` | **Function** | [player/vlc_controller.py](player/vlc_controller.py#L20-L101) | `L20-L101` | def decode_vlc_fourcc(codec_val) |
 | `detect_ffplay_path` | **Function** | [core/config_manager.py](core/config_manager.py#L48-L57) | `L48-L57` | def detect_ffplay_path() |
 | `detect_mpv_path` | **Function** | [core/config_manager.py](core/config_manager.py#L36-L45) | `L36-L45` | def detect_mpv_path() |
-| `detect_quality_tag` | **Function** | [core/models.py](core/models.py#L31-L58) | `L31-L58` | Erkennt den Qualitäts-Tag AUSSCHLIESSLICH anhand von echten Dimensionsdaten in den Metadat... |
+| `detect_quality_tag` | **Function** | [core/models.py](core/models.py#L153-L180) | `L153-L180` | Erkennt den Qualitäts-Tag AUSSCHLIESSLICH anhand von echten Dimensionsdaten in den Metadat... |
 | `detect_stream_error_payload` | **Function** | [core/stream_probe.py](core/stream_probe.py#L332-L399) | `L332-L399` | Erkennt versteckte Fehler-Payloads (z. B. IP_BAN, ISP_LOCK_FAILED, Geo-Blocks), |
 | `detect_vlc_path` | **Function** | [core/config_manager.py](core/config_manager.py#L19-L33) | `L19-L33` | def detect_vlc_path() |
 | `diagnose_iptv_status` | **Function** | [core/stream_probe.py](core/stream_probe.py#L311-L329) | `L311-L329` | Diagnostiziert proprietäre/spezifische HTTP-Statuscodes von IPTV- und Streaming-Clustern. |
 | `emit_scanner_connection_error_log` | **Function** | [clients/stb_client.py](clients/stb_client.py#L71-L141) | `L71-L141` | Sporadisches / gesampeltes Logging von Verbindungs- und Timeout-Fehlern während des MAC-Sc... |
 | `EPGGuideDialog` | **Class / Widget** | [ui/dialogs/epg_guide_dialog.py](ui/dialogs/epg_guide_dialog.py#L31-L245) | `L31-L245` | Basis: QDialog |
 | `EPGPanel` | **Class / Widget** | [ui/components/epg_panel.py](ui/components/epg_panel.py#L26-L192) | `L26-L192` | Basis: QFrame |
-| `EPGProgram` | **Class / Widget** | [core/models.py](core/models.py#L171-L329) | `L171-L329` | Basis:  |
+| `EPGProgram` | **Class / Widget** | [core/models.py](core/models.py#L293-L451) | `L293-L451` | Basis:  |
 | `ExternalPlayerRunner` | **Class / Widget** | [player/external_player.py](player/external_player.py#L11-L124) | `L11-L124` | Basis:  |
 | `extract_portal_urls_from_folder` | **Function** | [core/portal_checker.py](core/portal_checker.py#L288-L321) | `L288-L321` | Durchsucht alle .txt-Dateien eines Ordners rekursiv nach Stalker Portal-URLs. |
 | `extract_portal_urls_from_text` | **Function** | [core/portal_checker.py](core/portal_checker.py#L214-L285) | `L214-L285` | Extrahiert Stalker-Portal-URLs aus einem Textstring (z. B. aus TXT-Listen, Logs, M3U). |
@@ -81,17 +81,18 @@
 | `find_ffmpeg` | **Function** | [core/recorder.py](core/recorder.py#L34-L52) | `L34-L52` | def find_ffmpeg() |
 | `find_ffprobe` | **Function** | [core/stream_probe.py](core/stream_probe.py#L17-L31) | `L17-L31` | def find_ffprobe() |
 | `format_codec_name` | **Function** | [core/stream_probe.py](core/stream_probe.py#L69-L85) | `L69-L85` | def format_codec_name(codec) |
-| `format_mac_str` | **Function** | [core/mac_database.py](core/mac_database.py#L19-L23) | `L19-L23` | def format_mac_str(mac) |
+| `format_mac_str` | **Function** | [core/mac_database.py](core/mac_database.py#L21-L25) | `L21-L25` | def format_mac_str(mac) |
 | `format_resolution` | **Function** | [core/stream_probe.py](core/stream_probe.py#L88-L104) | `L88-L104` | def format_resolution(width, height, fps) |
 | `FullscreenOSDOverlay` | **Class / Widget** | [player/osd_overlay.py](player/osd_overlay.py#L278-L396) | `L278-L396` | Koordiniert Top-HUD, Bottom-HUD, Uhrzeit-Timer, Auto-Hide und den Quick-Channel-Drawer. |
 | `get_portal_candidate_endpoints` | **Function** | [core/portal_checker.py](core/portal_checker.py#L444-L479) | `L444-L479` | Generiert typische Stalker/Ministra-Endpunkte für Handshake-Probes. |
 | `grab_thumbnail` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L216-L280) | `L216-L280` | High-Performance Standalone Thumbnail Grabber. |
 | `HeroCard` | **Class / Widget** | [ui/components/hero_card.py](ui/components/hero_card.py#L25-L283) | `L25-L283` | Basis: QFrame |
-| `HttpLogEntry` | **Class / Widget** | [core/models.py](core/models.py#L492-L538) | `L492-L538` | Basis:  |
+| `HttpLogEntry` | **Class / Widget** | [core/models.py](core/models.py#L614-L660) | `L614-L660` | Basis:  |
 | `InspectorView` | **Class / Widget** | [ui/views/inspector_view.py](ui/views/inspector_view.py#L32-L262) | `L32-L262` | Basis: QWidget |
 | `is_blank_or_black_jpeg` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L40-L61) | `L40-L61` | Erkennt korrupte, leere oder rein schwarze Dummy-Frames zuverlässig. |
 | `is_ip_or_stream_ban` | **Function** | [core/stream_probe.py](core/stream_probe.py#L295-L308) | `L295-L308` | Ermittelt zuverlässig, ob ein HTTP-Statuscode oder Fehlertext auf |
 | `is_stalker_response` | **Function** | [core/portal_checker.py](core/portal_checker.py#L395-L441) | `L395-L441` | Prüft eine HTTP-Response rigoros auf definitive Stalker / Ministra Signaturen. |
+| `is_valid_expire_date` | **Function** | [core/models.py](core/models.py#L29-L131) | `L29-L131` | Prüft, ob ein Ablaufdatum-Wert gültig und aktiv (in der Zukunft oder unbegrenzt) ist. |
 | `is_valid_portal_hostname` | **Function** | [core/portal_checker.py](core/portal_checker.py#L162-L211) | `L162-L211` | Validiert streng, ob ein Hostname eine reale Internet-Domain oder IPv4-Adresse darstellt. |
 | `Job` | **Class / Widget** | [core/recorder.py](core/recorder.py#L56-L118) | `L56-L118` | Basis:  |
 | `JobsDialog` | **Class / Widget** | [ui/dialogs/jobs_dialog.py](ui/dialogs/jobs_dialog.py#L25-L135) | `L25-L135` | Basis: QDialog |
@@ -100,11 +101,11 @@
 | `load_cached_thumb` | **Function** | [core/preview_grabber.py](core/preview_grabber.py#L120-L133) | `L120-L133` | def load_cached_thumb(key) |
 | `load_portal_list` | **Function** | [core/portal_checker.py](core/portal_checker.py#L348-L376) | `L348-L376` | Liest eine Stalker-Portal-Datei (.txt) ein, bereinigt Kommentare und |
 | `LogoCache` | **Class / Widget** | [core/logo_cache.py](core/logo_cache.py#L22-L151) | `L22-L151` | Lädt Kanal-Logos und VOD-Poster im Hintergrund als QImage (Thread-sicher!) |
-| `MacDatabase` | **Class / Widget** | [core/mac_database.py](core/mac_database.py#L26-L238) | `L26-L238` | Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern. |
+| `MacDatabase` | **Class / Widget** | [core/mac_database.py](core/mac_database.py#L28-L250) | `L28-L250` | Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern. |
 | `MacDatabaseDialog` | **Class / Widget** | [ui/dialogs/mac_db_dialog.py](ui/dialogs/mac_db_dialog.py#L31-L211) | `L31-L211` | Basis: QDialog |
 | `main` | **Function** | [main.py](main.py#L22-L54) | `L22-L54` | def main() |
-| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L96-L2993) | `L96-L2993` | Basis: QMainWindow |
-| `MultiPortalScanScheduler` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L56-L589) | `L56-L589` | Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans mit intelligenter |
+| `MainWindow` | **Class / Widget** | [ui/main_window.py](ui/main_window.py#L104-L3006) | `L104-L3006` | Basis: QMainWindow |
+| `MultiPortalScanScheduler` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L58-L596) | `L58-L596` | Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans mit intelligenter |
 | `NordVpnManager` | **Class / Widget** | [core/vpn_manager.py](core/vpn_manager.py#L29-L653) | `L29-L653` | Verwaltet die Integration mit NordVPN unter Windows. |
 | `normalize_portal_url` | **Function** | [core/portal_checker.py](core/portal_checker.py#L324-L345) | `L324-L345` | Normalisiert eine Portal-URL sauber (Protokoll, Leerzeichen, Format). |
 | `parse_sps_from_h264` | **Function** | [core/stream_probe.py](core/stream_probe.py#L107-L208) | `L107-L208` | Decodiert H.264 Sequence Parameter Set (SPS) direkt in (width, height) ohne externe Tools. |
@@ -112,9 +113,9 @@
 | `PortalCheckResult` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L34-L93) | `L34-L93` | Repräsentiert das Prüfergebnis eines einzelnen Stalker-Portals. |
 | `PreviewOverlayWidget` | **Class / Widget** | [ui/views/live_tv_view.py](ui/views/live_tv_view.py#L86-L152) | `L86-L152` | Standbild-Preview Thumbnail Overlay displayed inside the video viewport when |
 | `probe_stream` | **Function** | [core/stream_probe.py](core/stream_probe.py#L402-L614) | `L402-L614` | def probe_stream(url, user_agent, cookies, timeout, sample_duration, cancel, skip_ffprobe,... |
-| `Profile` | **Class / Widget** | [core/models.py](core/models.py#L333-L452) | `L333-L452` | Basis:  |
+| `Profile` | **Class / Widget** | [core/models.py](core/models.py#L455-L574) | `L455-L574` | Basis:  |
 | `ProfileEditorDialog` | **Class / Widget** | [ui/dialogs/profile_dialog.py](ui/dialogs/profile_dialog.py#L44-L308) | `L44-L308` | Basis: QDialog |
-| `quality_from_dimensions` | **Function** | [core/models.py](core/models.py#L13-L28) | `L13-L28` | Ermittelt den Qualitäts-Tag (UHD/FHD/HD/SD) exakt anhand von Pixel-Dimensionen. |
+| `quality_from_dimensions` | **Function** | [core/models.py](core/models.py#L135-L150) | `L135-L150` | Ermittelt den Qualitäts-Tag (UHD/FHD/HD/SD) exakt anhand von Pixel-Dimensionen. |
 | `read_bit` | **Function** | [core/stream_probe.py](core/stream_probe.py#L124-L133) | `L124-L133` | def read_bit() |
 | `read_bits` | **Function** | [core/stream_probe.py](core/stream_probe.py#L135-L139) | `L135-L139` | def read_bits(count) |
 | `read_se` | **Function** | [core/stream_probe.py](core/stream_probe.py#L149-L151) | `L149-L151` | def read_se() |
@@ -127,8 +128,8 @@
 | `ScanHost` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L62-L85) | `L62-L85` | Repräsentiert einen Host / ein Portal mit allen zugehörigen Logins. |
 | `ScannerView` | **Class / Widget** | [ui/views/scanner_view.py](ui/views/scanner_view.py#L87-L1378) | `L87-L1378` | Basis: QWidget |
 | `ScanRepository` | **Class / Widget** | [core/scan_repository.py](core/scan_repository.py#L88-L264) | `L88-L264` | Verwaltet das Einlesen, Filtern und Cachen aller Scan-Dateien aus 'mac_scans/'. |
-| `ScanResult` | **Class / Widget** | [core/models.py](core/models.py#L478-L488) | `L478-L488` | Basis:  |
-| `ScanRotationMode` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L19-L53) | `L19-L53` | Konstanten für Multi-Portal Rotations- und Scan-Modi. |
+| `ScanResult` | **Class / Widget** | [core/models.py](core/models.py#L600-L610) | `L600-L610` | Basis:  |
+| `ScanRotationMode` | **Class / Widget** | [core/scan_scheduler.py](core/scan_scheduler.py#L21-L55) | `L21-L55` | Konstanten für Multi-Portal Rotations- und Scan-Modi. |
 | `ScanThrottleController` | **Class / Widget** | [clients/throttle.py](clients/throttle.py#L11-L69) | `L11-L69` | Basis:  |
 | `SeriesBrowserDialog` | **Class / Widget** | [ui/dialogs/series_dialog.py](ui/dialogs/series_dialog.py#L26-L163) | `L26-L163` | Basis: QDialog |
 | `SettingsView` | **Class / Widget** | [ui/views/settings_view.py](ui/views/settings_view.py#L45-L968) | `L45-L968` | Basis: QWidget |
@@ -136,10 +137,13 @@
 | `StalkerPortalChecker` | **Class / Widget** | [core/portal_checker.py](core/portal_checker.py#L629-L835) | `L629-L835` | Multi-threaded Stalker Portal Prüf-Engine. |
 | `StbClient` | **Class / Widget** | [clients/stb_client.py](clients/stb_client.py#L151-L203) | `L151-L203` | Erweiterter Stalker/Ministra Client mit automatischem Inspector-Logging |
 | `StreamBufferProxy` | **Class / Widget** | [core/stream_buffer.py](core/stream_buffer.py#L590-L634) | `L590-L634` | Basis:  |
-| `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L456-L474) | `L456-L474` | Basis:  |
+| `StreamProbeResult` | **Class / Widget** | [core/models.py](core/models.py#L578-L596) | `L578-L596` | Basis:  |
+| `TestExpireDateValidation` | **Class / Widget** | [tests/test_expire_validation.py](tests/test_expire_validation.py#L16-L118) | `L16-L118` | Tests für is_valid_expire_date Hilfsfunktion. |
+| `TestMacDatabaseExpireFilter` | **Class / Widget** | [tests/test_expire_validation.py](tests/test_expire_validation.py#L121-L229) | `L121-L229` | Tests für MacDatabase Filterung ungültiger Ablaufdaten. |
 | `TestPortalChecker` | **Class / Widget** | [tests/test_portal_checker.py](tests/test_portal_checker.py#L26-L532) | `L26-L532` | Basis: unittest.TestCase |
 | `TestScanProfiles` | **Class / Widget** | [tests/test_scan_profiles.py](tests/test_scan_profiles.py#L10-L42) | `L10-L42` | Basis: unittest.TestCase |
 | `TestScanScheduler` | **Class / Widget** | [tests/test_scan_scheduler.py](tests/test_scan_scheduler.py#L13-L474) | `L13-L474` | Basis: unittest.TestCase |
+| `TestScanSchedulerExpireHandling` | **Class / Widget** | [tests/test_expire_validation.py](tests/test_expire_validation.py#L232-L293) | `L232-L293` | Tests für MultiPortalScanScheduler mit 0000000 / ungültigen Ablaufdaten. |
 | `TestSettingsAndSidebar` | **Class / Widget** | [tests/test_settings_and_sidebar.py](tests/test_settings_and_sidebar.py#L25-L301) | `L25-L301` | Basis: unittest.TestCase |
 | `TestUIAndEngine` | **Class / Widget** | [tests/test_ui_and_engine.py](tests/test_ui_and_engine.py#L90-L840) | `L90-L840` | Basis: unittest.TestCase |
 | `TestVpnAndStreamErrors` | **Class / Widget** | [tests/test_vpn_and_stream_errors.py](tests/test_vpn_and_stream_errors.py#L15-L330) | `L15-L330` | Basis: unittest.TestCase |
@@ -229,7 +233,7 @@ Mit automatischer HTTP-Telemetrie für den Protokoll-Inspector sowie Serien-API-
 
 ## 📦 Core (Business Logic, Cache & DB)
 
-### 📄 [`core/__init__.py`](core/__init__.py) (36 Zeilen)
+### 📄 [`core/__init__.py`](core/__init__.py) (38 Zeilen)
 > Core-Paket für STB Pro Qt6.
 Enthält Datenmodelle, Event-Bus, Persistenz, Stream-Puffer, Probing und Recording.
 
@@ -304,93 +308,97 @@ als standardkonforme .m3u8 Datei für VLC, Kodi, TiviMate oder externe Tools.
 
 ---
 
-### 📄 [`core/mac_database.py`](core/mac_database.py) (239 Zeilen)
+### 📄 [`core/mac_database.py`](core/mac_database.py) (251 Zeilen)
 > Persistente, threadsichere MAC-Hit-Datenbank für STB Pro Qt6.
 Synchronisiert sich automatisch mit einer vorhandenen mac_database.json im Hauptordner.
 
 #### Klassen & Komponenten
-- **[`MacDatabase`](core/mac_database.py#L26-L238)** — `L26-L238`
+- **[`MacDatabase`](core/mac_database.py#L28-L250)** — `L28-L250`
   - *Persistente, threadsichere Datenbank für gefundene MAC-Adressen mit Sendern.*
   - **Wichtige Methoden:**
-    - [`__init__(filepath)`](core/mac_database.py#L32) — `L32`
-    - [`_load()`](core/mac_database.py#L44) — `L44`
-    - [`_save()`](core/mac_database.py#L57) — `L57`
-    - [`save_found_mac(portal_url, res)`](core/mac_database.py#L74) — `L74`
-    - [`get_known_macs(portal_url)`](core/mac_database.py#L127) — `L127`
-    - [`get_all_records(portal_url)`](core/mac_database.py#L150) — `L150`
-    - [`get_portals()`](core/mac_database.py#L159) — `L159`
-    - [`delete_entry(mac, portal_url)`](core/mac_database.py#L163) — `L163`
-    - [`clean_duplicates()`](core/mac_database.py#L186) — `L186`
-    - [`get_count()`](core/mac_database.py#L216) — `L216`
-    - [`total_count()`](core/mac_database.py#L220) — `L220`
-    - [`get_entries(portal_url)`](core/mac_database.py#L223) — `L223`
-    - [`deduplicate()`](core/mac_database.py#L234) — `L234`
-    - [`remove_entry(portal_url, mac)`](core/mac_database.py#L237) — `L237`
+    - [`__init__(filepath)`](core/mac_database.py#L34) — `L34`
+    - [`_load()`](core/mac_database.py#L46) — `L46`
+    - [`_save()`](core/mac_database.py#L59) — `L59`
+    - [`save_found_mac(portal_url, res)`](core/mac_database.py#L76) — `L76`
+    - [`get_known_macs(portal_url)`](core/mac_database.py#L133) — `L133`
+    - [`get_all_records(portal_url)`](core/mac_database.py#L156) — `L156`
+    - [`get_portals()`](core/mac_database.py#L165) — `L165`
+    - [`delete_entry(mac, portal_url)`](core/mac_database.py#L169) — `L169`
+    - [`clean_duplicates()`](core/mac_database.py#L192) — `L192`
+    - [`get_count()`](core/mac_database.py#L228) — `L228`
+    - [`total_count()`](core/mac_database.py#L232) — `L232`
+    - [`get_entries(portal_url)`](core/mac_database.py#L235) — `L235`
+    - [`deduplicate()`](core/mac_database.py#L246) — `L246`
+    - [`remove_entry(portal_url, mac)`](core/mac_database.py#L249) — `L249`
 
 #### Modul-Funktionen
-- **[`format_mac_str(mac)`](core/mac_database.py#L19-L23)** — `L19`
+- **[`format_mac_str(mac)`](core/mac_database.py#L21-L25)** — `L21`
 
 #### Wichtige Konstanten / Konfigurationen
-- `APP_DIR` (L13), `PARENT_DIR` (L14), `LOCAL_DB_FILE` (L15), `PARENT_DB_FILE` (L16)
+- `APP_DIR` (L15), `PARENT_DIR` (L16), `LOCAL_DB_FILE` (L17), `PARENT_DB_FILE` (L18)
 
 ---
 
-### 📄 [`core/models.py`](core/models.py) (563 Zeilen)
+### 📄 [`core/models.py`](core/models.py) (685 Zeilen)
 > Datenmodelle (Dataclasses) für STB Pro Qt6.
 Strikt typisiert und unabhängig von UI-Komponenten.
 
 #### Klassen & Komponenten
-- **[`Channel`](core/models.py#L62-L167)** — `L62-L167`
+- **[`Channel`](core/models.py#L184-L289)** — `L184-L289`
   - **Wichtige Methoden:**
-    - [`__post_init__()`](core/models.py#L79) — `L79`
-    - [`__hash__()`](core/models.py#L83) — `L83`
-    - [`__eq__(other)`](core/models.py#L86) — `L86`
-    - [`tv_genre_id()`](core/models.py#L92) — `L92`
-    - [`tv_genre_id(val)`](core/models.py#L96) — `L96`
-    - [`fav()`](core/models.py#L100) — `L100`
-    - [`fav(val)`](core/models.py#L104) — `L104`
-    - [`is_hls()`](core/models.py#L108) — `L108`
-    - [`has_archive()`](core/models.py#L112) — `L112`
-    - [`enable_tv_archive()`](core/models.py#L121) — `L121`
-    - [`flags_summary()`](core/models.py#L125) — `L125`
-    - [`from_raw(cls, raw, genre_map)`](core/models.py#L147) — `L147`
-- **[`EPGProgram`](core/models.py#L171-L329)** — `L171-L329`
+    - [`__post_init__()`](core/models.py#L201) — `L201`
+    - [`__hash__()`](core/models.py#L205) — `L205`
+    - [`__eq__(other)`](core/models.py#L208) — `L208`
+    - [`tv_genre_id()`](core/models.py#L214) — `L214`
+    - [`tv_genre_id(val)`](core/models.py#L218) — `L218`
+    - [`fav()`](core/models.py#L222) — `L222`
+    - [`fav(val)`](core/models.py#L226) — `L226`
+    - [`is_hls()`](core/models.py#L230) — `L230`
+    - [`has_archive()`](core/models.py#L234) — `L234`
+    - [`enable_tv_archive()`](core/models.py#L243) — `L243`
+    - [`flags_summary()`](core/models.py#L247) — `L247`
+    - [`from_raw(cls, raw, genre_map)`](core/models.py#L269) — `L269`
+- **[`EPGProgram`](core/models.py#L293-L451)** — `L293-L451`
   - **Wichtige Methoden:**
-    - [`name()`](core/models.py#L186) — `L186`
-    - [`descr()`](core/models.py#L190) — `L190`
-    - [`time_str()`](core/models.py#L194) — `L194`
-    - [`time_to_str()`](core/models.py#L198) — `L198`
-    - [`progress_percent()`](core/models.py#L202) — `L202`
-    - [`progress()`](core/models.py#L231) — `L231`
-    - [`remaining_minutes()`](core/models.py#L235) — `L235`
-    - [`from_raw(cls, raw)`](core/models.py#L248) — `L248`
-- **[`Profile`](core/models.py#L333-L452)** — `L333-L452`
+    - [`name()`](core/models.py#L308) — `L308`
+    - [`descr()`](core/models.py#L312) — `L312`
+    - [`time_str()`](core/models.py#L316) — `L316`
+    - [`time_to_str()`](core/models.py#L320) — `L320`
+    - [`progress_percent()`](core/models.py#L324) — `L324`
+    - [`progress()`](core/models.py#L353) — `L353`
+    - [`remaining_minutes()`](core/models.py#L357) — `L357`
+    - [`from_raw(cls, raw)`](core/models.py#L370) — `L370`
+- **[`Profile`](core/models.py#L455-L574)** — `L455-L574`
   - **Wichtige Methoden:**
-    - [`from_dict(cls, data)`](core/models.py#L352) — `L352`
-    - [`to_dict()`](core/models.py#L372) — `L372`
-    - [`portal_type()`](core/models.py#L393) — `L393`
-    - [`portal_type(val)`](core/models.py#L402) — `L402`
-    - [`url()`](core/models.py#L412) — `L412`
-    - [`url(val)`](core/models.py#L421) — `L421`
-    - [`server_url()`](core/models.py#L430) — `L430`
-    - [`server_url(val)`](core/models.py#L434) — `L434`
-    - [`m3u_url()`](core/models.py#L440) — `L440`
-    - [`m3u_url(val)`](core/models.py#L444) — `L444`
-    - [`clone(new_name)`](core/models.py#L449) — `L449`
-- **[`StreamProbeResult`](core/models.py#L456-L474)** — `L456-L474`
-- **[`ScanResult`](core/models.py#L478-L488)** — `L478-L488`
-- **[`HttpLogEntry`](core/models.py#L492-L538)** — `L492-L538`
+    - [`from_dict(cls, data)`](core/models.py#L474) — `L474`
+    - [`to_dict()`](core/models.py#L494) — `L494`
+    - [`portal_type()`](core/models.py#L515) — `L515`
+    - [`portal_type(val)`](core/models.py#L524) — `L524`
+    - [`url()`](core/models.py#L534) — `L534`
+    - [`url(val)`](core/models.py#L543) — `L543`
+    - [`server_url()`](core/models.py#L552) — `L552`
+    - [`server_url(val)`](core/models.py#L556) — `L556`
+    - [`m3u_url()`](core/models.py#L562) — `L562`
+    - [`m3u_url(val)`](core/models.py#L566) — `L566`
+    - [`clone(new_name)`](core/models.py#L571) — `L571`
+- **[`StreamProbeResult`](core/models.py#L578-L596)** — `L578-L596`
+- **[`ScanResult`](core/models.py#L600-L610)** — `L600-L610`
+- **[`HttpLogEntry`](core/models.py#L614-L660)** — `L614-L660`
   - **Wichtige Methoden:**
-    - [`create(cls, method, url, status_code, elapsed_ms, headers, params, body)`](core/models.py#L503) — `L503`
-    - [`to_curl()`](core/models.py#L524) — `L524`
-- **[`AppState`](core/models.py#L541-L563)** — `L541-L563`
+    - [`create(cls, method, url, status_code, elapsed_ms, headers, params, body)`](core/models.py#L625) — `L625`
+    - [`to_curl()`](core/models.py#L646) — `L646`
+- **[`AppState`](core/models.py#L663-L685)** — `L663-L685`
   - *Zentraler Laufzeit-Zustand der Anwendung.*
   - **Wichtige Methoden:**
-    - [`__init__()`](core/models.py#L543) — `L543`
+    - [`__init__()`](core/models.py#L665) — `L665`
 
 #### Modul-Funktionen
-- **[`quality_from_dimensions(width, height)`](core/models.py#L13-L28)** — `L13` — *Ermittelt den Qualitäts-Tag (UHD/FHD/HD/SD) exakt anhand von Pixel-Dimensionen.*
-- **[`detect_quality_tag(name, raw)`](core/models.py#L31-L58)** — `L31` — *Erkennt den Qualitäts-Tag AUSSCHLIESSLICH anhand von echten Dimensionsdaten in den Metadaten.*
+- **[`is_valid_expire_date(expire_val, allow_unlimited)`](core/models.py#L29-L131)** — `L29` — *Prüft, ob ein Ablaufdatum-Wert gültig und aktiv (in der Zukunft oder unbegrenzt) ist.*
+- **[`quality_from_dimensions(width, height)`](core/models.py#L135-L150)** — `L135` — *Ermittelt den Qualitäts-Tag (UHD/FHD/HD/SD) exakt anhand von Pixel-Dimensionen.*
+- **[`detect_quality_tag(name, raw)`](core/models.py#L153-L180)** — `L153` — *Erkennt den Qualitäts-Tag AUSSCHLIESSLICH anhand von echten Dimensionsdaten in den Metadaten.*
+
+#### Wichtige Konstanten / Konfigurationen
+- `_MONTHS` (L13)
 
 ---
 
@@ -546,7 +554,7 @@ und generiert dynamisch Host- und Login-Auswahlen für Stalker-Portale.
 
 ---
 
-### 📄 [`core/scan_scheduler.py`](core/scan_scheduler.py) (589 Zeilen)
+### 📄 [`core/scan_scheduler.py`](core/scan_scheduler.py) (596 Zeilen)
 > Multi-Portal Scan Scheduler für STB Pro Qt6.
 Bietet intelligente Verteilungsmodi für Multi-Portal MAC-Scans:
 - HOT_SPOT: Hot-Spot Affinity mit Backfill (bei einem Treffer werden auch zuvor auf anderen Portalen abgewiesene MACs auf dem Hot-Portal nachgetestet)
@@ -557,29 +565,29 @@ Bietet intelligente Verteilungsmodi für Multi-Portal MAC-Scans:
 - SWEEP_EARLY_EXIT: Sweep mit Abbruch sobald eine MAC auf einem Portal erfolgreich verifiziert wurde
 
 #### Klassen & Komponenten
-- **[`ScanRotationMode`](core/scan_scheduler.py#L19-L53)** — `L19-L53`
+- **[`ScanRotationMode`](core/scan_scheduler.py#L21-L55)** — `L21-L55`
   - *Konstanten für Multi-Portal Rotations- und Scan-Modi.*
   - **Wichtige Methoden:**
-    - [`describe(cls, mode)`](core/scan_scheduler.py#L29) — `L29`
-    - [`from_ui_label(cls, label)`](core/scan_scheduler.py#L41) — `L41`
-- **[`MultiPortalScanScheduler`](core/scan_scheduler.py#L56-L589)** — `L56-L589`
+    - [`describe(cls, mode)`](core/scan_scheduler.py#L31) — `L31`
+    - [`from_ui_label(cls, label)`](core/scan_scheduler.py#L43) — `L43`
+- **[`MultiPortalScanScheduler`](core/scan_scheduler.py#L58-L596)** — `L58-L596`
   - *Thread-sicherer Work-Scheduler für Multi-Portal MAC-Scans mit intelligenter*
   - **Wichtige Methoden:**
-    - [`__init__(portals, macs, mode, hot_spot_burst, failover_threshold, on_log)`](core/scan_scheduler.py#L62) — `L62`
-    - [`_log(msg)`](core/scan_scheduler.py#L153) — `L153`
-    - [`get_next_work_item()`](core/scan_scheduler.py#L160) — `L160` *(Gibt das nächste (MAC, Portal)-Tupel thread-sicher zurück.)*
-    - [`_get_hot_spot_item()`](core/scan_scheduler.py#L201) — `L201`
-    - [`_get_adaptive_item()`](core/scan_scheduler.py#L270) — `L270`
-    - [`_get_failover_item()`](core/scan_scheduler.py#L316) — `L316`
-    - [`_get_round_robin_item()`](core/scan_scheduler.py#L340) — `L340`
-    - [`_weighted_portal_choice()`](core/scan_scheduler.py#L353) — `L353`
-    - [`_activate_hot_spot(portal, ch_cnt)`](core/scan_scheduler.py#L366) — `L366` *(Aktiviert Hot-Spot Modus und sammelt alle bisher auf anderen Portalen abgewiesenen MACs.)*
-    - [`report_result(portal_url, mac, result)`](core/scan_scheduler.py#L396) — `L396` *(Aktualisiert Metriken, Treffer, Burst-Quotas und Failover-Zustände thread-sicher.)*
-    - [`requeue_item(portal_url, mac, reason)`](core/scan_scheduler.py#L536) — `L536` *(Stellt ein Work-Item bei transientem Fehler thread-sicher erneut an.)*
-    - [`release_in_flight()`](core/scan_scheduler.py#L553) — `L553` *(Reduziert in_flight falls ein Worker unerwartet abbricht.)*
-    - [`is_exhausted()`](core/scan_scheduler.py#L558) — `L558` *(Prüft, ob alle Items verarbeitet wurden und keine mehr in Bearbeitung sind.)*
-    - [`get_progress()`](core/scan_scheduler.py#L568) — `L568` *(Gibt (effektive_fertige_checks, gesamt_checks) zurück.)*
-    - [`get_queue_size()`](core/scan_scheduler.py#L574) — `L574` *(Gibt die Anzahl der noch wartenden Items zurück.)*
+    - [`__init__(portals, macs, mode, hot_spot_burst, failover_threshold, on_log)`](core/scan_scheduler.py#L64) — `L64`
+    - [`_log(msg)`](core/scan_scheduler.py#L155) — `L155`
+    - [`get_next_work_item()`](core/scan_scheduler.py#L162) — `L162` *(Gibt das nächste (MAC, Portal)-Tupel thread-sicher zurück.)*
+    - [`_get_hot_spot_item()`](core/scan_scheduler.py#L203) — `L203`
+    - [`_get_adaptive_item()`](core/scan_scheduler.py#L272) — `L272`
+    - [`_get_failover_item()`](core/scan_scheduler.py#L318) — `L318`
+    - [`_get_round_robin_item()`](core/scan_scheduler.py#L342) — `L342`
+    - [`_weighted_portal_choice()`](core/scan_scheduler.py#L355) — `L355`
+    - [`_activate_hot_spot(portal, ch_cnt)`](core/scan_scheduler.py#L368) — `L368` *(Aktiviert Hot-Spot Modus und sammelt alle bisher auf anderen Portalen abgewiesenen MACs.)*
+    - [`report_result(portal_url, mac, result)`](core/scan_scheduler.py#L398) — `L398` *(Aktualisiert Metriken, Treffer, Burst-Quotas und Failover-Zustände thread-sicher.)*
+    - [`requeue_item(portal_url, mac, reason)`](core/scan_scheduler.py#L543) — `L543` *(Stellt ein Work-Item bei transientem Fehler thread-sicher erneut an.)*
+    - [`release_in_flight()`](core/scan_scheduler.py#L560) — `L560` *(Reduziert in_flight falls ein Worker unerwartet abbricht.)*
+    - [`is_exhausted()`](core/scan_scheduler.py#L565) — `L565` *(Prüft, ob alle Items verarbeitet wurden und keine mehr in Bearbeitung sind.)*
+    - [`get_progress()`](core/scan_scheduler.py#L575) — `L575` *(Gibt (effektive_fertige_checks, gesamt_checks) zurück.)*
+    - [`get_queue_size()`](core/scan_scheduler.py#L581) — `L581` *(Gibt die Anzahl der noch wartenden Items zurück.)*
     - *... und 1 weitere Hilfsmethoden.*
 
 ---
@@ -817,31 +825,31 @@ Nutzt Qt Signals für reaktive Status- und Puffer-Updates ohne UI-Blockade.
 
 ---
 
-### 📄 [`ui/main_window.py`](ui/main_window.py) (2995 Zeilen)
+### 📄 [`ui/main_window.py`](ui/main_window.py) (3008 Zeilen)
 > Main Application Window (Orchestrator) for STB Pro v6.0 Qt6 Edition.
 Coordinates Sidebar, TopNavigationBar, LiveTVView, VODView, ScannerView, InspectorView, ConsoleView,
 LibVLC Hardware Player, External Player Runner, Fullscreen HUD Overlay, PiP Mini-Player,
 Multi-Thread MAC Scanner, Parallel Category Validator, and all 7 Dialogs.
 
 #### Klassen & Komponenten
-- **[`MainWindow`](ui/main_window.py#L96-L2993)** : *QMainWindow* — `L96-L2993`
+- **[`MainWindow`](ui/main_window.py#L104-L3006)** : *QMainWindow* — `L104-L3006`
   - **Signals**: `_val_progress_sig`, `_val_finished_sig`, `_val_thumb_progress_sig`, `_val_thumb_finished_sig`, `_epg_loaded_sig`, `_probe_done_sig`, `_preview_ready_sig`
   - **Wichtige Methoden:**
-    - [`__init__()`](ui/main_window.py#L106) — `L106`
-    - [`_build_ui()`](ui/main_window.py#L205) — `L205`
-    - [`_bind_signals()`](ui/main_window.py#L266) — `L266`
-    - [`_on_buffer_settings_from_view(st)`](ui/main_window.py#L389) — `L389`
-    - [`_on_settings_applied(cfg)`](ui/main_window.py#L394) — `L394`
-    - [`_is_text_input_focused()`](ui/main_window.py#L414) — `L414`
-    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L418) — `L418`
-    - [`_cycle_aspect_ratio()`](ui/main_window.py#L427) — `L427`
-    - [`_setup_shortcuts()`](ui/main_window.py#L432) — `L432`
-    - [`_load_initial_config()`](ui/main_window.py#L455) — `L455`
-    - [`switch_view(view_key)`](ui/main_window.py#L543) — `L543`
-    - [`toggle_sidebar()`](ui/main_window.py#L551) — `L551`
-    - [`toggle_cinema_mode()`](ui/main_window.py#L557) — `L557`
-    - [`toggle_pip_mode()`](ui/main_window.py#L565) — `L565` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
-    - [`toggle_fullscreen()`](ui/main_window.py#L607) — `L607`
+    - [`__init__()`](ui/main_window.py#L114) — `L114`
+    - [`_build_ui()`](ui/main_window.py#L213) — `L213`
+    - [`_bind_signals()`](ui/main_window.py#L274) — `L274`
+    - [`_on_buffer_settings_from_view(st)`](ui/main_window.py#L397) — `L397`
+    - [`_on_settings_applied(cfg)`](ui/main_window.py#L402) — `L402`
+    - [`_is_text_input_focused()`](ui/main_window.py#L422) — `L422`
+    - [`_bind_guarded_shortcut(key_seq, callback)`](ui/main_window.py#L426) — `L426`
+    - [`_cycle_aspect_ratio()`](ui/main_window.py#L435) — `L435`
+    - [`_setup_shortcuts()`](ui/main_window.py#L440) — `L440`
+    - [`_load_initial_config()`](ui/main_window.py#L463) — `L463`
+    - [`switch_view(view_key)`](ui/main_window.py#L551) — `L551`
+    - [`toggle_sidebar()`](ui/main_window.py#L559) — `L559`
+    - [`toggle_cinema_mode()`](ui/main_window.py#L565) — `L565`
+    - [`toggle_pip_mode()`](ui/main_window.py#L573) — `L573` *(Switches into a floating Always-on-Top Picture-in-Picture mini-player window.)*
+    - [`toggle_fullscreen()`](ui/main_window.py#L615) — `L615`
     - *... und 95 weitere Hilfsmethoden.*
 
 ---
@@ -1361,6 +1369,34 @@ Handles thousands of Movies and Series items effortlessly without blocking the U
 ## 📦 Automatisierte Test-Suiten
 
 ### 📄 [`tests/probe_multi_hosts.py`](tests/probe_multi_hosts.py) (134 Zeilen)
+---
+
+### 📄 [`tests/test_expire_validation.py`](tests/test_expire_validation.py) (297 Zeilen)
+> Unit-Tests für die Validierung von Ablaufdaten (Expiration Dates) und
+die Verhinderung von False-Positive Hot-Hits bei 0000000 / None / Unbekannt / abgelaufenen Accounts.
+
+#### Klassen & Komponenten
+- **[`TestExpireDateValidation`](tests/test_expire_validation.py#L16-L118)** : *unittest.TestCase* — `L16-L118`
+  - *Tests für is_valid_expire_date Hilfsfunktion.*
+  - **Wichtige Methoden:**
+    - [`test_invalid_and_zero_dates()`](tests/test_expire_validation.py#L19) — `L19` *(Nullwerte, Nullen und Platzhalter müssen als ungültig erkannt werden.)*
+    - [`test_past_dates()`](tests/test_expire_validation.py#L53) — `L53` *(Vergangene Ablaufdaten müssen als abgelaufen (False) erkannt werden.)*
+    - [`test_future_valid_dates()`](tests/test_expire_validation.py#L73) — `L73` *(Zukünftige Daten müssen als aktiv und gültig erkannt werden.)*
+    - [`test_unlimited_and_lifetime_dates()`](tests/test_expire_validation.py#L95) — `L95` *(Unbegrenzte / Lifetime Kennzeichnungen müssen als gültig akzeptiert werden.)*
+- **[`TestMacDatabaseExpireFilter`](tests/test_expire_validation.py#L121-L229)** : *unittest.TestCase* — `L121-L229`
+  - *Tests für MacDatabase Filterung ungültiger Ablaufdaten.*
+  - **Wichtige Methoden:**
+    - [`setUp()`](tests/test_expire_validation.py#L124) — `L124`
+    - [`tearDown()`](tests/test_expire_validation.py#L129) — `L129`
+    - [`test_save_found_mac_rejects_zero_and_none_expire()`](tests/test_expire_validation.py#L132) — `L132` *(save_found_mac darf Accounts mit 0000000 oder None Expire nicht speichern.)*
+    - [`test_save_found_mac_accepts_valid_future_expire()`](tests/test_expire_validation.py#L166) — `L166` *(save_found_mac speichert Accounts mit zukünftigem Datum oder Unlimited.)*
+    - [`test_clean_duplicates_removes_invalid_expire_records()`](tests/test_expire_validation.py#L179) — `L179` *(clean_duplicates bereinigt historische Einträge mit 0000000 oder abgelaufenem Datum.)*
+- **[`TestScanSchedulerExpireHandling`](tests/test_expire_validation.py#L232-L293)** : *unittest.TestCase* — `L232-L293`
+  - *Tests für MultiPortalScanScheduler mit 0000000 / ungültigen Ablaufdaten.*
+  - **Wichtige Methoden:**
+    - [`test_report_result_with_zero_expire_does_not_trigger_hotspot()`](tests/test_expire_validation.py#L235) — `L235` *(Ein Account mit 0000000 / None Expire darf keinen Hot-Spot Burst auslösen.)*
+    - [`test_report_result_with_valid_expire_triggers_hotspot()`](tests/test_expire_validation.py#L266) — `L266` *(Ein echter Hot-Hit mit gültigem Ablaufdatum löst wie gewohnt Hot-Spot Burst aus.)*
+
 ---
 
 ### 📄 [`tests/test_portal_checker.py`](tests/test_portal_checker.py) (536 Zeilen)

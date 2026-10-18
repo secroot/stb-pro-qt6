@@ -8,6 +8,128 @@ from dataclasses import dataclass, field
 from typing import Optional, Dict, List, Set, Any
 import datetime
 import time
+import re
+
+_MONTHS = {
+    "january": 1, "jan": 1, "januar": 1,
+    "february": 2, "feb": 2, "februar": 2,
+    "march": 3, "mar": 3, "maerz": 3, "mrz": 3, "märz": 3,
+    "april": 4, "apr": 4,
+    "may": 5, "mai": 5,
+    "june": 6, "jun": 6, "juni": 6,
+    "july": 7, "jul": 7, "juli": 7,
+    "august": 8, "aug": 8,
+    "september": 9, "sep": 9, "sept": 9,
+    "october": 10, "oct": 10, "oktober": 10, "okt": 10,
+    "november": 11, "nov": 11,
+    "december": 12, "dec": 12, "dezember": 12, "dez": 12,
+}
+
+
+def is_valid_expire_date(expire_val: Any, allow_unlimited: bool = True) -> bool:
+    """Prüft, ob ein Ablaufdatum-Wert gültig und aktiv (in der Zukunft oder unbegrenzt) ist.
+
+    Gibt False zurück bei None, Leerstring, 0000000, 0000-00-00, None, Unbekannt, -,
+    oder Datumsangaben in der Vergangenheit.
+    """
+    if expire_val is None:
+        return False
+    if isinstance(expire_val, (int, float)):
+        if expire_val <= 0:
+            return False
+        if 1000000000 <= expire_val <= 253402300799:
+            return expire_val > datetime.datetime.now().timestamp()
+        return False
+
+    s = str(expire_val).strip()
+    if not s:
+        return False
+
+    s_lower = s.lower()
+    if s_lower in ("none", "null", "nil", "unbekannt", "unknown", "n/a", "na", "-", "--", "undefined", "0"):
+        return False
+
+    # Nur Nullen (z.B. '0000000', '0000-00-00', '0000-00-00 00:00:00')
+    cleaned_digits = re.sub(r"[^0-9]", "", s)
+    if cleaned_digits and set(cleaned_digits) == {"0"}:
+        return False
+
+    # Lifetime / Unlimited
+    if allow_unlimited:
+        unlimited_keywords = ("unlimited", "unbegrenzt", "lifetime", "never", "permanent", "dauerhaft")
+        if any(kw in s_lower for kw in unlimited_keywords):
+            return True
+
+    # Numerischer Unix-Timestamp als String
+    if s.isdigit():
+        val = int(s)
+        if 1000000000 <= val <= 253402300799:
+            return val > datetime.datetime.now().timestamp()
+        return False
+
+    now = datetime.datetime.now()
+
+    # Typische Datumsformate
+    formats = (
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%d %H:%M",
+        "%Y-%m-%d",
+        "%d.%m.%Y %H:%M:%S",
+        "%d.%m.%Y %H:%M",
+        "%d.%m.%Y",
+        "%d/%m/%Y %H:%M:%S",
+        "%d/%m/%Y",
+        "%m/%d/%Y",
+        "%B %d, %Y, %I:%M %p",
+        "%B %d, %Y %I:%M %p",
+        "%B %d, %Y, %H:%M",
+        "%B %d, %Y",
+        "%b %d, %Y",
+        "%Y/%m/%d %H:%M:%S",
+        "%Y/%m/%d",
+    )
+    for fmt in formats:
+        try:
+            dt = datetime.datetime.strptime(s, fmt)
+            return dt > now
+        except ValueError:
+            pass
+
+    # Monatsname suchen
+    found_month = None
+    for word in re.findall(r"[a-zA-ZäöüÄÖÜ]+", s_lower):
+        if word in _MONTHS:
+            found_month = _MONTHS[word]
+            break
+
+    # Zukünftiges 4-stelliges Jahr (z.B. 2026, 2027)
+    year_match = re.search(r"\b(20[2-9]\d)\b", s)
+    if year_match:
+        yr = int(year_match.group(1))
+        if yr > now.year:
+            return True
+        if yr < now.year:
+            return False
+        # Gleiches Jahr: Prüfe Monat & Tag wenn vorhanden
+        if found_month:
+            if found_month > now.month:
+                return True
+            if found_month < now.month:
+                return False
+            day_match = re.search(r"\b([0-3]?\d)\b", s.replace(str(yr), ""))
+            if day_match:
+                day = int(day_match.group(1))
+                return day >= now.day
+            return True
+        return True
+
+    # Explizite Vorjahre ausschließen (19xx, 200x, 201x, 2020-2025)
+    past_year_match = re.search(r"\b(19\d\d|20[0-1]\d|202[0-5])\b", s)
+    if past_year_match:
+        return False
+
+    return False
+
 
 
 def quality_from_dimensions(width: int, height: int) -> str:

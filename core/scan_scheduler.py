@@ -15,6 +15,8 @@ import random
 import threading
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
+from core.models import is_valid_expire_date
+
 
 class ScanRotationMode:
     """Konstanten für Multi-Portal Rotations- und Scan-Modi."""
@@ -405,7 +407,12 @@ class MultiPortalScanScheduler:
 
             is_hot = bool(
                 result.get("tag") == "hot"
-                or (result.get("valid") and int(result.get("channels") or 0) > 0)
+                or (
+                    result.get("tag") is None
+                    and result.get("valid")
+                    and int(result.get("channels") or 0) > 0
+                    and is_valid_expire_date(result.get("expire"))
+                )
             )
             ch_cnt = int(result.get("channels") or 0)
             err_str = str(result.get("error") or "")

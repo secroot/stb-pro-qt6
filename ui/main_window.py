@@ -51,7 +51,15 @@ from core.config_manager import APP_DIR, ConfigManager
 from core.logo_cache import logo_cache
 from core.m3u_exporter import build_m3u_playlist
 from core.mac_database import MacDatabase
-from core.models import AppState, Channel, EPGProgram, Profile, StreamProbeResult, quality_from_dimensions
+from core.models import (
+    AppState,
+    Channel,
+    EPGProgram,
+    Profile,
+    StreamProbeResult,
+    quality_from_dimensions,
+    is_valid_expire_date,
+)
 from core.preview_grabber import (
     THUMB_DIR,
     ThumbGrabber,
@@ -2589,7 +2597,7 @@ class MainWindow(QMainWindow):
                             active_date_missing_channels = bool(
                                 res.get("valid")
                                 and ch_cnt == 0
-                                and any(y in str(res.get("expire") or "") for y in ("2025", "2026", "2027", "2028", "2029", "2030"))
+                                and is_valid_expire_date(res.get("expire"))
                                 and retries < scan_max_retries
                             )
                             is_transient = bool(
@@ -2614,7 +2622,7 @@ class MainWindow(QMainWindow):
                                     error_msg=err_str or stat_str or "Verbindungsfehler",
                                     endpoint=cached_target_ep or res.get("load_url"),
                                     status_code=504 if ("timeout" in err_str.lower() or "timeout" in stat_str.lower()) else 0,
-                                )
+                                    )
 
                             # WENN TRANSIENT (Timeout/503/429/Kanalfehler): MAC hinten anstellen und erneut probieren!
                             if scan_auto_requeue and is_transient and retries < scan_max_retries and not self._scan_stop_ev.is_set():
@@ -2629,7 +2637,8 @@ class MainWindow(QMainWindow):
                                 continue
 
                             # Endgültiges Ergebnis ermitteln
-                            if res.get("valid") and ch_cnt > 0:
+                            is_valid_exp = is_valid_expire_date(res.get("expire"))
+                            if res.get("valid") and ch_cnt > 0 and is_valid_exp:
                                 res["tag"] = "hot"
                                 self.mac_db.save_found_mac(cur_portal, res)
                                 event_bus.log_message.emit(
@@ -2637,6 +2646,10 @@ class MainWindow(QMainWindow):
                                 )
                             elif res.get("valid"):
                                 res["tag"] = "valid"
+                                if ch_cnt > 0 and not is_valid_exp:
+                                    event_bus.log_message.emit(
+                                        f"[ℹ️ Kein Hot-Hit] {res['mac']} | {ch_cnt} Kanäle, aber ungültiges/abgelaufenes Datum: '{res.get('expire')}' ({cur_portal})"
+                                    )
                             else:
                                 res["tag"] = "invalid"
 
