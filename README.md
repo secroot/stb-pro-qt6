@@ -158,8 +158,8 @@ Eine vollständige Dokumentation der internen Modul-Zusammenhänge und des Symbo
 
 ---
 
-## ⚖️ Ethical Pentesting & Disclaimer
+## Download: 
+```powershell
+https://github.com/secroot/stb-pro-qt6/archive/refs/heads/main.zip
+```
 
-> [!CAUTION]
-> **Wichtiger rechtlicher Hinweis**:
-> Dieses Tool wurde ausschließlich zu Forschungs-, Bildungs- und autorisierten Red-Team-Auditzwecken entwickelt. Das Scannen und Zugreifen auf Portale und Netzwerke ohne vorherige ausdrückliche Genehmigung des jeweiligen Betreibers ist illegal. Die Entwickler übernehmen keinerlei Haftung für Missbrauch oder Schäden, die durch den Einsatz dieser Software entstehen. Bitte beachten Sie stets die Gesetze Ihrer jeweiligen Jurisdiktion.
